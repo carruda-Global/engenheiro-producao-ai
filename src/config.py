@@ -38,6 +38,13 @@ class Settings:
         self.log_level: str = os.getenv("LOG_LEVEL", "INFO")
         self.debug: bool = self.config["app"]["debug"]
 
+        self.aws_access_key_id: str = os.getenv("AWS_ACCESS_KEY_ID", "")
+        self.aws_secret_access_key: str = os.getenv("AWS_SECRET_ACCESS_KEY", "")
+        self.aws_region: str = self.config.get("marketplace", {}).get("aws", {}).get("region", "us-east-1")
+        self.aws_product_code: str = self.config.get("marketplace", {}).get("aws", {}).get("product_code", "")
+        self.aws_sns_topic_arn: str = self.config.get("marketplace", {}).get("aws", {}).get("sns_topic_arn", "")
+        self.aws_subscribe_redirect_url: str = os.getenv("AWS_SUBSCRIBE_REDIRECT_URL", "")
+
         self.agents_config: dict = self.config["agents"]
         self.plans_config: dict = self.config["stripe"]["plans"]
         self.cross_selling_config: dict = self.config["cross_selling"]

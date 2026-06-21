@@ -46,3 +46,42 @@ supabase:
   table_projects: projects
   table_subscriptions: subscriptions
   table_users: users
+
+marketplace:
+  openstall:
+    enabled: true
+    agent_owner: EngenheiroProducaoAI
+    base_price_credits: 500
+  swarms_cloud:
+    enabled: true
+    api_base: https://swarmcloud-285321057562.us-central1.run.app
+  microsoft:
+    enabled: true
+    offer_type: SaaS
+    category: AI Apps and Agents
+  aws:
+    enabled: false
+    product_code: engproai-v1
+    region: us-east-1
+    sns_topic_arn: ""
+    plans:
+      starter:
+        price_monthly_usd: 199.00
+        description: "Starter - Spec Analyst"
+        dimensions:
+          - spec_analyst_seats
+      professional:
+        price_monthly_usd: 299.00
+        description: "Professional - Spec Analyst + Procurement"
+        dimensions:
+          - professional_seats
+      enterprise:
+        price_monthly_usd: 599.00
+        description: "Enterprise - 4 Agentes"
+        dimensions:
+          - enterprise_seats
+      full_suite:
+        price_monthly_usd: 699.00
+        description: "Full Suite - Todos os 5 Agentes"
+        dimensions:
+          - full_suite_seats
