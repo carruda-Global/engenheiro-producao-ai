@@ -1,0 +1,48 @@
+agents:
+  field_execution:
+    enabled: true
+  inventory:
+    enabled: true
+  logistics:
+    enabled: true
+  procurement:
+    enabled: true
+  spec_analyst:
+    enabled: true
+    max_docs_per_month: 50
+app:
+  debug: false
+  log_level: INFO
+  name: Engenheiro de Producao AI
+  version: 1.0.0
+cross_selling:
+  enabled: true
+  min_confidence: 0.7
+deepseek:
+  api_base: https://api.deepseek.com/v1
+  max_tokens: 16384
+  model: deepseek-v4-flash
+  temperature: 0.3
+  timeout: 120
+stripe:
+  plans:
+    enterprise:
+      amount_cents: 299700
+      name: Enterprise
+      price_id: price_1TkpycQjQffMYsbZxTkZaP01
+    full_suite:
+      amount_cents: 350000
+      name: Full Suite
+      price_id: price_1TkpydQjQffMYsbZwOrKsEmg
+    professional:
+      amount_cents: 159700
+      name: Professional
+      price_id: price_1TkpybQjQffMYsbZsxLeLnPg
+    starter:
+      amount_cents: 99700
+      name: Starter - Spec Analyst
+      price_id: price_1TkpyaQjQffMYsbZSpTKqSZP
+supabase:
+  table_projects: projects
+  table_subscriptions: subscriptions
+  table_users: users
