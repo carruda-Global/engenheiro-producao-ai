@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.routers import (
     acp_checkout, agents, aws_marketplace, cross_selling,
-    google_marketplace, health, oracle_marketplace, pgrs, subscriptions,
+    google_marketplace, health, oracle_marketplace, pgrs, security, subscriptions,
 )
 from src.config import Settings
 from src.a2a_bridge import setup_a2a_routes
@@ -36,6 +36,7 @@ app.include_router(oracle_marketplace.router, prefix="/api/v1/oracle-marketplace
 app.include_router(google_marketplace.router, prefix="/api/v1/google-marketplace", tags=["google-marketplace"])
 app.include_router(cross_selling.router, prefix="/api/v1/cross-selling", tags=["cross-selling"])
 app.include_router(pgrs.router, prefix="/api/v1/pgrs", tags=["pgrs"])
+app.include_router(security.router, prefix="/api/v1/security", tags=["security"])
 
 templates_dir = Path(__file__).parent.parent / "templates"
 if templates_dir.exists():
