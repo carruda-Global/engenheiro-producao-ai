@@ -45,6 +45,15 @@ class Settings:
         self.aws_sns_topic_arn: str = self.config.get("marketplace", {}).get("aws", {}).get("sns_topic_arn", "")
         self.aws_subscribe_redirect_url: str = os.getenv("AWS_SUBSCRIBE_REDIRECT_URL", "")
 
+        self.oci_config_file: str = os.getenv("OCI_CONFIG_FILE", "~/.oci/config")
+        self.oci_profile: str = os.getenv("OCI_PROFILE", "DEFAULT")
+        self.oci_use_instance_principal: bool = os.getenv("OCI_USE_INSTANCE_PRINCIPAL", "").lower() == "true"
+        self.oci_use_resource_principal: bool = os.getenv("OCI_USE_RESOURCE_PRINCIPAL", "").lower() == "true"
+        oracle_config = self.config.get("marketplace", {}).get("oracle", {})
+        self.oracle_product_id: str = oracle_config.get("product_id", "")
+        self.oracle_seller_id: str = oracle_config.get("seller_id", "")
+        self.oracle_enabled: bool = oracle_config.get("enabled", False)
+
         self.agents_config: dict = self.config["agents"]
         self.plans_config: dict = self.config["stripe"]["plans"]
         self.cross_selling_config: dict = self.config["cross_selling"]

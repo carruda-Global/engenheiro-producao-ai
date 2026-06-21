@@ -7,6 +7,13 @@ const agents = [
   { id: 'inventory', icon: '📦', title: 'Inventory', description: 'Monitoramento de estoque, alertas de escassez e sugestao de substitutos.', tags: ['Tempo real'] },
   { id: 'logistics', icon: '🚚', title: 'Logistics', description: 'Rastreamento de entregas, identificacao de problemas e notas fiscais.', tags: ['Tracking'] },
   { id: 'field-execution', icon: '🏗️', title: 'Field Execution', description: 'Instrucoes de obra, identificacao de desvios e reducao de retrabalho.', tags: ['BIM', 'RA'] },
+  { id: 'bim-coordinator', icon: '📐', title: 'BIM Coordinator', description: 'Criacao de elementos 3D, clash detection e validacao de modelos BIM.', tags: ['BIM', '3D'] },
+  { id: 'requirements-analyst', icon: '📋', title: 'Requirements Analyst', description: 'Analise de qualidade de requisitos, scores e deteccao de ambiguidades.', tags: ['Qualidade'] },
+  { id: 'engineering-assistant', icon: '💬', title: 'Engineering Assistant', description: 'Assistente conversacional para perguntas tecnicas e sumarizacao.', tags: ['Chat', 'IA'] },
+  { id: 'work-synopsis', icon: '📝', title: 'Work Synopsis', description: 'Resumo estruturado de tarefas, defeitos e status de obra.', tags: ['Resumo'] },
+  { id: 'photo-intelligence', icon: '📸', title: 'Photo Intelligence', description: 'Analise visual de obras, deteccao de riscos e comparacao com cronograma.', tags: ['Visao'] },
+  { id: 'rfi-creation', icon: '📄', title: 'RFI Creation', description: 'Criacao automatica de RFIs a partir de duvidas do campo.', tags: ['RFI', 'Docs'] },
+  { id: 'compliance', icon: '⚖️', title: 'Compliance Agent', description: 'Gestao de conformidade PGRS/PGRSS e monitoramento regulatorio.', tags: ['PGRS', 'Normas'] },
 ];
 
 export default function Dashboard() {

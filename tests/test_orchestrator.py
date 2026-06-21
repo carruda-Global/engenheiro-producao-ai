@@ -6,17 +6,20 @@ from src.orchestrator import Orchestrator
 class TestOrchestrator:
     def test_init_loads_enabled_agents(self, settings):
         orchestrator = Orchestrator(settings)
-        assert "spec_analyst" in orchestrator.agents
-        assert "procurement" in orchestrator.agents
-        assert "inventory" in orchestrator.agents
-        assert "logistics" in orchestrator.agents
-        assert "field_execution" in orchestrator.agents
+        for agent_id in [
+            "spec_analyst", "procurement", "inventory",
+            "logistics", "field_execution",
+            "bim_coordinator", "requirements_analyst",
+            "engineering_assistant", "work_synopsis",
+            "photo_intelligence", "rfi_creation", "compliance",
+        ]:
+            assert agent_id in orchestrator.agents
 
     def test_health_check_returns_dict(self, settings):
         orchestrator = Orchestrator(settings)
         result = orchestrator.health_check()
         assert result["status"] == "healthy"
-        assert len(result["agents"]) == 5
+        assert len(result["agents"]) == 12
 
     def test_run_agent_valid(self, settings, llm_mock):
         orchestrator = Orchestrator(settings)

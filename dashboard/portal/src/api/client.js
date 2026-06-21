@@ -35,10 +35,26 @@ export const api = {
     request('/api/v1/agents/field-execution/instructions', {
       method: 'POST', body: JSON.stringify({ specs }),
     }),
+  agentAction: (agentId, action, data) =>
+    request(`/api/v1/agents/${agentId}/${action}`, {
+      method: 'POST', body: JSON.stringify(data),
+    }),
   runWorkflow: (document) =>
     request('/api/v1/agents/workflow', {
       method: 'POST', body: JSON.stringify({ document }),
     }),
   plans: () => request('/api/v1/subscriptions/plans'),
   getPlan: (id) => request(`/api/v1/subscriptions/plans/${id}`),
+  createCheckout: (planId, successUrl, cancelUrl) =>
+    request('/api/v1/subscriptions/checkout', {
+      method: 'POST',
+      body: JSON.stringify({
+        plan_id: planId,
+        success_url: successUrl || window.location.origin + '/subscription?success=true',
+        cancel_url: cancelUrl || window.location.origin + '/subscription?canceled=true',
+      }),
+    }),
+  upgradePlan: (subscriptionId, newPlanId) =>
+    request('/api/v1/cross-selling/upgrade/' + newPlanId),
+  getUpsells: (planId) => request('/api/v1/cross-selling/upsell/' + planId),
 };

@@ -18,27 +18,67 @@ class StripeClient:
         if not plan_config:
             return None
 
+        price_id = plan_config.get("price_id")
+        if price_id:
+            line_items = [{"price": price_id, "quantity": 1}]
+        else:
+            line_items = [{
+                "price_data": {
+                    "currency": "brl",
+                    "product_data": {"name": plan_config["name"]},
+                    "unit_amount": plan_config["amount_cents"],
+                    "recurring": {"interval": "month"},
+                },
+                "quantity": 1,
+            }]
+
+        metadata = {"plan_id": plan_id}
+
         session = stripe.checkout.Session.create(
             mode="subscription",
-            line_items=[
-                {
-                    "price_data": {
-                        "currency": "brl",
-                        "product_data": {"name": plan_config["name"]},
-                        "unit_amount": plan_config["amount_cents"],
-                        "recurring": {"interval": "month"},
-                    },
-                    "quantity": 1,
-                }
-            ],
+            line_items=line_items,
             success_url=success_url,
             cancel_url=cancel_url,
             customer_email=customer_email,
-            subscription_data={
-                "trial_period_days": 15,
-            },
+            subscription_data={"trial_period_days": 15, "metadata": metadata},
+            metadata=metadata,
         )
         return session.url
+
+    def create_upgrade_session(
+        self,
+        subscription_id: str,
+        new_plan_id: str,
+        success_url: str,
+        cancel_url: str,
+    ) -> str | None:
+        plan_config = self.settings.plans_config.get(new_plan_id)
+        if not plan_config:
+            return None
+
+        price_id = plan_config.get("price_id")
+        if not price_id:
+            return None
+
+        try:
+            sub = stripe.Subscription.retrieve(subscription_id)
+            current_item = sub["items"]["data"][0]["id"]
+
+            session = stripe.checkout.Session.create(
+                mode="setup",
+                success_url=success_url,
+                cancel_url=cancel_url,
+                metadata={
+                    "action": "upgrade",
+                    "subscription_id": subscription_id,
+                    "new_plan_id": new_plan_id,
+                    "new_price_id": price_id,
+                    "subscription_item_id": current_item,
+                },
+            )
+            return session.url
+        except Exception:
+            return None
 
     def cancel_subscription(self, subscription_id: str) -> bool:
         try:
@@ -55,6 +95,6 @@ class StripeClient:
             return None
 
     def handle_webhook(self, payload: bytes, sig_header: str) -> dict:
-        endpoint_secret = self.settings.stripe_secret_key
+        endpoint_secret = self.settings.stripe_webhook_secret
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
         return {"type": event.type, "data": event.data.object}

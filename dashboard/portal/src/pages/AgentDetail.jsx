@@ -33,6 +33,48 @@ const agentConfig = {
     fields: [{ key: 'specs', label: 'Especificacoes do Projeto', type: 'textarea', placeholder: 'Descreva o projeto e as especificacoes tecnicas...' }],
     action: (d) => api.fieldInstructions(d.specs),
   },
+  'bim-coordinator': {
+    name: 'BIM Coordinator', icon: '📐',
+    description: 'Crie elementos 3D e detecte conflitos entre disciplinas BIM.',
+    fields: [{ key: 'description', label: 'Descricao do Elemento', type: 'textarea', placeholder: 'Descreva o elemento 3D que deseja criar (ex: parede de concreto 3m x 2.8m)...' }],
+    action: (d) => api.agentAction('bim-coordinator', 'generate-bim-element', { description: d.description }),
+  },
+  'requirements-analyst': {
+    name: 'Requirements Analyst', icon: '📋',
+    description: 'Analise qualidade de requisitos e detecte ambiguidades.',
+    fields: [{ key: 'requirements', label: 'Requisitos', type: 'textarea', placeholder: 'Cole os requisitos de engenharia para analise...' }],
+    action: (d) => api.agentAction('requirements-analyst', 'analyze-requirements', { requirements: d.requirements }),
+  },
+  'engineering-assistant': {
+    name: 'Engineering Assistant', icon: '💬',
+    description: 'Tire duvidas tecnicas de engenharia e construcao.',
+    fields: [{ key: 'question', label: 'Pergunta', type: 'textarea', placeholder: 'Digite sua pergunta de engenharia...' }],
+    action: (d) => api.agentAction('engineering-assistant', 'answer-question', { question: d.question }),
+  },
+  'work-synopsis': {
+    name: 'Work Synopsis', icon: '📝',
+    description: 'Gere resumos de tarefas, defeitos e status de obra.',
+    fields: [{ key: 'task_data', label: 'Dados da Tarefa', type: 'textarea', placeholder: 'Descreva a tarefa, defeito ou atualizacao de obra...' }],
+    action: (d) => api.agentAction('work-synopsis', 'generate-synopsis', { task_data: d.task_data }),
+  },
+  'photo-intelligence': {
+    name: 'Photo Intelligence', icon: '📸',
+    description: 'Analise fotos de obras para identificar riscos e progresso.',
+    fields: [{ key: 'photo_description', label: 'Descricao da Foto', type: 'textarea', placeholder: 'Descreva detalhadamente o que aparece na foto da obra...' }],
+    action: (d) => api.agentAction('photo-intelligence', 'analyze-photo', { photo_description: d.photo_description }),
+  },
+  'rfi-creation': {
+    name: 'RFI Creation', icon: '📄',
+    description: 'Crie RFIs profissionais a partir de duvidas do campo.',
+    fields: [{ key: 'question', label: 'Duvida', type: 'textarea', placeholder: 'Descreva a duvida que precisa ser esclarecida via RFI...' }],
+    action: (d) => api.agentAction('rfi-creation', 'create-rfi', { question: d.question }),
+  },
+  compliance: {
+    name: 'Compliance Agent', icon: '⚖️',
+    description: 'Verifique conformidade legal e gere documentacao PGRS/PGRSS.',
+    fields: [{ key: 'project_data', label: 'Dados do Projeto', type: 'textarea', placeholder: 'Descreva o projeto e suas caracteristicas para analise de conformidade...' }],
+    action: (d) => api.agentAction('compliance', 'check-compliance', { project_data: d.project_data }),
+  },
 };
 
 export default function AgentDetail() {

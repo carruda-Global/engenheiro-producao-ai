@@ -13,6 +13,10 @@ pandas>=2.0.0
 numpy>=1.24.0
 pyyaml>=6.0
 
+# Google A2A Protocol
+a2a-sdk[fastapi]>=1.0.0
+
 # Marketplace integrations
 swarms-cloud>=0.4.0
 boto3>=1.34.0
+oci>=2.179.0

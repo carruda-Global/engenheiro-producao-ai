@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: engenheiro-producao-api
+    name: ecosystem-aec-api
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
@@ -10,6 +10,8 @@ services:
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
         sync: false
       - key: SUPABASE_URL
         sync: false

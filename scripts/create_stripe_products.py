@@ -1,46 +1,102 @@
-import stripe
-import os
+"""
+Cria produtos e precos no Stripe para os 5 planos do EcoSystem AEC.
+Atualiza automaticamente o config.yaml com os price_ids gerados.
+
+Uso:
+    python scripts/create_stripe_products.py
+    python scripts/create_stripe_products.py --dry-run
+
+Requer:
+    - STRIPE_SECRET_KEY no .env
+"""
+import argparse
 import json
+import os
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
+import stripe
+import yaml
+
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
-products = [
-    {"name": "Starter - Spec Analyst", "price": 99700, "agents": ["spec_analyst"]},
-    {"name": "Professional", "price": 159700, "agents": ["spec_analyst", "procurement"]},
-    {"name": "Enterprise", "price": 299700, "agents": ["spec_analyst", "procurement", "inventory", "logistics"]},
-    {"name": "Full Suite", "price": 350000, "agents": ["spec_analyst", "procurement", "inventory", "logistics", "field_execution"]},
+PRODUCTS = [
+    {"id": "starter", "name": "Starter - Spec Analyst", "price": 99700,
+     "agents": ["spec_analyst"],
+     "description": "Analise de especificacoes tecnicas com IA"},
+    {"id": "professional", "name": "Professional - 3 Agentes", "price": 239100,
+     "agents": ["spec_analyst", "procurement", "inventory"],
+     "description": "Analise, compras e estoque automatizados"},
+    {"id": "enterprise", "name": "Enterprise - 5 Agentes", "price": 468500,
+     "agents": ["spec_analyst", "procurement", "inventory", "logistics", "field_execution"],
+     "description": "Suite completa de 5 agentes para construtoras"},
+    {"id": "full_suite", "name": "Full Suite - 12 Agentes", "price": 949700,
+     "agents": ["spec_analyst", "procurement", "inventory", "logistics",
+                "field_execution", "bim_coordinator", "requirements_analyst",
+                "engineering_assistant", "work_synopsis", "photo_intelligence",
+                "rfi_creation", "compliance"],
+     "description": "Ecossistema completo de 12 agentes de IA para AEC"},
+    {"id": "compliance_pack", "name": "Compliance Pack - PGRS/PGRSS", "price": 239100,
+     "agents": ["photo_intelligence", "rfi_creation", "compliance"],
+     "description": "Conformidade e gestao de residuos PGRS/PGRSS"},
 ]
 
-results = []
-for p in products:
-    prod = stripe.Product.create(name=p["name"], metadata={"agents": json.dumps(p["agents"])})
-    price = stripe.Price.create(
-        product=prod.id,
-        unit_amount=p["price"],
-        currency="brl",
-        recurring={"interval": "month"},
-    )
-    results.append({"product_id": prod.id, "price_id": price.id, "name": p["name"]})
-    print(f"{p['name']:30s} | Produto: {prod.id:20s} | Preco: {price.id}")
+CONFIG_PATH = Path(__file__).parent.parent / "config.yaml"
 
-# Save to config
-import yaml
-config_path = os.path.join(os.path.dirname(__file__), "..", "config.yaml")
-with open(config_path, "r", encoding="utf-8") as f:
-    config = yaml.safe_load(f)
 
-for r in results:
-    key = r["name"].lower().replace(" ", "_").replace("-", "_").replace("__", "_")
-    if key.startswith("starter"): plan_key = "starter"
-    elif key.startswith("professional"): plan_key = "professional"
-    elif key.startswith("enterprise"): plan_key = "enterprise"
-    elif key.startswith("full"): plan_key = "full_suite"
-    else: continue
-    config["stripe"]["plans"][plan_key]["price_id"] = r["price_id"]
+def main():
+    parser = argparse.ArgumentParser(description="Criar produtos Stripe")
+    parser.add_argument("--dry-run", action="store_true", help="Apenas mostrar o que seria criado")
+    args = parser.parse_args()
 
-with open(config_path, "w", encoding="utf-8") as f:
-    yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
+    if not stripe.api_key or stripe.api_key.startswith("sk_test_") is False:
+        print("ERRO: STRIPE_SECRET_KEY nao configurada ou invalida no .env")
+        sys.exit(1)
 
-print("\nConfiguracao atualizada em config.yaml!")
+    results = []
+    for p in PRODUCTS:
+        if args.dry_run:
+            print(f"[DRY-RUN] {p['name']:30s} | R$ {p['price']/100:.2f}")
+            continue
+
+        try:
+            prod = stripe.Product.create(
+                name=p["name"],
+                description=p["description"],
+                metadata={"agents": json.dumps(p["agents"]), "plan_id": p["id"]},
+            )
+            price = stripe.Price.create(
+                product=prod.id,
+                unit_amount=p["price"],
+                currency="brl",
+                recurring={"interval": "month"},
+                metadata={"plan_id": p["id"]},
+            )
+            results.append({"plan_id": p["id"], "product_id": prod.id, "price_id": price.id})
+            print(f"  OK  {p['name']:30s} | Produto: {prod.id[:20]:20s} | Preco: {price.id}")
+        except Exception as e:
+            print(f"  ERRO {p['name']:30s} | {e}")
+
+    if results and not args.dry_run:
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            config = yaml.safe_load(f)
+
+        for r in results:
+            plan_id = r["plan_id"]
+            if plan_id in config.get("stripe", {}).get("plans", {}):
+                config["stripe"]["plans"][plan_id]["price_id"] = r["price_id"]
+
+        with open(CONFIG_PATH, "w", encoding="utf-8") as f:
+            yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
+
+        print(f"\nconfig.yaml atualizado com {len(results)} price_ids!")
+
+
+if __name__ == "__main__":
+    main()

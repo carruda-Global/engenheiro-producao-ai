@@ -1,108 +1,125 @@
+"""
+Gera ofertas SaaS para o Microsoft Azure Marketplace (12 agentes).
+
+Uso:
+    python scripts/generate_microsoft_marketplace.py
+
+Gera:
+    - offers/ecosystem-aec-offer.json (listing completo)
+    - Instrucoes para publicacao no Partner Center
+"""
 import json
+import os
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.config import Settings
-
-OFFER_TEMPLATE = {
-    "offer": {
-        "id": "engenheiro-producao-ai",
-        "title": "Engenheiro de Produção AI - Automação Inteligente para AEC",
-        "description": "Sistema multiagente de IA especializado na indústria de Arquitetura, Engenharia e Construção (AEC). Automatiza análise de especificações técnicas, processamento de compras, gestão de estoque, rastreamento logístico e geração de instruções de execução em campo.",
-        "publisher": {
-            "name": "",
-            "website": "",
-            "support_email": "",
-            "support_url": "",
-        },
-        "categories": ["AI Apps and Agents", "Machine Learning"],
-        "industry": ["Engineering and Construction", "Architecture and Construction"],
-        "type": "SaaS",
-        "plans": [
-            {
-                "id": "starter",
-                "name": "Starter - Spec Analyst",
-                "description": "Acesso ao agente Analisador de Especificações Técnicas",
-                "price": 997.00,
-                "currency": "BRL",
-                "billing": "monthly",
-                "agents": ["spec_analyst"],
-            },
-            {
-                "id": "professional",
-                "name": "Professional",
-                "description": "Agentes de especificações, compras e estoque",
-                "price": 1597.00,
-                "currency": "BRL",
-                "billing": "monthly",
-                "agents": ["spec_analyst", "procurement", "inventory"],
-            },
-            {
-                "id": "enterprise",
-                "name": "Enterprise",
-                "description": "Agentes de especificações, compras, estoque e logística",
-                "price": 2997.00,
-                "currency": "BRL",
-                "billing": "monthly",
-                "agents": ["spec_analyst", "procurement", "inventory", "logistics"],
-            },
-            {
-                "id": "full-suite",
-                "name": "Full Suite",
-                "description": "Todos os 5 agentes de IA para gestão completa de obras",
-                "price": 3500.00,
-                "currency": "BRL",
-                "billing": "monthly",
-                "agents": ["spec_analyst", "procurement", "inventory", "logistics", "field_execution"],
-            },
+PLANS = [
+    {
+        "id": "starter",
+        "name": "Starter - Spec Analyst",
+        "description": "1 agente de IA para analise de especificacoes tecnicas",
+        "monthly_price_usd": 199.00,
+        "agents": ["Spec Analyst"],
+    },
+    {
+        "id": "professional",
+        "name": "Professional - 3 Agentes",
+        "description": "Spec Analyst + Procurement + Inventory",
+        "monthly_price_usd": 399.00,
+        "agents": ["Spec Analyst", "Procurement", "Inventory"],
+    },
+    {
+        "id": "enterprise",
+        "name": "Enterprise - 5 Agentes",
+        "description": "5 agentes do nucleo AEC: analise, compras, estoque, logistica, campo",
+        "monthly_price_usd": 799.00,
+        "agents": ["Spec Analyst", "Procurement", "Inventory", "Logistics", "Field Execution"],
+    },
+    {
+        "id": "full_suite",
+        "name": "Full Suite - 12 Agentes",
+        "description": "Ecossistema completo de 12 agentes de IA para AEC",
+        "monthly_price_usd": 1599.00,
+        "agents": [
+            "Spec Analyst", "Procurement", "Inventory", "Logistics",
+            "Field Execution", "BIM Coordinator", "Requirements Analyst",
+            "Engineering Assistant", "Work Synopsis", "Photo Intelligence",
+            "RFI Creation", "Compliance Agent",
         ],
-        "technical_configuration": {
-            "authentication": "API Key",
-            "api_endpoint": "https://engenheiro-producao-ai.onrender.com/api/v1",
-            "sso_enabled": False,
-            "cors_support": True,
-        },
-        "listing": {
-            "summary": "Automação com IA para construção civil: análise de specs, compras, estoque, logística e execução em campo.",
-            "industries": ["Architecture & Construction", "Engineering"],
-            "countries": ["BR"],
-            "languages": ["pt-BR"],
-            "search_keywords": ["engenharia", "construção civil", "AEC", "IA", "agente IA", "obra", "especificações técnicas"],
-        },
-    }
+    },
+    {
+        "id": "compliance_pack",
+        "name": "Compliance Pack - PGRS/PGRSS",
+        "description": "Photo Intelligence + RFI Creation + Compliance Agent",
+        "monthly_price_usd": 399.00,
+        "agents": ["Photo Intelligence", "RFI Creation", "Compliance Agent"],
+    },
+]
+
+OFFER = {
+    "$schema": "https://schema.mp.azure.com/schema/2024-03-01/offer.json",
+    "id": "ecosystem_aec",
+    "name": "EcoSystem AEC",
+    "alias": "ecosystem-aec",
+    "description": "12 Agentes de IA Integrados para Arquitetura, Engenharia e Construcao",
+    "publisher": {
+        "id": "projato_engenharia",
+        "name": "Projato Engenharia",
+    },
+    "kind": "SaaS",
+    "categories": ["AI + Machine Learning", "Developer Tools"],
+    "industries": ["Engineering and Construction", "Architecture"],
+    "plans": [],
 }
 
+for plan in PLANS:
+    offer_plan = {
+        "id": plan["id"],
+        "name": plan["name"],
+        "description": plan["description"],
+        "pricing": {
+            "type": "recurring",
+            "interval": "month",
+            "price_usd": plan["monthly_price_usd"],
+            "currency": "USD",
+        },
+        "hidden": False,
+        "components": [
+            {
+                "name": plan["name"],
+                "type": "SaaS",
+                "description": plan["description"],
+                "provisioning_url": "https://ecosystem-aec.onrender.com/api/v1/subscriptions/checkout",
+                "provisioning_type": "redirect",
+            }
+        ],
+    }
+    OFFER["plans"].append(offer_plan)
 
-def generate_offer_json():
-    settings = Settings()
 
-    offer = OFFER_TEMPLATE.copy()
-    offer["offer"]["publisher"]["name"] = "Projato Engenharia"
-    offer["offer"]["publisher"]["support_email"] = "suporte@projato.com.br"
-    offer["offer"]["publisher"]["support_url"] = "https://engenheiro-producao-ai.onrender.com"
-
-    output_path = Path(__file__).parent.parent / "config" / "microsoft_marketplace_offer.json"
-    output_path.parent.mkdir(exist_ok=True)
+def main():
+    output_dir = Path(__file__).parent.parent / "offers"
+    output_dir.mkdir(exist_ok=True)
+    output_path = output_dir / "ecosystem-aec-offer.json"
 
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(offer, f, indent=2, ensure_ascii=False)
+        json.dump(OFFER, f, ensure_ascii=False, indent=2)
 
-    print(f"Arquivo de oferta gerado: {output_path}")
+    print(f"Oferta Microsoft Marketplace gerada: {output_path}")
+    print(f"Planos: {len(PLANS)}")
+    for p in PLANS:
+        print(f"  - {p['name']:30s} | ${p['monthly_price_usd']:.2f}/mes | {len(p['agents'])} agentes")
     print()
-    print("Próximos passos manuais no Microsoft Partner Center:")
+    print("Para publicar no Microsoft Partner Center:")
     print("  1. Acesse https://partner.microsoft.com")
-    print("  2. Cadastre-se no Microsoft AI Cloud Partner Program")
-    print("  3. Crie uma nova oferta > SaaS")
-    print("  4. Use o arquivo gerado como referência para preencher:")
-    print("     - Nome e descrição do produto")
-    print("     - Categoria: AI Apps and Agents")
-    print("     - Planos de precificação (4 tiers)")
-    print("     - Configuração técnica (API endpoint)")
-    print("  5. Configure Stripe como processador de pagamento integrado")
-    print("  6. Envie para revisão e publicação")
+    print("  2. Crie uma oferta SaaS")
+    print("  3. Importe o arquivo offers/ecosystem-aec-offer.json")
+    print("  4. Configure a URL de provisionamento:")
+    print("     https://ecosystem-aec.onrender.com/api/v1/subscriptions/checkout")
+    print("  5. Publique para certificacao")
 
 
 if __name__ == "__main__":
-    generate_offer_json()
+    main()
