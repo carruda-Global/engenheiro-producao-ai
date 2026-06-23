@@ -135,3 +135,147 @@ class TestComplianceAgent:
         agent = ComplianceAgent(settings, llm_mock)
         result = agent.monitor_deadlines("Licenca ambiental vence em 30 dias")
         assert isinstance(result, str)
+
+
+@pytest.mark.unit
+class TestRegulatoryAnalystAgent:
+    def test_analisar_documento_returns_dict(self, settings, llm_mock):
+        from src.agents.regulatory_analyst import RegulatoryAnalystAgent
+        agent = RegulatoryAnalystAgent(settings, llm_mock)
+        result = agent.analisar_documento("Contrato de prestacao de servicos")
+        assert isinstance(result, dict)
+        assert "analise_documento" in result
+
+    def test_gerar_relatorio_riscos_returns_dict(self, settings, llm_mock):
+        from src.agents.regulatory_analyst import RegulatoryAnalystAgent
+        agent = RegulatoryAnalystAgent(settings, llm_mock)
+        result = agent.gerar_relatorio_riscos("Analise completa")
+        assert isinstance(result, dict)
+        assert "relatorio_riscos" in result
+
+    def test_revisar_documento_sharepoint_returns_dict(self, settings, llm_mock):
+        from src.agents.regulatory_analyst import RegulatoryAnalystAgent
+        agent = RegulatoryAnalystAgent(settings, llm_mock)
+        result = agent.revisar_documento_sharepoint("https://sharepoint.com/doc")
+        assert isinstance(result, dict)
+        assert "revisao_sharepoint" in result
+
+
+@pytest.mark.unit
+class TestCompliancePMAgent:
+    def test_gerenciar_projeto_returns_dict(self, settings, llm_mock):
+        from src.agents.compliance_pm import CompliancePMAgent
+        agent = CompliancePMAgent(settings, llm_mock)
+        result = agent.gerenciar_projeto("PGRS - Obra XYZ")
+        assert isinstance(result, dict)
+        assert "plano_projeto" in result
+
+    def test_criar_tarefa_planner_returns_dict(self, settings, llm_mock):
+        from src.agents.compliance_pm import CompliancePMAgent
+        agent = CompliancePMAgent(settings, llm_mock)
+        result = agent.criar_tarefa_planner("Revisar documentos PGRS")
+        assert isinstance(result, dict)
+        assert "tarefa_planner" in result
+
+    def test_monitorar_prazos_returns_dict(self, settings, llm_mock):
+        from src.agents.compliance_pm import CompliancePMAgent
+        agent = CompliancePMAgent(settings, llm_mock)
+        result = agent.monitorar_prazos("Projeto A, Projeto B")
+        assert isinstance(result, dict)
+        assert "monitoramento_prazos" in result
+
+
+@pytest.mark.unit
+class TestChannelAgentAgent:
+    def test_monitorar_canal_returns_dict(self, settings, llm_mock):
+        from src.agents.channel_agent import ChannelAgentAgent
+        agent = ChannelAgentAgent(settings, llm_mock)
+        result = agent.monitorar_canal("Conversas do time financeiro")
+        assert isinstance(result, dict)
+        assert "monitoramento_canal" in result
+
+    def test_detectar_riscos_returns_dict(self, settings, llm_mock):
+        from src.agents.channel_agent import ChannelAgentAgent
+        agent = ChannelAgentAgent(settings, llm_mock)
+        result = agent.detectar_riscos("Mensagens sobre bonus nao declarados")
+        assert isinstance(result, dict)
+        assert "deteccao_riscos" in result
+
+    def test_gerar_alerta_returns_dict(self, settings, llm_mock):
+        from src.agents.channel_agent import ChannelAgentAgent
+        agent = ChannelAgentAgent(settings, llm_mock)
+        result = agent.gerar_alerta("Risco trabalhista detectado")
+        assert isinstance(result, dict)
+        assert "alerta_compliance" in result
+
+
+@pytest.mark.unit
+class TestKnowledgeAgent:
+    def test_indexar_documento_returns_dict(self, settings, llm_mock):
+        from src.agents.knowledge_agent import KnowledgeAgent
+        agent = KnowledgeAgent(settings, llm_mock)
+        result = agent.indexar_documento("Politica de privacidade 2025")
+        assert isinstance(result, dict)
+        assert "documento_indexado" in result
+
+    def test_pesquisar_returns_dict(self, settings, llm_mock):
+        from src.agents.knowledge_agent import KnowledgeAgent
+        agent = KnowledgeAgent(settings, llm_mock)
+        result = agent.pesquisar("Politica de compliance")
+        assert isinstance(result, dict)
+        assert "resultado_pesquisa" in result
+
+    def test_gerar_resposta_returns_dict(self, settings, llm_mock):
+        from src.agents.knowledge_agent import KnowledgeAgent
+        agent = KnowledgeAgent(settings, llm_mock)
+        result = agent.gerar_resposta("Contexto sobre LGPD")
+        assert isinstance(result, dict)
+        assert "resposta_rag" in result
+
+
+@pytest.mark.unit
+class TestFacilitatorAgentAgent:
+    def test_facilitar_reuniao_returns_dict(self, settings, llm_mock):
+        from src.agents.facilitator_agent import FacilitatorAgentAgent
+        agent = FacilitatorAgentAgent(settings, llm_mock)
+        result = agent.facilitar_reuniao("Pauta: revisao de conformidade")
+        assert isinstance(result, dict)
+        assert "reuniao_estruturada" in result
+
+    def test_gerar_minuta_returns_dict(self, settings, llm_mock):
+        from src.agents.facilitator_agent import FacilitatorAgentAgent
+        agent = FacilitatorAgentAgent(settings, llm_mock)
+        result = agent.gerar_minuta("Discussao sobre prazos de entrega")
+        assert isinstance(result, dict)
+        assert "minuta_reuniao" in result
+
+    def test_criar_tarefas_planner_returns_dict(self, settings, llm_mock):
+        from src.agents.facilitator_agent import FacilitatorAgentAgent
+        agent = FacilitatorAgentAgent(settings, llm_mock)
+        result = agent.criar_tarefas_planner("Decisoes da reuniao")
+        assert isinstance(result, dict)
+        assert "tarefas_planner" in result
+
+
+@pytest.mark.unit
+class TestDevExperienceAgent:
+    def test_revisar_pr_returns_dict(self, settings, llm_mock):
+        from src.agents.dev_experience import DevExperienceAgent
+        agent = DevExperienceAgent(settings, llm_mock)
+        result = agent.revisar_pr("PR #42: Adiciona modulo de login")
+        assert isinstance(result, dict)
+        assert "revisao_pr" in result
+
+    def test_verificar_compliance_returns_dict(self, settings, llm_mock):
+        from src.agents.dev_experience import DevExperienceAgent
+        agent = DevExperienceAgent(settings, llm_mock)
+        result = agent.verificar_compliance("codigo_fonte.py")
+        assert isinstance(result, dict)
+        assert "verificacao_compliance" in result
+
+    def test_gerar_relatorio_qualidade_returns_dict(self, settings, llm_mock):
+        from src.agents.dev_experience import DevExperienceAgent
+        agent = DevExperienceAgent(settings, llm_mock)
+        result = agent.gerar_relatorio_qualidade("org/repo")
+        assert isinstance(result, dict)
+        assert "relatorio_qualidade" in result

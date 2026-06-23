@@ -42,6 +42,18 @@ agents:
     enabled: true
   compliance_anticorrupcao:
     enabled: true
+  regulatory_analyst:
+    enabled: true
+  compliance_pm:
+    enabled: true
+  channel_agent:
+    enabled: true
+  knowledge_agent:
+    enabled: true
+  facilitator_agent:
+    enabled: true
+  dev_experience:
+    enabled: true
 app:
   debug: false
   log_level: INFO

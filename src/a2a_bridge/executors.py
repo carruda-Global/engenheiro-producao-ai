@@ -30,6 +30,12 @@ from src.agents import (
     CanalDenunciasAgent,
     IgualdadeSalarialAgent,
     ComplianceAnticorrupcaoAgent,
+    RegulatoryAnalystAgent,
+    CompliancePMAgent,
+    ChannelAgentAgent,
+    KnowledgeAgent,
+    FacilitatorAgentAgent,
+    DevExperienceAgent,
 )
 from .monetization import check_subscription
 
@@ -58,6 +64,12 @@ SKILL_MAP: dict[str, str] = {
     "canal_denuncias": "canal_denuncias",
     "igualdade_salarial": "igualdade_salarial",
     "compliance_anticorrupcao": "compliance_anticorrupcao",
+    "regulatory_analyst": "regulatory_analyst",
+    "compliance_pm": "compliance_pm",
+    "channel_agent": "channel_agent",
+    "knowledge_agent": "knowledge_agent",
+    "facilitator_agent": "facilitator_agent",
+    "dev_experience": "dev_experience",
 }
 
 
@@ -93,6 +105,12 @@ class AECAgentExecutor(AgentExecutor):
             "canal_denuncias": CanalDenunciasAgent,
             "igualdade_salarial": IgualdadeSalarialAgent,
             "compliance_anticorrupcao": ComplianceAnticorrupcaoAgent,
+            "regulatory_analyst": RegulatoryAnalystAgent,
+            "compliance_pm": CompliancePMAgent,
+            "channel_agent": ChannelAgentAgent,
+            "knowledge_agent": KnowledgeAgent,
+            "facilitator_agent": FacilitatorAgentAgent,
+            "dev_experience": DevExperienceAgent,
         }
         for agent_id, agent_class in _map.items():
             if agent_config.get(agent_id, {}).get("enabled", True):
@@ -219,6 +237,18 @@ class AECAgentExecutor(AgentExecutor):
             return agent.analisar_equidade(user_input)
         elif agent_id == "compliance_anticorrupcao":
             return agent.diagnosticar_maturidade(user_input)
+        elif agent_id == "regulatory_analyst":
+            return agent.analisar_documento(user_input)
+        elif agent_id == "compliance_pm":
+            return agent.gerenciar_projeto(user_input)
+        elif agent_id == "channel_agent":
+            return agent.monitorar_canal(user_input)
+        elif agent_id == "knowledge_agent":
+            return agent.indexar_documento(user_input)
+        elif agent_id == "facilitator_agent":
+            return agent.facilitar_reuniao(user_input)
+        elif agent_id == "dev_experience":
+            return agent.revisar_pr(user_input)
         return {"error": "Agente não implementado"}
 
     def _format_result(self, result: dict) -> str:
@@ -230,8 +260,14 @@ class AECAgentExecutor(AgentExecutor):
                      "mapeamento_dados", "ropa", "diagnostico_maturidade",
                      "emissoes_calculadas", "inventario_ghg", "avaliacao_cadeia",
                      "relatorio_escopo3", "classificacao", "relatorio_semestral",
-                     "analise_equidade", "relatorio_mte", "codigo_etica",
-                     "due_diligence", "relatorio_cgu", "diagnostico_integridade"]:
+                      "analise_equidade", "relatorio_mte", "codigo_etica",
+                      "due_diligence", "relatorio_cgu", "diagnostico_integridade",
+                      "analise_documento", "relatorio_riscos", "revisao_sharepoint",
+                      "plano_projeto", "tarefa_planner", "monitoramento_prazos",
+                      "monitoramento_canal", "deteccao_riscos", "alerta_compliance",
+                      "documento_indexado", "resultado_pesquisa", "resposta_rag",
+                      "reuniao_estruturada", "minuta_reuniao", "tarefas_planner",
+                      "revisao_pr", "verificacao_compliance", "relatorio_qualidade"]:
             if key in result:
                 return result[key]
         return json.dumps(result, ensure_ascii=False, indent=2)

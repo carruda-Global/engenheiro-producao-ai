@@ -17,6 +17,12 @@ class TestOrchestrator:
             "inventario_carbono", "escopo3_fornecedores",
             "canal_denuncias", "igualdade_salarial",
             "compliance_anticorrupcao",
+            "regulatory_analyst",
+            "compliance_pm",
+            "channel_agent",
+            "knowledge_agent",
+            "facilitator_agent",
+            "dev_experience",
         ]:
             assert agent_id in orchestrator.agents
 
@@ -24,7 +30,7 @@ class TestOrchestrator:
         orchestrator = Orchestrator(settings)
         result = orchestrator.health_check()
         assert result["status"] == "healthy"
-        assert len(result["agents"]) == 21
+        assert len(result["agents"]) == 27
 
     def test_run_agent_valid(self, settings, llm_mock):
         orchestrator = Orchestrator(settings)

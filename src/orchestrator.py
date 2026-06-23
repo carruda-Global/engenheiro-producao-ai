@@ -25,6 +25,12 @@ from src.agents import (
     CanalDenunciasAgent,
     IgualdadeSalarialAgent,
     ComplianceAnticorrupcaoAgent,
+    RegulatoryAnalystAgent,
+    CompliancePMAgent,
+    ChannelAgentAgent,
+    KnowledgeAgent,
+    FacilitatorAgentAgent,
+    DevExperienceAgent,
 )
 
 
@@ -62,6 +68,12 @@ class Orchestrator:
             "canal_denuncias": CanalDenunciasAgent,
             "igualdade_salarial": IgualdadeSalarialAgent,
             "compliance_anticorrupcao": ComplianceAnticorrupcaoAgent,
+            "regulatory_analyst": RegulatoryAnalystAgent,
+            "compliance_pm": CompliancePMAgent,
+            "channel_agent": ChannelAgentAgent,
+            "knowledge_agent": KnowledgeAgent,
+            "facilitator_agent": FacilitatorAgentAgent,
+            "dev_experience": DevExperienceAgent,
         }
 
         for agent_id, agent_class in _agent_map.items():
@@ -98,6 +110,12 @@ class Orchestrator:
             "canal_denuncias",
             "igualdade_salarial",
             "compliance_anticorrupcao",
+            "regulatory_analyst",
+            "compliance_pm",
+            "channel_agent",
+            "knowledge_agent",
+            "facilitator_agent",
+            "dev_experience",
         ]
 
         for agent_id in workflow_chain:
@@ -138,6 +156,12 @@ class Orchestrator:
             "canal_denuncias": lambda: agent.classificar_denuncia(input_data.get("denuncia", "")),
             "igualdade_salarial": lambda: agent.analisar_equidade(input_data.get("dados_folha", "")),
             "compliance_anticorrupcao": lambda: agent.diagnosticar_maturidade(input_data.get("dados_empresa", "")),
+            "regulatory_analyst": lambda: agent.analisar_documento(input_data.get("documento", ""), input_data.get("lang", "pt")),
+            "compliance_pm": lambda: agent.gerenciar_projeto(input_data.get("projeto", ""), input_data.get("lang", "pt")),
+            "channel_agent": lambda: agent.monitorar_canal(input_data.get("conversas", ""), input_data.get("lang", "pt")),
+            "knowledge_agent": lambda: agent.indexar_documento(input_data.get("documento", ""), input_data.get("lang", "pt")),
+            "facilitator_agent": lambda: agent.facilitar_reuniao(input_data.get("ata", ""), input_data.get("lang", "pt")),
+            "dev_experience": lambda: agent.revisar_pr(input_data.get("pr_data", ""), input_data.get("lang", "pt")),
         }
 
         handler = dispatch.get(agent_id)
@@ -217,6 +241,24 @@ class Orchestrator:
         elif agent_id == "compliance_anticorrupcao":
             dados = context.get("document", "") or context.get("dados_empresa", "")
             return agent.diagnosticar_maturidade(dados) if dados else None
+        elif agent_id == "regulatory_analyst":
+            doc = context.get("document", "") or context.get("documento", "")
+            return agent.analisar_documento(doc) if doc else None
+        elif agent_id == "compliance_pm":
+            proj = context.get("document", "") or context.get("projeto", "")
+            return agent.gerenciar_projeto(proj) if proj else None
+        elif agent_id == "channel_agent":
+            conv = context.get("document", "") or context.get("conversas", "")
+            return agent.monitorar_canal(conv) if conv else None
+        elif agent_id == "knowledge_agent":
+            doc = context.get("document", "") or context.get("documento", "")
+            return agent.indexar_documento(doc) if doc else None
+        elif agent_id == "facilitator_agent":
+            ata = context.get("document", "") or context.get("ata", "")
+            return agent.facilitar_reuniao(ata) if ata else None
+        elif agent_id == "dev_experience":
+            pr = context.get("document", "") or context.get("pr_data", "")
+            return agent.revisar_pr(pr) if pr else None
         return None
 
     def _needs_procurement(self, analysis: str) -> bool:

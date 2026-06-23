@@ -1,4 +1,4 @@
-# 🏗️ EcoSystem AEC + Regulatory — 21 Agentes de IA
+# 🏗️ EcoSystem AEC + Regulatory — 27 Agentes de IA
 
 **Projeto:** Engenheiro de Produção AI
 **Proprietário:** Cristiano Arruda | Global Match Engenharia de Produção | CREA-SP 5071200171
@@ -141,6 +141,17 @@ engenheiro-producao-ai/
 | 20 | `igualdade_salarial` | Igualdade Salarial | Lei 14.611/2023 | Análise de equidade, relatório MTE, diversidade | R$ 490–1.490/mês |
 | 21 | `compliance_anticorrupcao` | Compliance Anticorrupção | Lei 12.846/2013 | Programa de integridade, código de ética, due diligence | R$ 390–1.490/mês |
 
+## 🪟 Grupo 5: Agentes Microsoft (Agentes #22 a #27)
+
+| # | ID | Agente | Descrição | Preço |
+|---|----|--------|-----------|-------|
+| 22 | `regulatory_analyst` | Regulatory Analyst | Análise de contratos e documentos legais via SharePoint/OneDrive, riscos LGPD/NR-1/ESG | R$ 997/mês |
+| 23 | `compliance_pm` | Compliance PM | Gestão de projetos de compliance (PGRS, Carbono, Igualdade), tarefas no Planner | R$ 797/mês |
+| 24 | `channel_agent` | Channel Agent Regulatório | Monitoramento de canais Teams, detecção de riscos trabalhistas/tributários | R$ 597/mês |
+| 25 | `knowledge_agent` | Knowledge Agent | Indexação de documentos SharePoint com RAG, busca inteligente | R$ 697/mês |
+| 26 | `facilitator_agent` | Facilitator Agent | Facilitação de reuniões de compliance, atas, minutas, tarefas no Planner | R$ 497/mês |
+| 27 | `dev_experience` | Dev Experience Agent | Automação de PRs e code reviews, conformidade LGPD em código | R$ 897/mês |
+
 ---
 
 ## 💳 Planos de Assinatura
@@ -150,7 +161,8 @@ engenheiro-producao-ai/
 | Starter | `starter` | #1 Spec Analyst | R$ 997/mês |
 | Professional | `professional` | #1 + #2 + #3 | R$ 2.391/mês |
 | Enterprise | `enterprise` | #1 a #5 | R$ 4.685/mês |
-| Full Suite | `full_suite` | Todos os 21 agentes | R$ 9.497/mês |
+| Full Suite | `full_suite` | Todos os 27 agentes | R$ 9.497/mês |
+| Microsoft Pack | `microsoft_pack` | #22 a #27 (6 agentes Microsoft) | R$ 4.482/mês |
 | Compliance Pack | `compliance_pack` | #10 + #11 + #12 | R$ 2.391/mês |
 | Regulatory Starter | `regulatory_starter` | #13 + #15 | R$ 590/mês |
 | Regulatory Professional | `regulatory_professional` | #13, #15, #19, #20, #21 | R$ 1.490/mês |
@@ -167,6 +179,7 @@ ESP: #6 BIM → #7 Requirements → #8 Assistant → #9 Synopsis
 CON: #10 Photo → #11 RFI → #12 Compliance
 REG: #13 NR-1 → #15 LGPD → #19 Denúncias → #20 Igualdade → #21 Anticorrupção
      #14 Tributário → #16 ESG → #17 Carbono → #18 Escopo 3
+MST: #22 Regulatory → #23 PM → #24 Channel → #25 Knowledge → #26 Facilitator → #27 DevEx
 ```
 
 ---
@@ -204,7 +217,7 @@ REG: #13 NR-1 → #15 LGPD → #19 Denúncias → #20 Igualdade → #21 Anticorr
 
 ## 🧪 Testes
 
-**Status:** 51/51 testes passando ✅
+**Status:** 75/75 testes passando ✅
 
 - `tests/test_orchestrator.py` — Inicialização, health check, run_agent, workflow
 - `tests/test_plans.py` — Estrutura de planos, preços, agentes por plano

@@ -21,6 +21,12 @@ from .escopo3_fornecedores import Escopo3FornecedoresAgent
 from .canal_denuncias import CanalDenunciasAgent
 from .igualdade_salarial import IgualdadeSalarialAgent
 from .compliance_anticorrupcao import ComplianceAnticorrupcaoAgent
+from .regulatory_analyst import RegulatoryAnalystAgent
+from .compliance_pm import CompliancePMAgent
+from .channel_agent import ChannelAgentAgent
+from .knowledge_agent import KnowledgeAgent
+from .facilitator_agent import FacilitatorAgentAgent
+from .dev_experience import DevExperienceAgent
 
 __all__ = [
     "SpecAnalystAgent",
@@ -46,4 +52,10 @@ __all__ = [
     "CanalDenunciasAgent",
     "IgualdadeSalarialAgent",
     "ComplianceAnticorrupcaoAgent",
+    "RegulatoryAnalystAgent",
+    "CompliancePMAgent",
+    "ChannelAgentAgent",
+    "KnowledgeAgent",
+    "FacilitatorAgentAgent",
+    "DevExperienceAgent",
 ]

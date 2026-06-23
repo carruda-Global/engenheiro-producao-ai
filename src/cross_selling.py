@@ -27,6 +27,12 @@ AGENT_CHAIN = [
     "canal_denuncias",
     "igualdade_salarial",
     "compliance_anticorrupcao",
+    "regulatory_analyst",
+    "compliance_pm",
+    "channel_agent",
+    "knowledge_agent",
+    "facilitator_agent",
+    "dev_experience",
 ]
 
 UPGRADE_PATH = {
@@ -111,5 +117,11 @@ def get_agent_name(agent_id: str) -> str:
         "canal_denuncias": "Canal de Denúncias",
         "igualdade_salarial": "Igualdade Salarial",
         "compliance_anticorrupcao": "Compliance Anticorrupção",
+        "regulatory_analyst": "Regulatory Analyst",
+        "compliance_pm": "Compliance PM",
+        "channel_agent": "Channel Agent Regulatório",
+        "knowledge_agent": "Knowledge Agent",
+        "facilitator_agent": "Facilitator Agent",
+        "dev_experience": "Dev Experience Agent",
     }
     return names.get(agent_id, agent_id)

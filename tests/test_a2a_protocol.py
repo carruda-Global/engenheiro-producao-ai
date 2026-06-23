@@ -25,7 +25,7 @@ class TestA2AProtocol:
         data = response.json()
         assert data["name"] == "Engenheiro de Produção AI"
         assert "skills" in data
-        assert len(data["skills"]) == 21
+        assert len(data["skills"]) == 27
 
     async def test_agent_card_has_all_skills(self, client):
         response = await client.get("/.well-known/agent-card.json")
@@ -39,6 +39,8 @@ class TestA2AProtocol:
             "nr1_psicossocial", "tributario_cbs_ibs", "lgpd_operacional",
             "esg_ifrs", "inventario_carbono", "escopo3_fornecedores",
             "canal_denuncias", "igualdade_salarial", "compliance_anticorrupcao",
+            "regulatory_analyst", "compliance_pm", "channel_agent",
+            "knowledge_agent", "facilitator_agent", "dev_experience",
         }
         assert skill_ids == expected
 
@@ -107,7 +109,7 @@ class TestAgentCardBuilder:
 
         card = build_agent_card()
         assert "Engenheiro" in card.name
-        assert len(card.skills) == 21
+        assert len(card.skills) == 27
         assert card.capabilities.streaming
 
     def test_build_card_custom_url(self):
@@ -121,7 +123,7 @@ class TestAgentCardBuilder:
         from src.a2a_bridge.agent_cards import build_agent_card
 
         card = build_agent_card()
-        assert len(card.skills) == 21
+        assert len(card.skills) == 27
         for skill in card.skills:
             assert skill.id
             assert skill.name
@@ -155,5 +157,7 @@ class TestSkillMap:
             "nr1_psicossocial", "tributario_cbs_ibs", "lgpd_operacional",
             "esg_ifrs", "inventario_carbono", "escopo3_fornecedores",
             "canal_denuncias", "igualdade_salarial", "compliance_anticorrupcao",
+            "regulatory_analyst", "compliance_pm", "channel_agent",
+            "knowledge_agent", "facilitator_agent", "dev_experience",
         }
         assert internal_ids == expected

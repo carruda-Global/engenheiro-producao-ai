@@ -32,7 +32,7 @@ class TestAPI:
         assert response.status_code == 200
         data = response.json()
         assert "plans" in data
-        assert len(data["plans"]) == 9
+        assert len(data["plans"]) == 10
 
     async def test_get_plan_by_id(self, client):
         response = await client.get("/api/v1/subscriptions/plans/starter")

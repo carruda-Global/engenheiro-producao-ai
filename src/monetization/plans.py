@@ -168,6 +168,31 @@ PLANS: List[Dict] = [
             "Relatorios para SBCE e IFRS",
         ],
     },
+    {
+        "id": "microsoft_pack",
+        "name": "Microsoft Pack - 6 Agentes",
+        "price": 448200,
+        "currency": "brl",
+        "agents": [
+            "regulatory_analyst", "compliance_pm",
+            "channel_agent", "knowledge_agent",
+            "facilitator_agent", "dev_experience",
+        ],
+        "trial_days": 15,
+        "features": [
+            "Regulatory Analyst (R$ 997/mes)",
+            "Compliance PM (R$ 797/mes)",
+            "Channel Agent Regulatorio (R$ 597/mes)",
+            "Knowledge Agent (R$ 697/mes)",
+            "Facilitator Agent (R$ 497/mes)",
+            "Dev Experience Agent (R$ 897/mes)",
+            "Integracao com SharePoint e OneDrive",
+            "Monitoramento de canais Teams",
+            "Automacao de PRs e code reviews",
+            "Indexacao de documentos com RAG",
+            "Suporte prioritario 24/7",
+        ],
+    },
 ]
 
 

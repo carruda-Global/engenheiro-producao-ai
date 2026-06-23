@@ -21,7 +21,9 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
             "Inclui agentes AEC: Análise de Especificações, Compras, Estoque, "
             "Logística, Execução, BIM, RFI. Agentes Regulatórios: NR-1 Psicossocial, "
             "Tributário CBS/IBS, LGPD, ESG, Carbono, Escopo 3, Canal de Denúncias, "
-            "Igualdade Salarial e Compliance Anticorrupção."
+            "Igualdade Salarial, Compliance Anticorrupção, Regulatory Analyst, "
+            "Compliance PM, Channel Agent, Knowledge Agent, Facilitator Agent e "
+            "Dev Experience Agent."
         ),
         version="2.1.0",
         documentation_url="https://engenheiro-producao-ai.onrender.com/docs",
@@ -356,6 +358,96 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
         examples=[
             "Estruture o programa de integridade da empresa",
             "Realize due diligence deste fornecedor",
+        ],
+    )
+    _add_skill(
+        card,
+        id="regulatory_analyst",
+        name="Regulatory Analyst",
+        description=(
+            "Analisa contratos, politicas e documentos legais via SharePoint "
+            "e OneDrive. Identifica riscos LGPD, NR-1, ESG e Anticorrupcao. "
+            "Gera relatorios de risco com matriz de probabilidade e impacto."
+        ),
+        tags=["regulatorio", "contratos", "LGPD", "NR-1", "ESG", "riscos"],
+        examples=[
+            "Analise este contrato para riscos regulatorios",
+            "Identifique riscos LGPD neste documento",
+        ],
+    )
+    _add_skill(
+        card,
+        id="compliance_pm",
+        name="Compliance PM",
+        description=(
+            "Gerencia projetos de compliance como PGRS, Carbono e Igualdade "
+            "Salarial. Cria tarefas automaticas no Microsoft Planner e envia "
+            "alertas e prazos via Microsoft Teams."
+        ),
+        tags=["compliance", "projetos", "Planner", "Teams", "prazos"],
+        examples=[
+            "Gerencie o projeto de inventario de carbono",
+            "Crie tarefa no Planner para o PGRS",
+        ],
+    )
+    _add_skill(
+        card,
+        id="channel_agent",
+        name="Channel Agent Regulatorio",
+        description=(
+            "Monitora canais do Microsoft Teams para detectar riscos de "
+            "conformidade. Identifica conversas com riscos trabalhistas e "
+            "tributarios. Gera alertas automaticos de compliance."
+        ),
+        tags=["Teams", "monitoramento", "riscos", "trabalhista", "tributario"],
+        examples=[
+            "Monitore conversas do Teams por riscos trabalhistas",
+            "Detecte riscos de compliance nestas mensagens",
+        ],
+    )
+    _add_skill(
+        card,
+        id="knowledge_agent",
+        name="Knowledge Agent",
+        description=(
+            "Indexa documentos do SharePoint com metadados e disponibiliza "
+            "busca inteligente via RAG (Retrieval-Augmented Generation). "
+            "Responde perguntas com base em documentos indexados."
+        ),
+        tags=["conhecimento", "SharePoint", "RAG", "busca", "indexacao"],
+        examples=[
+            "Indexe este documento para busca",
+            "Pesquise sobre politicas de compliance",
+        ],
+    )
+    _add_skill(
+        card,
+        id="facilitator_agent",
+        name="Facilitator Agent",
+        description=(
+            "Facilita reunioes do comite de compliance, gera atas e minutas "
+            "detalhadas. Integra-se ao Teams Meetings e cria tarefas "
+            "automaticas no Planner apos cada reuniao."
+        ),
+        tags=["reunioes", "atas", "compliance", "Teams", "Planner"],
+        examples=[
+            "Facilite a reuniao do comite de compliance",
+            "Gere a minuta da ultima reuniao",
+        ],
+    )
+    _add_skill(
+        card,
+        id="dev_experience",
+        name="Dev Experience Agent",
+        description=(
+            "Automatiza revisoes de Pull Requests e code reviews no GitHub. "
+            "Garante conformidade LGPD no codigo, identifica vazamento de "
+            "dados e gera relatorios de qualidade do repositorio."
+        ),
+        tags=["DevEx", "GitHub", "PR", "code review", "LGPD", "qualidade"],
+        examples=[
+            "Revise este Pull Request para conformidade LGPD",
+            "Gere relatorio de qualidade do repositorio",
         ],
     )
 
