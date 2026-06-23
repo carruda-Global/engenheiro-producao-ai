@@ -15,7 +15,7 @@ class RFICreationAgent:
             "Siga o padrao AIA (American Institute of Architects) para RFIs."
         )
 
-    def create_rfi(self, question: str, context: str = "") -> dict:
+    def create_rfi(self, question: str, context: str = "", lang: str = "pt") -> dict:
         prompt = (
             "Gere uma RFI (Request for Information) profissional com base "
             "na duvida abaixo:\n\n"
@@ -33,10 +33,10 @@ class RFICreationAgent:
             "6. Prazo sugerido para resposta\n"
             "7. Espaco para resposta do consultor"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "rfi_creation", "rfi_document": result}
 
-    def search_specification(self, question: str, specification: str) -> str:
+    def search_specification(self, question: str, specification: str, lang: str = "pt") -> str:
         prompt = (
             "Busque na especificacao abaixo a informacao necessaria "
             "para responder a seguinte questao:\n\n"
@@ -45,4 +45,4 @@ class RFICreationAgent:
             "Extraia os trechos relevantes e forneca uma resposta "
             "clara baseada na documentacao."
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

@@ -17,7 +17,7 @@ class CanalDenunciasAgent:
             "Garanta anonimato, sigilo e conformidade legal."
         )
 
-    def classificar_denuncia(self, denuncia: str) -> dict:
+    def classificar_denuncia(self, denuncia: str, lang: str = "pt") -> dict:
         prompt = (
             "Classifique a denuncia abaixo conforme as categorias "
             "da Lei 14.457/2022 e normas internas:\n\n"
@@ -31,10 +31,10 @@ class CanalDenunciasAgent:
             "5. Fluxo de investigacao recomendado\n"
             "6. Riscos psicossociais associados (cross-sell NR-1)"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "canal_denuncias", "classificacao": result}
 
-    def gerar_relatorio_semestral(self, denuncias_periodo: str) -> dict:
+    def gerar_relatorio_semestral(self, denuncias_periodo: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nas denuncias do periodo abaixo, gere um "
             "relatorio semestral para CIPA e diretoria:\n\n"
@@ -47,10 +47,10 @@ class CanalDenunciasAgent:
             "5. Indicadores de clima organizacional\n"
             "6. Recomendacoes para a diretoria"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "canal_denuncias", "relatorio_semestral": result}
 
-    def configurar_canal(self, dados_empresa: str) -> dict:
+    def configurar_canal(self, dados_empresa: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados da empresa abaixo, recomende a "
             "configuracao ideal do canal de denuncias:\n\n"
@@ -62,5 +62,5 @@ class CanalDenunciasAgent:
             "4. Integracao com NR-1 riscos psicossociais\n"
             "5. Modelo de politica interna"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "canal_denuncias", "configuracao": result}

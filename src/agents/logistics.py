@@ -13,7 +13,7 @@ class LogisticsAgent:
             "Seja preciso com prazos e custos logisticos."
         )
 
-    def track_shipment(self, shipment_data: dict) -> dict:
+    def track_shipment(self, shipment_data: dict, lang: str = "pt") -> dict:
         prompt = (
             "Analise o status do seguinte envio:\n"
             f"Produto: {shipment_data.get('product', 'N/A')}\n"
@@ -26,14 +26,14 @@ class LogisticsAgent:
             "2. Riscos de atraso\n"
             "3. Recomendacoes"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
 
         return {
             "agent": "logistics",
             "tracking_analysis": result,
         }
 
-    def check_delivery_issues(self, deliveries: list[dict]) -> str:
+    def check_delivery_issues(self, deliveries: list[dict], lang: str = "pt") -> str:
         deliveries_str = "\n".join(
             f"- Pedido {d.get('order_id', 'N/A')}: "
             f"status={d.get('status', 'N/A')}, "
@@ -45,4 +45,4 @@ class LogisticsAgent:
             f"{deliveries_str}\n\n"
             "Liste cada entrega com problema, a gravidade e a acao recomendada."
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

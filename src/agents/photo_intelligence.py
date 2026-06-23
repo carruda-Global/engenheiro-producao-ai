@@ -15,7 +15,7 @@ class PhotoIntelligenceAgent:
             "visual. Seja preciso e objetivo."
         )
 
-    def analyze_photo(self, photo_description: str) -> dict:
+    def analyze_photo(self, photo_description: str, lang: str = "pt") -> dict:
         prompt = (
             "Analise a descricao da foto de obra abaixo:\n\n"
             f"{photo_description}\n\n"
@@ -27,10 +27,10 @@ class PhotoIntelligenceAgent:
             "5. Desvios visuais em relacao ao projeto\n"
             "6. Recomendacoes"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "photo_intelligence", "visual_analysis": result}
 
-    def compare_with_schedule(self, photo_description: str, expected_progress: str) -> str:
+    def compare_with_schedule(self, photo_description: str, expected_progress: str, lang: str = "pt") -> str:
         prompt = (
             "Compare o que foi capturado na foto com o progresso esperado:\n\n"
             f"FOTO:\n{photo_description}\n\n"
@@ -40,4 +40,4 @@ class PhotoIntelligenceAgent:
             "2. Possiveis atrasos ou adiantamentos\n"
             "3. Recomendacoes para realinhamento"
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

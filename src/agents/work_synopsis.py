@@ -14,7 +14,7 @@ class WorkSynopsisAgent:
             "Capture contexto, riscos e prazos criticos."
         )
 
-    def generate_synopsis(self, task_data: str) -> dict:
+    def generate_synopsis(self, task_data: str, lang: str = "pt") -> dict:
         prompt = (
             "Analise os dados de tarefa/defeito abaixo e gere um resumo "
             "estruturado:\n\n"
@@ -28,10 +28,10 @@ class WorkSynopsisAgent:
             "6. Riscos associados\n"
             "7. Acoes necessarias"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "work_synopsis", "synopsis": result}
 
-    def summarize_project_status(self, project_updates: str) -> str:
+    def summarize_project_status(self, project_updates: str, lang: str = "pt") -> str:
         prompt = (
             "Com base nas atualizacoes do projeto abaixo, gere um resumo "
             "executivo do status atual da obra:\n\n"
@@ -43,4 +43,4 @@ class WorkSynopsisAgent:
             "4. Riscos identificados\n"
             "5. Proximos passos"
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

@@ -17,7 +17,7 @@ class ComplianceAnticorrupcaoAgent:
             "e relatorios no formato CGU para licitacoes."
         )
 
-    def diagnosticar_maturidade(self, dados_empresa: str) -> dict:
+    def diagnosticar_maturidade(self, dados_empresa: str, lang: str = "pt") -> dict:
         prompt = (
             "Realize um diagnostico de maturidade do programa de "
             "integridade da empresa abaixo conforme guia CGU:\n\n"
@@ -32,10 +32,10 @@ class ComplianceAnticorrupcaoAgent:
             "7. Monitoramento continuo\n\n"
             "Score geral de maturidade (0-100%)."
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "compliance_anticorrupcao", "diagnostico_integridade": result}
 
-    def gerar_codigo_etica(self, dados_empresa: str) -> dict:
+    def gerar_codigo_etica(self, dados_empresa: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados da empresa abaixo, elabore um "
             "Codigo de Etica e Conduta personalizado:\n\n"
@@ -49,10 +49,10 @@ class ComplianceAnticorrupcaoAgent:
             "6. Canal de denuncias\n"
             "7. Consequencias do descumprimento"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "compliance_anticorrupcao", "codigo_etica": result}
 
-    def due_diligence_terceiros(self, dados_terceiro: str) -> dict:
+    def due_diligence_terceiros(self, dados_terceiro: str, lang: str = "pt") -> dict:
         prompt = (
             "Realize uma due diligence simplificada do terceiro/fornecedor "
             "abaixo:\n\n"
@@ -64,10 +64,10 @@ class ComplianceAnticorrupcaoAgent:
             "4. Recomendacao (aprovar / aprovar com restricoes / rejeitar)\n"
             "5. Plano de monitoramento"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "compliance_anticorrupcao", "due_diligence": result}
 
-    def gerar_relatorio_cgu(self, dados_programa: str) -> dict:
+    def gerar_relatorio_cgu(self, dados_programa: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados do programa de integridade abaixo, "
             "gere o relatorio no formato CGU para licitacoes:\n\n"
@@ -79,5 +79,5 @@ class ComplianceAnticorrupcaoAgent:
             "4. Melhorias em andamento\n"
             "5. Declaracao de conformidade com Lei 12.846/2013"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "compliance_anticorrupcao", "relatorio_cgu": result}

@@ -28,6 +28,35 @@ ORACLE_REGION = os.getenv("ORACLE_REGION", "sa-saopaulo-1")
 
 
 def create_listing_config():
+    base_plans = [
+        {"name": "Starter", "price_usd": 199.00, "price_brl": 997.00},
+        {"name": "Professional", "price_usd": 399.00, "price_brl": 2391.00},
+        {"name": "Enterprise", "price_usd": 799.00, "price_brl": 4685.00},
+        {"name": "Full Suite", "price_usd": 1599.00, "price_brl": 9497.00},
+        {"name": "Compliance Pack", "price_usd": 399.00, "price_brl": 2391.00},
+        {"name": "Regulatory Starter", "price_usd": 119.00, "price_brl": 590.00},
+        {"name": "Regulatory Professional", "price_usd": 299.00, "price_brl": 1490.00},
+        {"name": "Regulatory Full", "price_usd": 699.00, "price_brl": 3490.00},
+        {"name": "ESG + Carbono", "price_usd": 499.00, "price_brl": 2490.00},
+    ]
+
+    plans = []
+    for p in base_plans:
+        plans.append({
+            "name": p["name"],
+            "price_usd": p["price_usd"],
+            "price_brl": p["price_brl"],
+            "contract_duration": "MONTHLY",
+            "billing_frequency": "MONTHLY",
+        })
+        plans.append({
+            "name": p["name"] + " (Annual)",
+            "price_usd": p["price_usd"],
+            "price_brl": p["price_brl"],
+            "contract_duration": "ANNUAL",
+            "billing_frequency": "MONTHLY",
+        })
+
     config = {
         "display_name": "EcoSystem AEC - Regulatory Agents",
         "short_description": (
@@ -47,17 +76,7 @@ def create_listing_config():
         "pricing": {
             "type": "SUBSCRIPTION",
             "currencies": ["USD", "BRL"],
-            "plans": [
-                {"name": "Starter", "price_usd": 199.00, "price_brl": 997.00},
-                {"name": "Professional", "price_usd": 399.00, "price_brl": 2391.00},
-                {"name": "Enterprise", "price_usd": 799.00, "price_brl": 4685.00},
-                {"name": "Full Suite", "price_usd": 1599.00, "price_brl": 9497.00},
-                {"name": "Compliance Pack", "price_usd": 399.00, "price_brl": 2391.00},
-                {"name": "Regulatory Starter", "price_usd": 119.00, "price_brl": 590.00},
-                {"name": "Regulatory Professional", "price_usd": 299.00, "price_brl": 1490.00},
-                {"name": "Regulatory Full", "price_usd": 699.00, "price_brl": 3490.00},
-                {"name": "ESG + Carbono", "price_usd": 499.00, "price_brl": 2490.00},
-            ],
+            "plans": plans,
         },
         "seller": {
             "id": ORACLE_SELLER_ID,

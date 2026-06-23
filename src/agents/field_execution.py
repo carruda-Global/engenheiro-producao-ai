@@ -13,7 +13,7 @@ class FieldExecutionAgent:
             "de projeto e reduzir retrabalho. Forneca instrucoes praticas e objetivas."
         )
 
-    def generate_field_instructions(self, project_specs: str) -> dict:
+    def generate_field_instructions(self, project_specs: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nas especificacoes do projeto abaixo, gere instrucoes "
             "de execucao para a equipe em campo:\n\n"
@@ -24,18 +24,18 @@ class FieldExecutionAgent:
             "3. Tolerancias e especificacoes tecnicas\n"
             "4. Checklist de verificacao"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
 
         return {
             "agent": "field_execution",
             "instructions": result,
         }
 
-    def identify_deviations(self, as_built: str, as_designed: str) -> str:
+    def identify_deviations(self, as_built: str, as_designed: str, lang: str = "pt") -> str:
         prompt = (
             "Compare o executado com o projetado e identifique desvios:\n\n"
             f"PROJETADO:\n{as_designed}\n\n"
             f"EXECUTADO:\n{as_built}\n\n"
             "Liste cada desvio, o impacto e a acao corretiva recomendada."
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

@@ -17,7 +17,7 @@ class ComplianceAgent:
             "Resolucoes CONAMA e legislacao municipal."
         )
 
-    def check_compliance(self, project_data: str) -> dict:
+    def check_compliance(self, project_data: str, lang: str = "pt") -> dict:
         prompt = (
             "Analise os dados do projeto abaixo e verifique a conformidade "
             "com requisitos legais e normativos:\n\n"
@@ -29,10 +29,10 @@ class ComplianceAgent:
             "4. Acao corretiva se necessario\n\n"
             "Ao final, forneca um score geral de conformidade (0-100%)."
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "compliance", "compliance_report": result}
 
-    def generate_pgrs(self, project_info: str) -> str:
+    def generate_pgrs(self, project_info: str, lang: str = "pt") -> str:
         prompt = (
             "Com base nas informacoes do projeto abaixo, gere um esboco "
             "de PGRS (Programa de Gerenciamento de Residuos Solidos):\n\n"
@@ -46,9 +46,9 @@ class ComplianceAgent:
             "6. Responsaveis tecnicos\n"
             "7. Cronograma de execucao"
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)
 
-    def monitor_deadlines(self, obligations: str) -> str:
+    def monitor_deadlines(self, obligations: str, lang: str = "pt") -> str:
         prompt = (
             "Analise as obrigacoes legais e regulatorias abaixo e "
             "identifique prazos, renovacoes e alertas:\n\n"
@@ -60,4 +60,4 @@ class ComplianceAgent:
             "4. Status (em dia / a vencer / vencido)\n"
             "5. Acao recomendada"
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

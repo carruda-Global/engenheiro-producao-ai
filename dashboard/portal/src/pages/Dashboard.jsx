@@ -1,22 +1,42 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import AgentCard from '../components/AgentCard';
 
-const agents = [
-  { id: 'spec-analyst', icon: '🔍', title: 'Spec Analyst', description: 'Analise de especificacoes tecnicas, normas e documentos de engenharia.', tags: ['1M tokens', 'OCR'] },
-  { id: 'procurement', icon: '🛒', title: 'Procurement', description: 'Compras automatizadas, comparacao de cotacoes e geracao de pedidos.', tags: ['Cross-selling'] },
-  { id: 'inventory', icon: '📦', title: 'Inventory', description: 'Monitoramento de estoque, alertas de escassez e sugestao de substitutos.', tags: ['Tempo real'] },
-  { id: 'logistics', icon: '🚚', title: 'Logistics', description: 'Rastreamento de entregas, identificacao de problemas e notas fiscais.', tags: ['Tracking'] },
-  { id: 'field-execution', icon: '🏗️', title: 'Field Execution', description: 'Instrucoes de obra, identificacao de desvios e reducao de retrabalho.', tags: ['BIM', 'RA'] },
-  { id: 'bim-coordinator', icon: '📐', title: 'BIM Coordinator', description: 'Criacao de elementos 3D, clash detection e validacao de modelos BIM.', tags: ['BIM', '3D'] },
-  { id: 'requirements-analyst', icon: '📋', title: 'Requirements Analyst', description: 'Analise de qualidade de requisitos, scores e deteccao de ambiguidades.', tags: ['Qualidade'] },
-  { id: 'engineering-assistant', icon: '💬', title: 'Engineering Assistant', description: 'Assistente conversacional para perguntas tecnicas e sumarizacao.', tags: ['Chat', 'IA'] },
-  { id: 'work-synopsis', icon: '📝', title: 'Work Synopsis', description: 'Resumo estruturado de tarefas, defeitos e status de obra.', tags: ['Resumo'] },
-  { id: 'photo-intelligence', icon: '📸', title: 'Photo Intelligence', description: 'Analise visual de obras, deteccao de riscos e comparacao com cronograma.', tags: ['Visao'] },
-  { id: 'rfi-creation', icon: '📄', title: 'RFI Creation', description: 'Criacao automatica de RFIs a partir de duvidas do campo.', tags: ['RFI', 'Docs'] },
-  { id: 'compliance', icon: '⚖️', title: 'Compliance Agent', description: 'Gestao de conformidade PGRS/PGRSS e monitoramento regulatorio.', tags: ['PGRS', 'Normas'] },
+const agentKeys = [
+  'spec_analyst', 'procurement', 'inventory', 'logistics', 'field_execution',
+  'bim_coordinator', 'requirements_analyst', 'engineering_assistant', 'work_synopsis',
+  'photo_intelligence', 'rfi_creation', 'compliance',
+  'nr1_psicossocial', 'tributario_cbs_ibs', 'lgpd_operacional', 'esg_ifrs',
+  'inventario_carbono', 'escopo3_fornecedores', 'canal_denuncias',
+  'igualdade_salarial', 'compliance_anticorrupcao',
 ];
 
+const agentTags = {
+  spec_analyst: ['1M tokens', 'OCR'],
+  procurement: ['Cross-selling'],
+  inventory: ['Tempo real'],
+  logistics: ['Tracking'],
+  field_execution: ['BIM', 'RA'],
+  bim_coordinator: ['BIM', '3D'],
+  requirements_analyst: ['Qualidade'],
+  engineering_assistant: ['Chat', 'IA'],
+  work_synopsis: ['Resumo'],
+  photo_intelligence: ['Visão'],
+  rfi_creation: ['RFI', 'Docs'],
+  compliance: ['PGRS', 'Normas'],
+  nr1_psicossocial: ['NR-1', 'MTE'],
+  tributario_cbs_ibs: ['CBS', 'IBS'],
+  lgpd_operacional: ['LGPD', 'ANPD'],
+  esg_ifrs: ['ESG', 'CVM'],
+  inventario_carbono: ['SBCE', 'GHG'],
+  escopo3_fornecedores: ['CBAM', 'IFRS'],
+  canal_denuncias: ['CIPA', '14.457'],
+  igualdade_salarial: ['14.611', 'MTE'],
+  compliance_anticorrupcao: ['CGU', '12.846'],
+};
+
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [health, setHealth] = useState(null);
   const [apiOk, setApiOk] = useState(false);
 
@@ -30,24 +50,34 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1>Dashboard</h1>
+        <h1>{t('dashboard.title')}</h1>
         <div className={`status-badge ${apiOk ? 'online' : 'offline'}`}>
-          {apiOk ? 'API Online' : 'API Offline'}
+          {apiOk ? t('dashboard.api_online') : t('dashboard.api_offline')}
         </div>
       </div>
 
       {health && (
         <div className="health-bar">
-          <span>🤖 Agentes: {health.agents?.join(', ') || 'N/A'}</span>
-          <span>🧠 DeepSeek: {health.deepseek === 'connected' ? 'Conectado' : 'Desconectado'}</span>
-          <span>📦 Versao: {health.version}</span>
+          <span>🤖 {t('dashboard.agents_label')}: {health.agents?.join(', ') || 'N/A'}</span>
+          <span>🧠 {t('dashboard.deepseek')}: {health.deepseek === 'connected' ? t('dashboard.connected') : t('dashboard.disconnected')}</span>
+          <span>📦 {t('dashboard.version')}: {health.version}</span>
         </div>
       )}
 
       <div className="agent-grid">
-        {agents.map((a) => (
-          <AgentCard key={a.id} {...a} />
-        ))}
+        {agentKeys.map((key) => {
+          const agent = t(`agents.${key}`, { returnObjects: true });
+          return (
+            <AgentCard
+              key={key}
+              id={key.replace(/_/g, '-')}
+              icon={agent.icon}
+              title={agent.name}
+              description={agent.description}
+              tags={agentTags[key] || []}
+            />
+          );
+        })}
       </div>
     </div>
   );

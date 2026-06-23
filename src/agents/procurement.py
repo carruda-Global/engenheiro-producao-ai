@@ -13,7 +13,7 @@ class ProcurementAgent:
             "Trabalhe com dados precisos e prazos realistas."
         )
 
-    def process_order(self, material_list: list[dict]) -> dict:
+    def process_order(self, material_list: list[dict], lang: str = "pt") -> dict:
         materials_str = "\n".join(
             f"- {m.get('name', 'Material')}: {m.get('quantity', 0)} "
             f"{m.get('unit', 'un')}"
@@ -28,7 +28,7 @@ class ProcurementAgent:
             "3. Prazo de entrega sugerido\n"
             "4. Fornecedores sugeridos"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
 
         return {
             "agent": "procurement",
@@ -36,7 +36,7 @@ class ProcurementAgent:
             "needs_inventory": True,
         }
 
-    def compare_quotes(self, quotes: list[dict]) -> str:
+    def compare_quotes(self, quotes: list[dict], lang: str = "pt") -> str:
         quotes_str = "\n".join(
             f"- {q.get('supplier', 'Fornecedor')}: R$ {q.get('price', 0)} - "
             f"Prazo: {q.get('lead_time', 'N/A')}"
@@ -47,4 +47,4 @@ class ProcurementAgent:
             "considerando preco, prazo e condicoes:\n\n"
             f"{quotes_str}"
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

@@ -16,7 +16,7 @@ class ESGIFRSAgent:
             "Foque em praticidade e baixo custo para PMEs."
         )
 
-    def diagnosticar_maturidade(self, dados_empresa: str) -> dict:
+    def diagnosticar_maturidade(self, dados_empresa: str, lang: str = "pt") -> dict:
         prompt = (
             "Realize um diagnostico inicial de maturidade ESG para a "
             "empresa abaixo:\n\n"
@@ -29,10 +29,10 @@ class ESGIFRSAgent:
             "5. Indicadores materiais por setor (SASB)\n"
             "6. Riscos de exclusao de cadeias B2B"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "esg_ifrs", "diagnostico_maturidade": result}
 
-    def gerar_relatorio_sustentabilidade(self, dados_empresa: str) -> dict:
+    def gerar_relatorio_sustentabilidade(self, dados_empresa: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados abaixo, gere um relatorio de "
             "sustentabilidade simplificado alinhado ao IFRS S1:\n\n"
@@ -46,10 +46,10 @@ class ESGIFRSAgent:
             "6. Metas e progresso\n"
             "7. Nota metodologica"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "esg_ifrs", "relatorio_sustentabilidade": result}
 
-    def responder_questionario(self, questionario: str, dados_empresa: str) -> dict:
+    def responder_questionario(self, questionario: str, dados_empresa: str, lang: str = "pt") -> dict:
         prompt = (
             "Responda ao questionario ESG abaixo com base nos dados "
             "da empresa fornecidos:\n\n"
@@ -60,5 +60,5 @@ class ESGIFRSAgent:
             "2. Evidencia ou referencia\n"
             "3. Observacao se necessario"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "esg_ifrs", "resposta_questionario": result}

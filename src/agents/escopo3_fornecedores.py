@@ -16,7 +16,7 @@ class Escopo3FornecedoresAgent:
             "para conformidade regulatoria."
         )
 
-    def avaliar_fornecedores(self, dados_cadeia: str) -> dict:
+    def avaliar_fornecedores(self, dados_cadeia: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados da cadeia de fornecedores abaixo, "
             "realize a avaliacao de emissoes Escopo 3:\n\n"
@@ -29,10 +29,10 @@ class Escopo3FornecedoresAgent:
             "5. Score de maturidade ESG (0-100%)\n"
             "6. Ranking de risco na cadeia"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "escopo3_fornecedores", "avaliacao_cadeia": result}
 
-    def gerar_relatorio_escopo3(self, dados_completos: str) -> dict:
+    def gerar_relatorio_escopo3(self, dados_completos: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados abaixo, gere o relatorio completo "
             "de emissoes Escopo 3:\n\n"
@@ -46,5 +46,5 @@ class Escopo3FornecedoresAgent:
             "6. Conformidade com IFRS S2 e CBAM\n"
             "7. Recomendacoes de engajamento"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "escopo3_fornecedores", "relatorio_escopo3": result}

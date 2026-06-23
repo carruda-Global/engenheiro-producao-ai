@@ -13,7 +13,7 @@ class InventoryAgent:
             "Seja preciso nas quantidades e prazos."
         )
 
-    def check_stock(self, items: list[dict]) -> dict:
+    def check_stock(self, items: list[dict], lang: str = "pt") -> dict:
         items_str = "\n".join(
             f"- {i.get('name', 'Item')}: estoque={i.get('stock', 0)}, "
             f"minimo={i.get('min_stock', 0)}, consumo_diario={i.get('daily_use', 0)}"
@@ -28,7 +28,7 @@ class InventoryAgent:
             "3. Quantidade recomendada para ressuprimento\n"
             "4. Sugestoes de substitutos se aplicavel"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
 
         return {
             "agent": "inventory",
@@ -37,11 +37,11 @@ class InventoryAgent:
             or "critico" in result.lower(),
         }
 
-    def suggest_substitute(self, material: str, required_specs: str) -> str:
+    def suggest_substitute(self, material: str, required_specs: str, lang: str = "pt") -> str:
         prompt = (
             f"Preciso de um substituto para o material '{material}' "
             f"com as seguintes especificacoes: {required_specs}. "
             "Sugira alternativas com especificacoes tecnicas equivalentes "
             "e estimativa de custo."
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

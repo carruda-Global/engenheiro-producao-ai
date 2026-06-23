@@ -1,5 +1,6 @@
 from openai import OpenAI
 from src.config import Settings
+from src.i18n.translations import get_system_prompt_instruction
 
 
 class DeepSeekClient:
@@ -17,11 +18,14 @@ class DeepSeekClient:
         user_prompt: str,
         temperature: float | None = None,
         max_tokens: int | None = None,
+        lang: str = "pt",
     ) -> str:
+        lang_instruction = get_system_prompt_instruction(lang)
+        combined_system = f"{system_prompt}\n\n{lang_instruction}"
         response = self.client.chat.completions.create(
             model=self.settings.deepseek_model,
             messages=[
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": combined_system},
                 {"role": "user", "content": user_prompt},
             ],
             temperature=temperature or self.settings.deepseek_temperature,
@@ -34,7 +38,13 @@ class DeepSeekClient:
         messages: list[dict],
         temperature: float | None = None,
         max_tokens: int | None = None,
+        lang: str = "pt",
     ) -> str:
+        lang_instruction = get_system_prompt_instruction(lang)
+        if messages and messages[0]["role"] == "system":
+            messages[0]["content"] = f"{messages[0]['content']}\n\n{lang_instruction}"
+        else:
+            messages.insert(0, {"role": "system", "content": lang_instruction})
         response = self.client.chat.completions.create(
             model=self.settings.deepseek_model,
             messages=messages,

@@ -14,7 +14,7 @@ class RequirementsAnalystAgent:
             "boas praticas de engenharia de requisitos."
         )
 
-    def analyze_requirements(self, requirements_text: str) -> dict:
+    def analyze_requirements(self, requirements_text: str, lang: str = "pt") -> dict:
         prompt = (
             "Analise a qualidade dos seguintes requisitos de engenharia:\n\n"
             f"{requirements_text}\n\n"
@@ -26,10 +26,10 @@ class RequirementsAnalystAgent:
             "5. Sugestoes de melhoria\n\n"
             "Ao final, forneca um score geral de qualidade."
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "requirements_analyst", "quality_analysis": result}
 
-    def check_consistency(self, req_set_a: str, req_set_b: str) -> str:
+    def check_consistency(self, req_set_a: str, req_set_b: str, lang: str = "pt") -> str:
         prompt = (
             "Compare os dois conjuntos de requisitos abaixo e identifique "
             "inconsistencias, contradicoes ou sobreposicoes:\n\n"
@@ -37,4 +37,4 @@ class RequirementsAnalystAgent:
             f"CONJUNTO B:\n{req_set_b}\n\n"
             "Liste cada inconsistencia e recomende acao corretiva."
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

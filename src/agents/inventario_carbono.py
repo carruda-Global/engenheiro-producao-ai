@@ -16,7 +16,7 @@ class InventarioCarbonoAgent:
             "Use fatores de emissao atualizados do MCTI e SIN."
         )
 
-    def calcular_emissoes(self, dados_consumo: str) -> dict:
+    def calcular_emissoes(self, dados_consumo: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados de consumo abaixo, calcule as emissoes "
             "de GEE (Escopo 1 e Escopo 2):\n\n"
@@ -30,10 +30,10 @@ class InventarioCarbonoAgent:
             "6. Metodologia de calculo\n\n"
             "Ao final, totalize as emissoes por escopo."
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "inventario_carbono", "emissoes_calculadas": result}
 
-    def gerar_inventario(self, dados_completos: str) -> dict:
+    def gerar_inventario(self, dados_completos: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados completos abaixo, gere o inventario "
             "de emissoes GHG Protocol:\n\n"
@@ -48,10 +48,10 @@ class InventarioCarbonoAgent:
             "7. Comparativo com ano anterior\n"
             "8. Trilha de auditoria com fatores de emissao"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "inventario_carbono", "inventario_ghg": result}
 
-    def identificar_hotspots(self, inventario: str) -> dict:
+    def identificar_hotspots(self, inventario: str, lang: str = "pt") -> dict:
         prompt = (
             "Analise o inventario de emissoes abaixo e identifique "
             "hotspots e oportunidades de reducao:\n\n"
@@ -63,5 +63,5 @@ class InventarioCarbonoAgent:
             "4. Acoes recomendadas\n"
             "5. Estimativa de custo-beneficio"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "inventario_carbono", "hotspots": result}

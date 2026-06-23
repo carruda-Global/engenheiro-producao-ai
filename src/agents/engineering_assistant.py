@@ -14,7 +14,7 @@ class EngineeringAssistantAgent:
             "duvidas do dia a dia. Use linguagem tecnica mas acessivel."
         )
 
-    def answer_question(self, question: str, context: str = "") -> dict:
+    def answer_question(self, question: str, context: str = "", lang: str = "pt") -> dict:
         prompt = (
             "Responda a pergunta de engenharia abaixo de forma clara e precisa.\n"
         )
@@ -28,10 +28,10 @@ class EngineeringAssistantAgent:
             "3. Normas aplicaveis se houver\n"
             "4. Referencias ou fontes"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "engineering_assistant", "answer": result}
 
-    def summarize_document(self, document_text: str) -> str:
+    def summarize_document(self, document_text: str, lang: str = "pt") -> str:
         prompt = (
             "Sumarize o documento tecnico abaixo de forma estruturada:\n\n"
             f"{document_text}\n\n"
@@ -41,4 +41,4 @@ class EngineeringAssistantAgent:
             "3. Dados tecnicos relevantes\n"
             "4. Conclusoes e recomendacoes"
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

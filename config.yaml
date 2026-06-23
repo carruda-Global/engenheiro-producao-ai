@@ -179,6 +179,12 @@ marketplace:
     enabled: true
     product_id: "ecosystem-aec-v2"
     seller_id: ""
+    pricing_model: flat_rate
+    contract_durations:
+      - monthly
+      - annual
+    billing_frequencies:
+      - monthly
     plans:
       starter:
         price_monthly_usd: 199.00

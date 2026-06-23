@@ -14,7 +14,7 @@ class BIMCoordinatorAgent:
             "Trabalhe com precisao dimensional e normas como NBR-15965."
         )
 
-    def generate_bim_element(self, description: str) -> dict:
+    def generate_bim_element(self, description: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base na descricao abaixo, gere as especificacoes para "
             "criacao de um elemento BIM 3D:\n\n"
@@ -27,10 +27,10 @@ class BIMCoordinatorAgent:
             "5. Parametros tecnicos relevantes\n"
             "6. Conflitos potenciais com outros elementos"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "bim_coordinator", "bim_element": result}
 
-    def clash_detection(self, model_description: str) -> str:
+    def clash_detection(self, model_description: str, lang: str = "pt") -> str:
         prompt = (
             "Analise o modelo descrito abaixo e identifique conflitos "
             "entre as disciplinas (estrutural, hidraulico, eletrico, arquitetonico):\n\n"
@@ -41,4 +41,4 @@ class BIMCoordinatorAgent:
             "3. Gravidade (alto/medio/baixo)\n"
             "4. Sugestao de resolucao"
         )
-        return self.llm.chat(self.system_prompt, prompt)
+        return self.llm.chat(self.system_prompt, prompt, lang=lang)

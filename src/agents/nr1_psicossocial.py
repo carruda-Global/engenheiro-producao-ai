@@ -16,7 +16,7 @@ class NR1PsicossocialAgent:
             "psicossocial conforme guia oficial MTE."
         )
 
-    def avaliar_riscos(self, dados_empresa: str) -> dict:
+    def avaliar_riscos(self, dados_empresa: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados da empresa abaixo, realize a identificacao "
             "e classificacao dos Fatores de Riscos Psicossociais Relacionados "
@@ -29,10 +29,10 @@ class NR1PsicossocialAgent:
             "4. Metodo de avaliacao recomendado\n\n"
             "Ao final, gere um inventario de riscos psicossociais completo."
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "nr1_psicossocial", "inventario_riscos": result}
 
-    def gerar_plano_acao(self, inventario: str) -> dict:
+    def gerar_plano_acao(self, inventario: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base no inventario de riscos psicossociais abaixo, "
             "gere um plano de acao hierarquizado:\n\n"
@@ -44,10 +44,10 @@ class NR1PsicossocialAgent:
             "4. Mitigar (medidas mitigadoras)\n\n"
             "Para cada acao: responsavel, prazo e indicador de acompanhamento."
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "nr1_psicossocial", "plano_acao": result}
 
-    def gerar_relatorio_executivo(self, inventario: str) -> dict:
+    def gerar_relatorio_executivo(self, inventario: str, lang: str = "pt") -> dict:
         prompt = (
             "Resuma o inventario de riscos psicossociais abaixo em um "
             "relatorio executivo para apresentacao a fiscalizacao:\n\n"
@@ -58,5 +58,5 @@ class NR1PsicossocialAgent:
             "3. Acoes prioritarias recomendadas\n"
             "4. Cronograma de revisao (minimo a cada 2 anos conforme NR-1)"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "nr1_psicossocial", "relatorio_executivo": result}

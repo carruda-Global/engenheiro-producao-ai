@@ -17,7 +17,7 @@ class IgualdadeSalarialAgent:
             "Inclua monitoramento de diversidade (genero, raca, PCD)."
         )
 
-    def analisar_equidade(self, dados_folha: str) -> dict:
+    def analisar_equidade(self, dados_folha: str, lang: str = "pt") -> dict:
         prompt = (
             "Analise os dados de folha de pagamento abaixo para "
             "identificar gaps de equidade salarial:\n\n"
@@ -30,10 +30,10 @@ class IgualdadeSalarialAgent:
             "5. Classificacao (dentro da meta / atencao / critico)\n\n"
             "Inclua analise por raca e PCD quando disponivel."
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "igualdade_salarial", "analise_equidade": result}
 
-    def gerar_relatorio_mte(self, dados_completos: str) -> dict:
+    def gerar_relatorio_mte(self, dados_completos: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados abaixo, gere o relatorio semestral "
             "de equidade salarial no formato exigido pelo MTE "
@@ -48,10 +48,10 @@ class IgualdadeSalarialAgent:
             "6. Metas e prazos\n"
             "7. Responsavel pela elaboracao"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "igualdade_salarial", "relatorio_mte": result}
 
-    def monitorar_diversidade(self, dados_funcionarios: str) -> dict:
+    def monitorar_diversidade(self, dados_funcionarios: str, lang: str = "pt") -> dict:
         prompt = (
             "Analise os dados de diversidade da empresa abaixo:\n\n"
             f"{dados_funcionarios}\n\n"
@@ -62,5 +62,5 @@ class IgualdadeSalarialAgent:
             "4. Recomendacoes para melhoria\n"
             "5. Alertas de prazos de relatorios semestrais"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "igualdade_salarial", "diversidade": result}

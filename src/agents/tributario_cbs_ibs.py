@@ -17,7 +17,7 @@ class TributarioCBSIBSAgent:
             "do IBS e Ministerio da Fazenda."
         )
 
-    def classificar_produto(self, descricao: str) -> dict:
+    def classificar_produto(self, descricao: str, lang: str = "pt") -> dict:
         prompt = (
             "Classifique o produto/servico abaixo conforme NCM e aliquotas "
             "CBS/IBS, considerando a Lei Complementar 214/2025:\n\n"
@@ -29,10 +29,10 @@ class TributarioCBSIBSAgent:
             "4. Regime especifico aplicavel (se houver)\n"
             "5. Comparativo com regime anterior (PIS/COFINS/ICMS/ISS)"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "tributario_cbs_ibs", "classificacao": result}
 
-    def verificar_conformidade(self, dados_empresa: str) -> dict:
+    def verificar_conformidade(self, dados_empresa: str, lang: str = "pt") -> dict:
         prompt = (
             "Analise os dados da empresa abaixo e verifique a conformidade "
             "com a reforma tributaria CBS/IBS:\n\n"
@@ -45,10 +45,10 @@ class TributarioCBSIBSAgent:
             "Inclua checklist de adequacao por tipo de empresa "
             "(Simples, Lucro Presumido, Real)."
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "tributario_cbs_ibs", "conformidade": result}
 
-    def simular_impacto(self, dados_financeiros: str) -> dict:
+    def simular_impacto(self, dados_financeiros: str, lang: str = "pt") -> dict:
         prompt = (
             "Com base nos dados financeiros abaixo, simule o impacto "
             "da transicao tributaria CBS/IBS:\n\n"
@@ -59,5 +59,5 @@ class TributarioCBSIBSAgent:
             "3. Diferenca percentual\n"
             "4. Recomendacoes de planejamento tributario"
         )
-        result = self.llm.chat(self.system_prompt, prompt)
+        result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "tributario_cbs_ibs", "simulacao_impacto": result}

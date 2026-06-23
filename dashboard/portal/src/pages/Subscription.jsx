@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 
-const planIcons = { starter: '🔍', professional: '🛒', enterprise: '🏢', full_suite: '🚀', compliance_pack: '⚖️' };
-const planColors = { starter: '#3b82f6', professional: '#8b5cf6', enterprise: '#f59e0b', full_suite: '#10b981', compliance_pack: '#ef4444' };
+const planIcons = { starter: '🔍', professional: '🛒', enterprise: '🏢', full_suite: '🚀', compliance_pack: '⚖️',
+  regulatory_starter: '🧠', regulatory_professional: '⚖️', regulatory_full: '🏛️', esg_carbon_pack: '🌱' };
+const planColors = { starter: '#3b82f6', professional: '#8b5cf6', enterprise: '#f59e0b', full_suite: '#10b981',
+  compliance_pack: '#ef4444', regulatory_starter: '#6366f1', regulatory_professional: '#8b5cf6',
+  regulatory_full: '#7c3aed', esg_carbon_pack: '#059669' };
 
 export default function Subscription() {
+  const { t } = useTranslation();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(null);
@@ -35,24 +40,22 @@ export default function Subscription() {
     }
   };
 
-  if (loading) return <div className="loading">Carregando planos...</div>;
-
-  const featured = 'full_suite';
+  if (loading) return <div className="loading">{t('subscription.loading')}</div>;
 
   return (
     <div className="subscription-page">
-      <h1>💳 Planos e Assinaturas</h1>
-      <p className="subtitle">Escolha o plano ideal para sua empresa de engenharia</p>
+      <h1>💳 {t('subscription.title')}</h1>
+      <p className="subtitle">{t('subscription.subtitle')}</p>
 
       <div className="plans-grid">
         {plans.map((plan) => (
-          <div key={plan.id} className={`plan-card ${plan.id === featured ? 'featured' : ''}`}
+          <div key={plan.id} className="plan-card"
                style={{ borderTop: `4px solid ${planColors[plan.id] || '#3b82f6'}` }}>
             <div className="plan-icon">{planIcons[plan.id] || '🤖'}</div>
             <h3>{plan.name}</h3>
-            <div className="plan-price">{formatPrice(plan.price)}<span>/mes</span></div>
+            <div className="plan-price">{formatPrice(plan.price)}<span>{t('subscription.per_month')}</span></div>
             <div className="plan-agent-count">
-              {plan.agents.length} {plan.agents.length === 1 ? 'agente' : 'agentes'}
+              {plan.agents.length} {plan.agents.length === 1 ? t('subscription.agent') : t('subscription.agents')}
             </div>
             <ul className="plan-features">
               {plan.features.map((f, i) => (
@@ -69,17 +72,17 @@ export default function Subscription() {
               onClick={() => handleSubscribe(plan.id)}
               disabled={checkoutLoading === plan.id}
             >
-              {checkoutLoading === plan.id ? 'Redirecionando...' : 'Assinar Agora'}
+              {checkoutLoading === plan.id ? t('subscription.redirecting') : t('subscription.subscribe')}
             </button>
           </div>
         ))}
       </div>
 
       <div className="upgrade-info" style={{ marginTop: 32, padding: 20, background: '#f8fafc', borderRadius: 12 }}>
-        <h3>🔄 Upgrade a qualquer momento</h3>
-        <p>Starter → Professional → Enterprise → Full Suite</p>
+        <h3>🔄 {t('subscription.upgrade_title')}</h3>
+        <p>{t('subscription.upgrade_path')}</p>
         <p style={{ fontSize: '0.9rem', color: '#64748b' }}>
-          Todos os planos incluem 15 dias de trial gratuito. Cancele quando quiser.
+          {t('subscription.trial_info')}
         </p>
       </div>
     </div>
