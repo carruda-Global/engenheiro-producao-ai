@@ -1,9 +1,29 @@
 import os
+import re
 from pathlib import Path
 from dotenv import load_dotenv
 import yaml
 
 load_dotenv()
+
+
+def _resolve_env(value):
+    if isinstance(value, str):
+        def _replace(match):
+            var = match.group(1)
+            return os.getenv(var, match.group(0))
+        return re.sub(r"\$\{(\w+)\}", _replace, value)
+    return value
+
+
+def _resolve_env_recursive(obj):
+    if isinstance(obj, dict):
+        return {k: _resolve_env_recursive(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [_resolve_env_recursive(v) for v in obj]
+    elif isinstance(obj, str):
+        return _resolve_env(obj)
+    return obj
 
 
 def load_config(config_path: str | None = None) -> dict:
@@ -13,6 +33,7 @@ def load_config(config_path: str | None = None) -> dict:
     with open(config_path, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
+    config = _resolve_env_recursive(config)
     return config
 
 
@@ -53,6 +74,13 @@ class Settings:
         self.oracle_product_id: str = oracle_config.get("product_id", "")
         self.oracle_seller_id: str = oracle_config.get("seller_id", "")
         self.oracle_enabled: bool = oracle_config.get("enabled", False)
+
+        microsoft_config = self.config.get("marketplace", {}).get("microsoft", {})
+        self.microsoft_tenant_id: str = microsoft_config.get("tenant_id", os.getenv("AZURE_TENANT_ID", ""))
+        self.microsoft_client_id: str = microsoft_config.get("client_id", os.getenv("AZURE_CLIENT_ID", ""))
+        self.microsoft_client_secret: str = microsoft_config.get("client_secret", os.getenv("AZURE_CLIENT_SECRET", ""))
+        self.microsoft_fulfillment_api_version: str = microsoft_config.get("fulfillment_api_version", "2018-08-31")
+        self.microsoft_enabled: bool = microsoft_config.get("enabled", False)
 
         self.agents_config: dict = self.config["agents"]
         self.plans_config: dict = self.config["stripe"]["plans"]

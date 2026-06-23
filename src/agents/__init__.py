@@ -12,6 +12,15 @@ from .rfi_creation import RFICreationAgent
 from .compliance import ComplianceAgent
 from .diagnostic import DiagnosticAgent
 from .monitoring import MonitoringAgent
+from .nr1_psicossocial import NR1PsicossocialAgent
+from .tributario_cbs_ibs import TributarioCBSIBSAgent
+from .lgpd_operacional import LgpdOperacionalAgent
+from .esg_ifrs import ESGIFRSAgent
+from .inventario_carbono import InventarioCarbonoAgent
+from .escopo3_fornecedores import Escopo3FornecedoresAgent
+from .canal_denuncias import CanalDenunciasAgent
+from .igualdade_salarial import IgualdadeSalarialAgent
+from .compliance_anticorrupcao import ComplianceAnticorrupcaoAgent
 
 __all__ = [
     "SpecAnalystAgent",
@@ -28,4 +37,13 @@ __all__ = [
     "ComplianceAgent",
     "DiagnosticAgent",
     "MonitoringAgent",
+    "NR1PsicossocialAgent",
+    "TributarioCBSIBSAgent",
+    "LgpdOperacionalAgent",
+    "ESGIFRSAgent",
+    "InventarioCarbonoAgent",
+    "Escopo3FornecedoresAgent",
+    "CanalDenunciasAgent",
+    "IgualdadeSalarialAgent",
+    "ComplianceAnticorrupcaoAgent",
 ]

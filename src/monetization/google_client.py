@@ -1,21 +1,28 @@
 import logging
 from typing import Any
 
-import google.auth
-from google.cloud import marketplace as google_marketplace
-
 from src.config import Settings
 
 logger = logging.getLogger(__name__)
+
+try:
+    import google.auth
+    from google.cloud import marketplace as google_marketplace
+    GOOGLE_AVAILABLE = True
+except ImportError:
+    GOOGLE_AVAILABLE = False
+    logger.warning("google-cloud-marketplace não instalado. Google Marketplace desabilitado.")
 
 
 class GoogleCloudMarketplaceClient:
     def __init__(self, settings: Settings):
         self.settings = settings
-        self.product_id = settings.google_product_id
+        self.product_id = settings.config["marketplace"]["google"]["product_id"]
         self._client = None
 
     def _get_client(self):
+        if not GOOGLE_AVAILABLE:
+            return None
         if self._client is None:
             try:
                 credentials, project = google.auth.default()
@@ -26,7 +33,7 @@ class GoogleCloudMarketplaceClient:
                 logger.warning("Erro ao criar Google Marketplace client: %s", e)
         return self._client
 
-    def resolve_ entitlements(self, customer_id: str) -> dict[str, Any] | None:
+    def resolve_entitlement(self, customer_id: str) -> dict[str, Any] | None:
         client = self._get_client()
         if not client:
             return None
@@ -46,5 +53,5 @@ class GoogleCloudMarketplaceClient:
             return None
 
     def is_subscription_active(self, customer_id: str) -> bool:
-        result = self.resolve_entitlements(customer_id)
+        result = self.resolve_entitlement(customer_id)
         return result is not None and result.get("state") == "ACTIVE"

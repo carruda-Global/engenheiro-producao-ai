@@ -5,7 +5,7 @@ from src.monetization.plans import PLANS, get_plan, get_plan_for_agents
 @pytest.mark.unit
 class TestPlans:
     def test_plans_have_correct_structure(self):
-        assert len(PLANS) == 5
+        assert len(PLANS) == 9
         for plan in PLANS:
             assert "id" in plan
             assert "name" in plan
@@ -22,7 +22,7 @@ class TestPlans:
     def test_full_suite_has_all_agents(self):
         plan = get_plan("full_suite")
         assert plan is not None
-        assert len(plan["agents"]) == 12
+        assert len(plan["agents"]) == 21
 
     def test_get_plan_invalid_returns_none(self):
         plan = get_plan("invalid_plan")
@@ -40,6 +40,11 @@ class TestPlans:
             "bim_coordinator", "requirements_analyst",
             "engineering_assistant", "work_synopsis",
             "photo_intelligence", "rfi_creation", "compliance",
+            "nr1_psicossocial", "tributario_cbs_ibs",
+            "lgpd_operacional", "esg_ifrs",
+            "inventario_carbono", "escopo3_fornecedores",
+            "canal_denuncias", "igualdade_salarial",
+            "compliance_anticorrupcao",
         ]
         plan = get_plan_for_agents(all_agents)
         assert plan is not None

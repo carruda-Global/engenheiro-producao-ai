@@ -142,6 +142,34 @@ async def get_subscription(customer_tenancy_id: str):
     }
 
 
+@router.post("/webhook")
+async def handle_webhook(request: Request):
+    try:
+        payload = await request.json()
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
+
+    event_type = payload.get("eventType", "")
+    subscription_id = payload.get("subscriptionId", "")
+
+    if event_type == "SUBSCRIPTION_ACTIVATED":
+        logger.info("Oracle subscription activated: %s", subscription_id)
+    elif event_type == "SUBSCRIPTION_SUSPENDED":
+        logger.info("Oracle subscription suspended: %s", subscription_id)
+        for tenancy, sub in _active_subscriptions.items():
+            if sub.get("subscription_id") == subscription_id:
+                sub["status"] = "suspended"
+    elif event_type == "SUBSCRIPTION_CANCELLED":
+        logger.info("Oracle subscription cancelled: %s", subscription_id)
+        for tenancy, sub in _active_subscriptions.items():
+            if sub.get("subscription_id") == subscription_id:
+                sub["status"] = "cancelled"
+    else:
+        logger.info("Oracle webhook evento: %s", event_type)
+
+    return {"received": True, "event_type": event_type, "subscription_id": subscription_id}
+
+
 @router.get("/plans")
 async def list_plans():
     oracle_plans = []

@@ -21,6 +21,15 @@ from src.agents import (
     PhotoIntelligenceAgent,
     RFICreationAgent,
     ComplianceAgent,
+    NR1PsicossocialAgent,
+    TributarioCBSIBSAgent,
+    LgpdOperacionalAgent,
+    ESGIFRSAgent,
+    InventarioCarbonoAgent,
+    Escopo3FornecedoresAgent,
+    CanalDenunciasAgent,
+    IgualdadeSalarialAgent,
+    ComplianceAnticorrupcaoAgent,
 )
 from .monetization import check_subscription
 
@@ -40,6 +49,15 @@ SKILL_MAP: dict[str, str] = {
     "photo_intelligence": "photo_intelligence",
     "rfi_creation": "rfi_creation",
     "compliance": "compliance",
+    "nr1_psicossocial": "nr1_psicossocial",
+    "tributario_cbs_ibs": "tributario_cbs_ibs",
+    "lgpd_operacional": "lgpd_operacional",
+    "esg_ifrs": "esg_ifrs",
+    "inventario_carbono": "inventario_carbono",
+    "escopo3_fornecedores": "escopo3_fornecedores",
+    "canal_denuncias": "canal_denuncias",
+    "igualdade_salarial": "igualdade_salarial",
+    "compliance_anticorrupcao": "compliance_anticorrupcao",
 }
 
 
@@ -66,6 +84,15 @@ class AECAgentExecutor(AgentExecutor):
             "photo_intelligence": PhotoIntelligenceAgent,
             "rfi_creation": RFICreationAgent,
             "compliance": ComplianceAgent,
+            "nr1_psicossocial": NR1PsicossocialAgent,
+            "tributario_cbs_ibs": TributarioCBSIBSAgent,
+            "lgpd_operacional": LgpdOperacionalAgent,
+            "esg_ifrs": ESGIFRSAgent,
+            "inventario_carbono": InventarioCarbonoAgent,
+            "escopo3_fornecedores": Escopo3FornecedoresAgent,
+            "canal_denuncias": CanalDenunciasAgent,
+            "igualdade_salarial": IgualdadeSalarialAgent,
+            "compliance_anticorrupcao": ComplianceAnticorrupcaoAgent,
         }
         for agent_id, agent_class in _map.items():
             if agent_config.get(agent_id, {}).get("enabled", True):
@@ -174,13 +201,37 @@ class AECAgentExecutor(AgentExecutor):
             return agent.create_rfi(user_input)
         elif agent_id == "compliance":
             return agent.check_compliance(user_input)
+        elif agent_id == "nr1_psicossocial":
+            return agent.avaliar_riscos(user_input)
+        elif agent_id == "tributario_cbs_ibs":
+            return agent.classificar_produto(user_input)
+        elif agent_id == "lgpd_operacional":
+            return agent.mapear_fluxos_dados(user_input)
+        elif agent_id == "esg_ifrs":
+            return agent.diagnosticar_maturidade(user_input)
+        elif agent_id == "inventario_carbono":
+            return agent.calcular_emissoes(user_input)
+        elif agent_id == "escopo3_fornecedores":
+            return agent.avaliar_fornecedores(user_input)
+        elif agent_id == "canal_denuncias":
+            return agent.classificar_denuncia(user_input)
+        elif agent_id == "igualdade_salarial":
+            return agent.analisar_equidade(user_input)
+        elif agent_id == "compliance_anticorrupcao":
+            return agent.diagnosticar_maturidade(user_input)
         return {"error": "Agente não implementado"}
 
     def _format_result(self, result: dict) -> str:
         import json
         for key in ["analysis", "order_plan", "stock_analysis", "tracking_analysis",
                      "instructions", "bim_element", "quality_analysis", "answer",
-                     "synopsis", "visual_analysis", "rfi_document", "compliance_report"]:
+                     "synopsis", "visual_analysis", "rfi_document", "compliance_report",
+                     "inventario_riscos", "plano_acao", "classificacao", "conformidade",
+                     "mapeamento_dados", "ropa", "diagnostico_maturidade",
+                     "emissoes_calculadas", "inventario_ghg", "avaliacao_cadeia",
+                     "relatorio_escopo3", "classificacao", "relatorio_semestral",
+                     "analise_equidade", "relatorio_mte", "codigo_etica",
+                     "due_diligence", "relatorio_cgu", "diagnostico_integridade"]:
             if key in result:
                 return result[key]
         return json.dumps(result, ensure_ascii=False, indent=2)

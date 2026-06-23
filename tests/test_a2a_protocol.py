@@ -25,13 +25,21 @@ class TestA2AProtocol:
         data = response.json()
         assert data["name"] == "Engenheiro de Produção AI"
         assert "skills" in data
-        assert len(data["skills"]) == 5
+        assert len(data["skills"]) == 21
 
     async def test_agent_card_has_all_skills(self, client):
         response = await client.get("/.well-known/agent-card.json")
         data = response.json()
         skill_ids = {s["id"] for s in data["skills"]}
-        expected = {"spec_analysis", "procurement", "inventory", "logistics", "field_execution"}
+        expected = {
+            "spec_analysis", "procurement", "inventory", "logistics",
+            "field_execution", "bim_coordination", "requirements_analysis",
+            "engineering_assistant", "work_synopsis", "photo_intelligence",
+            "rfi_creation", "compliance",
+            "nr1_psicossocial", "tributario_cbs_ibs", "lgpd_operacional",
+            "esg_ifrs", "inventario_carbono", "escopo3_fornecedores",
+            "canal_denuncias", "igualdade_salarial", "compliance_anticorrupcao",
+        }
         assert skill_ids == expected
 
     async def test_agent_card_has_security_schemes(self, client):
@@ -99,7 +107,7 @@ class TestAgentCardBuilder:
 
         card = build_agent_card()
         assert "Engenheiro" in card.name
-        assert len(card.skills) == 12
+        assert len(card.skills) == 21
         assert card.capabilities.streaming
 
     def test_build_card_custom_url(self):
@@ -113,7 +121,7 @@ class TestAgentCardBuilder:
         from src.a2a_bridge.agent_cards import build_agent_card
 
         card = build_agent_card()
-        assert len(card.skills) == 12
+        assert len(card.skills) == 21
         for skill in card.skills:
             assert skill.id
             assert skill.name
@@ -144,5 +152,8 @@ class TestSkillMap:
             "field_execution", "bim_coordinator", "requirements_analyst",
             "engineering_assistant", "work_synopsis", "photo_intelligence",
             "rfi_creation", "compliance",
+            "nr1_psicossocial", "tributario_cbs_ibs", "lgpd_operacional",
+            "esg_ifrs", "inventario_carbono", "escopo3_fornecedores",
+            "canal_denuncias", "igualdade_salarial", "compliance_anticorrupcao",
         }
         assert internal_ids == expected

@@ -18,6 +18,15 @@ AGENT_CHAIN = [
     "photo_intelligence",
     "rfi_creation",
     "compliance",
+    "nr1_psicossocial",
+    "tributario_cbs_ibs",
+    "lgpd_operacional",
+    "esg_ifrs",
+    "inventario_carbono",
+    "escopo3_fornecedores",
+    "canal_denuncias",
+    "igualdade_salarial",
+    "compliance_anticorrupcao",
 ]
 
 UPGRADE_PATH = {
@@ -93,5 +102,14 @@ def get_agent_name(agent_id: str) -> str:
         "photo_intelligence": "Photo Intelligence",
         "rfi_creation": "RFI Creation",
         "compliance": "Compliance Agent",
+        "nr1_psicossocial": "NR-1 Psicossocial",
+        "tributario_cbs_ibs": "Tributário CBS/IBS",
+        "lgpd_operacional": "LGPD Operacional",
+        "esg_ifrs": "ESG IFRS S1/S2",
+        "inventario_carbono": "Inventário de Carbono",
+        "escopo3_fornecedores": "Escopo 3 Fornecedores",
+        "canal_denuncias": "Canal de Denúncias",
+        "igualdade_salarial": "Igualdade Salarial",
+        "compliance_anticorrupcao": "Compliance Anticorrupção",
     }
     return names.get(agent_id, agent_id)

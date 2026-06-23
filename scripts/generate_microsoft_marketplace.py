@@ -1,19 +1,15 @@
 """
-Gera ofertas SaaS para o Microsoft Azure Marketplace (12 agentes).
+Gera ofertas SaaS para o Microsoft Azure Marketplace (21 agentes, 9 planos).
 
 Uso:
     python scripts/generate_microsoft_marketplace.py
 
 Gera:
-    - offers/ecosystem-aec-offer.json (listing completo)
+    - offers/ecosystem-aec-offer.json (listing completo com todos os planos)
     - Instrucoes para publicacao no Partner Center
 """
 import json
-import os
-import sys
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 PLANS = [
     {
@@ -21,32 +17,41 @@ PLANS = [
         "name": "Starter - Spec Analyst",
         "description": "1 agente de IA para analise de especificacoes tecnicas",
         "monthly_price_usd": 199.00,
-        "agents": ["Spec Analyst"],
+        "agents": ["spec_analyst"],
     },
     {
         "id": "professional",
         "name": "Professional - 3 Agentes",
         "description": "Spec Analyst + Procurement + Inventory",
         "monthly_price_usd": 399.00,
-        "agents": ["Spec Analyst", "Procurement", "Inventory"],
+        "agents": ["spec_analyst", "procurement", "inventory"],
     },
     {
         "id": "enterprise",
         "name": "Enterprise - 5 Agentes",
         "description": "5 agentes do nucleo AEC: analise, compras, estoque, logistica, campo",
         "monthly_price_usd": 799.00,
-        "agents": ["Spec Analyst", "Procurement", "Inventory", "Logistics", "Field Execution"],
+        "agents": [
+            "spec_analyst", "procurement", "inventory",
+            "logistics", "field_execution",
+        ],
     },
     {
         "id": "full_suite",
-        "name": "Full Suite - 12 Agentes",
-        "description": "Ecossistema completo de 12 agentes de IA para AEC",
+        "name": "Full Suite - 21 Agentes",
+        "description": "Ecossistema completo de 21 agentes de IA para AEC e conformidade regulatoria brasileira",
         "monthly_price_usd": 1599.00,
         "agents": [
-            "Spec Analyst", "Procurement", "Inventory", "Logistics",
-            "Field Execution", "BIM Coordinator", "Requirements Analyst",
-            "Engineering Assistant", "Work Synopsis", "Photo Intelligence",
-            "RFI Creation", "Compliance Agent",
+            "spec_analyst", "procurement", "inventory",
+            "logistics", "field_execution",
+            "bim_coordinator", "requirements_analyst",
+            "engineering_assistant", "work_synopsis",
+            "photo_intelligence", "rfi_creation", "compliance",
+            "nr1_psicossocial", "tributario_cbs_ibs",
+            "lgpd_operacional", "esg_ifrs",
+            "inventario_carbono", "escopo3_fornecedores",
+            "canal_denuncias", "igualdade_salarial",
+            "compliance_anticorrupcao",
         ],
     },
     {
@@ -54,31 +59,112 @@ PLANS = [
         "name": "Compliance Pack - PGRS/PGRSS",
         "description": "Photo Intelligence + RFI Creation + Compliance Agent",
         "monthly_price_usd": 399.00,
-        "agents": ["Photo Intelligence", "RFI Creation", "Compliance Agent"],
+        "agents": ["photo_intelligence", "rfi_creation", "compliance"],
+    },
+    {
+        "id": "regulatory_starter",
+        "name": "Regulatory Starter - NR-1 + LGPD",
+        "description": "NR-1 Riscos Psicossociais + LGPD Operacional",
+        "monthly_price_usd": 119.00,
+        "agents": ["nr1_psicossocial", "lgpd_operacional"],
+    },
+    {
+        "id": "regulatory_professional",
+        "name": "Regulatory Professional - 5 Agentes",
+        "description": "NR-1, LGPD, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao",
+        "monthly_price_usd": 299.00,
+        "agents": [
+            "nr1_psicossocial", "lgpd_operacional",
+            "canal_denuncias", "igualdade_salarial",
+            "compliance_anticorrupcao",
+        ],
+    },
+    {
+        "id": "regulatory_full",
+        "name": "Regulatory Full - 9 Agentes",
+        "description": "Todos os 9 agentes regulatorios brasileiros",
+        "monthly_price_usd": 699.00,
+        "agents": [
+            "nr1_psicossocial", "tributario_cbs_ibs",
+            "lgpd_operacional", "esg_ifrs",
+            "inventario_carbono", "escopo3_fornecedores",
+            "canal_denuncias", "igualdade_salarial",
+            "compliance_anticorrupcao",
+        ],
+    },
+    {
+        "id": "esg_carbon_pack",
+        "name": "ESG + Carbono",
+        "description": "ESG IFRS S1/S2 + Inventario de Carbono + Escopo 3 Fornecedores",
+        "monthly_price_usd": 499.00,
+        "agents": [
+            "esg_ifrs", "inventario_carbono",
+            "escopo3_fornecedores",
+        ],
     },
 ]
 
+AGENT_NAMES = {
+    "spec_analyst": "Spec Analyst",
+    "procurement": "Procurement",
+    "inventory": "Inventory",
+    "logistics": "Logistics",
+    "field_execution": "Field Execution",
+    "bim_coordinator": "BIM Coordinator",
+    "requirements_analyst": "Requirements Analyst",
+    "engineering_assistant": "Engineering Assistant",
+    "work_synopsis": "Work Synopsis",
+    "photo_intelligence": "Photo Intelligence",
+    "rfi_creation": "RFI Creation",
+    "compliance": "Compliance Agent",
+    "nr1_psicossocial": "NR-1 Psicossocial",
+    "tributario_cbs_ibs": "Tributario CBS/IBS",
+    "lgpd_operacional": "LGPD Operacional",
+    "esg_ifrs": "ESG IFRS S1/S2",
+    "inventario_carbono": "Inventario de Carbono",
+    "escopo3_fornecedores": "Escopo 3 Fornecedores",
+    "canal_denuncias": "Canal de Denuncias",
+    "igualdade_salarial": "Igualdade Salarial",
+    "compliance_anticorrupcao": "Compliance Anticorrupcao",
+}
+
 OFFER = {
     "$schema": "https://schema.mp.azure.com/schema/2024-03-01/offer.json",
-    "id": "ecosystem_aec",
-    "name": "EcoSystem AEC",
-    "alias": "ecosystem-aec",
-    "description": "12 Agentes de IA Integrados para Arquitetura, Engenharia e Construcao",
+    "id": "ecosystem_aec_regulatory",
+    "name": "EcoSystem AEC + Regulatory",
+    "alias": "ecosystem-aec-regulatory",
+    "description": (
+        "21 Agentes de IA Integrados para Arquitetura, Engenharia, "
+        "Construcao (AEC) e Conformidade Regulatoria Brasileira. "
+        "Inclui agentes AEC: analise de especificacoes, compras, estoque, "
+        "logistica, execucao de campo, BIM, RFI. Agentes regulatorios: "
+        "NR-1 Psicossocial, Tributario CBS/IBS, LGPD, ESG, Carbono, "
+        "Escopo 3, Canal de Denuncias, Igualdade Salarial e "
+        "Compliance Anticorrupcao."
+    ),
     "publisher": {
         "id": "projato_engenharia",
         "name": "Projato Engenharia",
     },
     "kind": "SaaS",
     "categories": ["AI + Machine Learning", "Developer Tools"],
-    "industries": ["Engineering and Construction", "Architecture"],
+    "industries": [
+        "Engineering and Construction",
+        "Architecture",
+        "Professional Services",
+    ],
     "plans": [],
 }
 
 for plan in PLANS:
+    agent_names = [AGENT_NAMES.get(a, a) for a in plan["agents"]]
     offer_plan = {
         "id": plan["id"],
         "name": plan["name"],
-        "description": plan["description"],
+        "description": (
+            f"{plan['description']}. "
+            f"Agentes: {', '.join(agent_names)}."
+        ),
         "pricing": {
             "type": "recurring",
             "interval": "month",
@@ -91,7 +177,10 @@ for plan in PLANS:
                 "name": plan["name"],
                 "type": "SaaS",
                 "description": plan["description"],
-                "provisioning_url": "https://ecosystem-aec.onrender.com/api/v1/subscriptions/checkout",
+                "provisioning_url": (
+                    "https://engenheiro-producao-ai.onrender.com/"
+                    "api/v1/microsoft-marketplace/subscribe"
+                ),
                 "provisioning_type": "redirect",
             }
         ],
@@ -110,15 +199,19 @@ def main():
     print(f"Oferta Microsoft Marketplace gerada: {output_path}")
     print(f"Planos: {len(PLANS)}")
     for p in PLANS:
-        print(f"  - {p['name']:30s} | ${p['monthly_price_usd']:.2f}/mes | {len(p['agents'])} agentes")
+        agent_names = [AGENT_NAMES.get(a, a) for a in p["agents"]]
+        print(f"  - {p['name']:35s} | ${p['monthly_price_usd']:.2f}/mes | {len(p['agents'])} agentes")
+        print(f"    Agentes: {', '.join(agent_names)}")
     print()
     print("Para publicar no Microsoft Partner Center:")
     print("  1. Acesse https://partner.microsoft.com")
     print("  2. Crie uma oferta SaaS")
     print("  3. Importe o arquivo offers/ecosystem-aec-offer.json")
     print("  4. Configure a URL de provisionamento:")
-    print("     https://ecosystem-aec.onrender.com/api/v1/subscriptions/checkout")
-    print("  5. Publique para certificacao")
+    print("     https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe")
+    print("  5. Configure o webhook:")
+    print("     https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/webhook")
+    print("  6. Publique para certificacao")
 
 
 if __name__ == "__main__":

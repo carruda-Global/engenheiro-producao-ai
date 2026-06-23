@@ -24,11 +24,29 @@ agents:
     enabled: true
   compliance:
     enabled: true
+  nr1_psicossocial:
+    enabled: true
+  tributario_cbs_ibs:
+    enabled: true
+  lgpd_operacional:
+    enabled: true
+  esg_ifrs:
+    enabled: true
+  inventario_carbono:
+    enabled: true
+  escopo3_fornecedores:
+    enabled: true
+  canal_denuncias:
+    enabled: true
+  igualdade_salarial:
+    enabled: true
+  compliance_anticorrupcao:
+    enabled: true
 app:
   debug: false
   log_level: INFO
-  name: EcoSystem AEC
-  version: 2.0.0
+  name: EcoSystem AEC + Regulatory
+  version: 2.1.0
 cross_selling:
   enabled: true
   min_confidence: 0.7
@@ -36,6 +54,9 @@ cross_selling:
     starter: professional
     professional: enterprise
     enterprise: full_suite
+    regulatory_starter: regulatory_professional
+    regulatory_professional: regulatory_full
+    esg_carbon_pack: regulatory_full
   compliance_upsell_targets:
     - starter
     - professional
@@ -73,11 +94,27 @@ stripe:
       price_id: ""
     full_suite:
       amount_cents: 949700
-      name: Full Suite - 12 Agentes
+      name: Full Suite - 21 Agentes
       price_id: ""
     compliance_pack:
       amount_cents: 239100
       name: Compliance Pack - PGRS/PGRSS
+      price_id: ""
+    regulatory_starter:
+      amount_cents: 59000
+      name: Regulatory Starter - NR-1 + LGPD
+      price_id: ""
+    regulatory_professional:
+      amount_cents: 149000
+      name: Regulatory Professional - 5 Agentes
+      price_id: ""
+    regulatory_full:
+      amount_cents: 349000
+      name: Regulatory Full - 9 Agentes
+      price_id: ""
+    esg_carbon_pack:
+      amount_cents: 249000
+      name: ESG + Carbono
       price_id: ""
 supabase:
   table_projects: projects
@@ -101,6 +138,10 @@ marketplace:
     enabled: true
     offer_type: SaaS
     category: AI Apps and Agents
+    tenant_id: "cb5ac0c5-38eb-4805-b0f7-097dddbca380"
+    client_id: "e5db2874-a728-49eb-b863-66ecb63b029c"
+    client_secret: "${AZURE_CLIENT_SECRET}"
+    fulfillment_api_version: "2018-08-31"
   google:
     enabled: true
     product_id: "ecosystem-aec-v2"
@@ -117,15 +158,27 @@ marketplace:
         description: "Enterprise - 5 Agentes"
       full_suite:
         price_monthly_usd: 1599.00
-        description: "Full Suite - 12 Agentes"
+        description: "Full Suite - 21 Agentes"
       compliance_pack:
         price_monthly_usd: 399.00
         description: "Compliance Pack - PGRS/PGRSS"
+      regulatory_starter:
+        price_monthly_usd: 119.00
+        description: "Regulatory Starter - NR-1 + LGPD"
+      regulatory_professional:
+        price_monthly_usd: 299.00
+        description: "Regulatory Professional - 5 Agentes"
+      regulatory_full:
+        price_monthly_usd: 699.00
+        description: "Regulatory Full - 9 Agentes"
+      esg_carbon_pack:
+        price_monthly_usd: 499.00
+        description: "ESG + Carbono"
 
   oracle:
-    enabled: false
-    product_id: "ocid1.listing.oc1..<your_oracle_listing_ocid>"
-    seller_id: "ocid1.seller.oc1..<your_oracle_seller_ocid>"
+    enabled: true
+    product_id: "ecosystem-aec-v2"
+    seller_id: ""
     plans:
       starter:
         price_monthly_usd: 199.00
@@ -138,10 +191,22 @@ marketplace:
         description: "Enterprise - 5 Agentes"
       full_suite:
         price_monthly_usd: 1599.00
-        description: "Full Suite - 12 Agentes"
+        description: "Full Suite - 21 Agentes"
       compliance_pack:
         price_monthly_usd: 399.00
         description: "Compliance Pack - PGRS/PGRSS"
+      regulatory_starter:
+        price_monthly_usd: 119.00
+        description: "Regulatory Starter - NR-1 + LGPD"
+      regulatory_professional:
+        price_monthly_usd: 299.00
+        description: "Regulatory Professional - 5 Agentes"
+      regulatory_full:
+        price_monthly_usd: 699.00
+        description: "Regulatory Full - 9 Agentes"
+      esg_carbon_pack:
+        price_monthly_usd: 499.00
+        description: "ESG + Carbono"
 
   aws:
     enabled: false
@@ -166,6 +231,6 @@ marketplace:
           - enterprise_seats
       full_suite:
         price_monthly_usd: 699.00
-        description: "Full Suite - Todos os 5 Agentes"
+        description: "Full Suite - 21 Agentes"
         dimensions:
           - full_suite_seats

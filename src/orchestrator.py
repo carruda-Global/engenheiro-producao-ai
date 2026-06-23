@@ -16,6 +16,15 @@ from src.agents import (
     PhotoIntelligenceAgent,
     RFICreationAgent,
     ComplianceAgent,
+    NR1PsicossocialAgent,
+    TributarioCBSIBSAgent,
+    LgpdOperacionalAgent,
+    ESGIFRSAgent,
+    InventarioCarbonoAgent,
+    Escopo3FornecedoresAgent,
+    CanalDenunciasAgent,
+    IgualdadeSalarialAgent,
+    ComplianceAnticorrupcaoAgent,
 )
 
 
@@ -44,6 +53,15 @@ class Orchestrator:
             "photo_intelligence": PhotoIntelligenceAgent,
             "rfi_creation": RFICreationAgent,
             "compliance": ComplianceAgent,
+            "nr1_psicossocial": NR1PsicossocialAgent,
+            "tributario_cbs_ibs": TributarioCBSIBSAgent,
+            "lgpd_operacional": LgpdOperacionalAgent,
+            "esg_ifrs": ESGIFRSAgent,
+            "inventario_carbono": InventarioCarbonoAgent,
+            "escopo3_fornecedores": Escopo3FornecedoresAgent,
+            "canal_denuncias": CanalDenunciasAgent,
+            "igualdade_salarial": IgualdadeSalarialAgent,
+            "compliance_anticorrupcao": ComplianceAnticorrupcaoAgent,
         }
 
         for agent_id, agent_class in _agent_map.items():
@@ -71,6 +89,15 @@ class Orchestrator:
             "photo_intelligence",
             "rfi_creation",
             "compliance",
+            "nr1_psicossocial",
+            "tributario_cbs_ibs",
+            "lgpd_operacional",
+            "esg_ifrs",
+            "inventario_carbono",
+            "escopo3_fornecedores",
+            "canal_denuncias",
+            "igualdade_salarial",
+            "compliance_anticorrupcao",
         ]
 
         for agent_id in workflow_chain:
@@ -102,6 +129,15 @@ class Orchestrator:
             "photo_intelligence": lambda: agent.analyze_photo(input_data.get("photo_description", "")),
             "rfi_creation": lambda: agent.create_rfi(input_data.get("question", ""), input_data.get("context", "")),
             "compliance": lambda: agent.check_compliance(input_data.get("project_data", "")),
+            "nr1_psicossocial": lambda: agent.avaliar_riscos(input_data.get("dados_empresa", "")),
+            "tributario_cbs_ibs": lambda: agent.classificar_produto(input_data.get("descricao", "")),
+            "lgpd_operacional": lambda: agent.mapear_fluxos_dados(input_data.get("dados_empresa", "")),
+            "esg_ifrs": lambda: agent.diagnosticar_maturidade(input_data.get("dados_empresa", "")),
+            "inventario_carbono": lambda: agent.calcular_emissoes(input_data.get("dados_consumo", "")),
+            "escopo3_fornecedores": lambda: agent.avaliar_fornecedores(input_data.get("dados_cadeia", "")),
+            "canal_denuncias": lambda: agent.classificar_denuncia(input_data.get("denuncia", "")),
+            "igualdade_salarial": lambda: agent.analisar_equidade(input_data.get("dados_folha", "")),
+            "compliance_anticorrupcao": lambda: agent.diagnosticar_maturidade(input_data.get("dados_empresa", "")),
         }
 
         handler = dispatch.get(agent_id)
@@ -154,6 +190,33 @@ class Orchestrator:
         elif agent_id == "compliance":
             doc = context.get("document", "")
             return agent.check_compliance(doc) if doc else None
+        elif agent_id == "nr1_psicossocial":
+            dados = context.get("document", "") or context.get("dados_empresa", "")
+            return agent.avaliar_riscos(dados) if dados else None
+        elif agent_id == "tributario_cbs_ibs":
+            desc = context.get("descricao", "")
+            return agent.classificar_produto(desc) if desc else None
+        elif agent_id == "lgpd_operacional":
+            dados = context.get("document", "") or context.get("dados_empresa", "")
+            return agent.mapear_fluxos_dados(dados) if dados else None
+        elif agent_id == "esg_ifrs":
+            dados = context.get("document", "") or context.get("dados_empresa", "")
+            return agent.diagnosticar_maturidade(dados) if dados else None
+        elif agent_id == "inventario_carbono":
+            dados = context.get("document", "") or context.get("dados_consumo", "")
+            return agent.calcular_emissoes(dados) if dados else None
+        elif agent_id == "escopo3_fornecedores":
+            dados = context.get("document", "") or context.get("dados_cadeia", "")
+            return agent.avaliar_fornecedores(dados) if dados else None
+        elif agent_id == "canal_denuncias":
+            denuncia = context.get("denuncia", "")
+            return agent.classificar_denuncia(denuncia) if denuncia else None
+        elif agent_id == "igualdade_salarial":
+            dados = context.get("document", "") or context.get("dados_folha", "")
+            return agent.analisar_equidade(dados) if dados else None
+        elif agent_id == "compliance_anticorrupcao":
+            dados = context.get("document", "") or context.get("dados_empresa", "")
+            return agent.diagnosticar_maturidade(dados) if dados else None
         return None
 
     def _needs_procurement(self, analysis: str) -> bool:

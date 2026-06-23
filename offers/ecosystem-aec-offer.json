@@ -1,0 +1,212 @@
+{
+  "$schema": "https://schema.mp.azure.com/schema/2024-03-01/offer.json",
+  "id": "ecosystem_aec_regulatory",
+  "name": "EcoSystem AEC + Regulatory",
+  "alias": "ecosystem-aec-regulatory",
+  "description": "21 Agentes de IA Integrados para Arquitetura, Engenharia, Construcao (AEC) e Conformidade Regulatoria Brasileira. Inclui agentes AEC: analise de especificacoes, compras, estoque, logistica, execucao de campo, BIM, RFI. Agentes regulatorios: NR-1 Psicossocial, Tributario CBS/IBS, LGPD, ESG, Carbono, Escopo 3, Canal de Denuncias, Igualdade Salarial e Compliance Anticorrupcao.",
+  "publisher": {
+    "id": "projato_engenharia",
+    "name": "Projato Engenharia"
+  },
+  "kind": "SaaS",
+  "categories": [
+    "AI + Machine Learning",
+    "Developer Tools"
+  ],
+  "industries": [
+    "Engineering and Construction",
+    "Architecture",
+    "Professional Services"
+  ],
+  "plans": [
+    {
+      "id": "starter",
+      "name": "Starter - Spec Analyst",
+      "description": "1 agente de IA para analise de especificacoes tecnicas. Agentes: Spec Analyst.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 199.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Starter - Spec Analyst",
+          "type": "SaaS",
+          "description": "1 agente de IA para analise de especificacoes tecnicas",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "professional",
+      "name": "Professional - 3 Agentes",
+      "description": "Spec Analyst + Procurement + Inventory. Agentes: Spec Analyst, Procurement, Inventory.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 399.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Professional - 3 Agentes",
+          "type": "SaaS",
+          "description": "Spec Analyst + Procurement + Inventory",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise - 5 Agentes",
+      "description": "5 agentes do nucleo AEC: analise, compras, estoque, logistica, campo. Agentes: Spec Analyst, Procurement, Inventory, Logistics, Field Execution.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 799.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Enterprise - 5 Agentes",
+          "type": "SaaS",
+          "description": "5 agentes do nucleo AEC: analise, compras, estoque, logistica, campo",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "full_suite",
+      "name": "Full Suite - 21 Agentes",
+      "description": "Ecossistema completo de 21 agentes de IA para AEC e conformidade regulatoria brasileira. Agentes: Spec Analyst, Procurement, Inventory, Logistics, Field Execution, BIM Coordinator, Requirements Analyst, Engineering Assistant, Work Synopsis, Photo Intelligence, RFI Creation, Compliance Agent, NR-1 Psicossocial, Tributario CBS/IBS, LGPD Operacional, ESG IFRS S1/S2, Inventario de Carbono, Escopo 3 Fornecedores, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 1599.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Full Suite - 21 Agentes",
+          "type": "SaaS",
+          "description": "Ecossistema completo de 21 agentes de IA para AEC e conformidade regulatoria brasileira",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "compliance_pack",
+      "name": "Compliance Pack - PGRS/PGRSS",
+      "description": "Photo Intelligence + RFI Creation + Compliance Agent. Agentes: Photo Intelligence, RFI Creation, Compliance Agent.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 399.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Compliance Pack - PGRS/PGRSS",
+          "type": "SaaS",
+          "description": "Photo Intelligence + RFI Creation + Compliance Agent",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "regulatory_starter",
+      "name": "Regulatory Starter - NR-1 + LGPD",
+      "description": "NR-1 Riscos Psicossociais + LGPD Operacional. Agentes: NR-1 Psicossocial, LGPD Operacional.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 119.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Regulatory Starter - NR-1 + LGPD",
+          "type": "SaaS",
+          "description": "NR-1 Riscos Psicossociais + LGPD Operacional",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "regulatory_professional",
+      "name": "Regulatory Professional - 5 Agentes",
+      "description": "NR-1, LGPD, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao. Agentes: NR-1 Psicossocial, LGPD Operacional, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 299.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Regulatory Professional - 5 Agentes",
+          "type": "SaaS",
+          "description": "NR-1, LGPD, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "regulatory_full",
+      "name": "Regulatory Full - 9 Agentes",
+      "description": "Todos os 9 agentes regulatorios brasileiros. Agentes: NR-1 Psicossocial, Tributario CBS/IBS, LGPD Operacional, ESG IFRS S1/S2, Inventario de Carbono, Escopo 3 Fornecedores, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 699.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Regulatory Full - 9 Agentes",
+          "type": "SaaS",
+          "description": "Todos os 9 agentes regulatorios brasileiros",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "esg_carbon_pack",
+      "name": "ESG + Carbono",
+      "description": "ESG IFRS S1/S2 + Inventario de Carbono + Escopo 3 Fornecedores. Agentes: ESG IFRS S1/S2, Inventario de Carbono, Escopo 3 Fornecedores.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 499.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "ESG + Carbono",
+          "type": "SaaS",
+          "description": "ESG IFRS S1/S2 + Inventario de Carbono + Escopo 3 Fornecedores",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    }
+  ]
+}

@@ -16,12 +16,14 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
     card = AgentCard(
         name="Engenheiro de Produção AI",
         description=(
-            "Sistema multiagente para Arquitetura, Engenharia e Construção (AEC). "
-            "Oferece 5 agentes especializados: Análise de Especificações Técnicas, "
-            "Compras/Procurement, Gestão de Estoque, Logística e Execução em Campo. "
-            "Automatize processos de engenharia com IA especializada no setor AEC."
+            "Sistema multiagente com 21 agentes de IA para Arquitetura, Engenharia, "
+            "Construção (AEC) e Conformidade Regulatória Brasileira. "
+            "Inclui agentes AEC: Análise de Especificações, Compras, Estoque, "
+            "Logística, Execução, BIM, RFI. Agentes Regulatórios: NR-1 Psicossocial, "
+            "Tributário CBS/IBS, LGPD, ESG, Carbono, Escopo 3, Canal de Denúncias, "
+            "Igualdade Salarial e Compliance Anticorrupção."
         ),
-        version="1.0.0",
+        version="2.1.0",
         documentation_url="https://engenheiro-producao-ai.onrender.com/docs",
         icon_url=f"{base_url}/static/logo.png" if base_url else "/static/logo.png",
     )
@@ -217,6 +219,143 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
         examples=[
             "Verifique a conformidade deste projeto com a legislacao ambiental",
             "Gere um esboco de PGRS para esta obra",
+        ],
+    )
+    _add_skill(
+        card,
+        id="nr1_psicossocial",
+        name="NR-1 Riscos Psicossociais",
+        description=(
+            "Identifica, avalia e documenta Fatores de Riscos Psicossociais "
+            "(FRPRT) conforme NR-1/Portaria MTE 1.419/2024. Aplica metodologias "
+            "COPSOQ, JCQ, PHQ-9 e GAD-7. Gera inventarios, planos de acao e "
+            "relatorios executivos para fiscalizacao."
+        ),
+        tags=["NR-1", "psicossocial", "saude mental", "MTE", "SESMT"],
+        examples=[
+            "Avalie os riscos psicossociais da empresa com 150 funcionarios",
+            "Gere um inventario de FRPRT conforme NR-1",
+        ],
+    )
+    _add_skill(
+        card,
+        id="tributario_cbs_ibs",
+        name="Tributario CBS/IBS",
+        description=(
+            "Auxilia na conformidade com a reforma tributaria CBS/IBS "
+            "(LC 214/2025). Classifica produtos/servicos com NCM e aliquotas, "
+            "gera declaracoes DeRE e simula impacto financeiro da transicao."
+        ),
+        tags=["tributario", "CBS", "IBS", "reforma tributaria", "Receita Federal"],
+        examples=[
+            "Classifique este produto conforme CBS/IBS",
+            "Simule o impacto da transicao tributaria",
+        ],
+    )
+    _add_skill(
+        card,
+        id="lgpd_operacional",
+        name="LGPD Operacional",
+        description=(
+            "Mapeia fluxos de dados pessoais, gera RoPA conforme ANPD, "
+            "identifica lacunas de base legal e monitora incidentes "
+            "com notificacao a ANPD. Foco em adequacao de PMEs a LGPD."
+        ),
+        tags=["LGPD", "privacidade", "dados", "ANPD", "RoPA"],
+        examples=[
+            "Mapeie os fluxos de dados da minha empresa",
+            "Gere o RoPA completo conforme modelo ANPD",
+        ],
+    )
+    _add_skill(
+        card,
+        id="esg_ifrs",
+        name="ESG IFRS S1/S2",
+        description=(
+            "Diagnostico de maturidade ESG, mapeamento de indicadores "
+            "materiais SASB, geracao de relatorios de sustentabilidade "
+            "alinhados ao IFRS S1/S2 e resposta a questionarios ESG "
+            "de clientes corporativos."
+        ),
+        tags=["ESG", "IFRS", "sustentabilidade", "CVM", "SASB"],
+        examples=[
+            "Diagnostique a maturidade ESG da minha empresa",
+            "Gere um relatorio de sustentabilidade IFRS S1",
+        ],
+    )
+    _add_skill(
+        card,
+        id="inventario_carbono",
+        name="Inventario de Carbono",
+        description=(
+            "Calcula emissoes de GEE Escopo 1 e 2 conforme GHG Protocol "
+            "e Lei 15.042/2024 (SBCE). Gera inventarios completos com "
+            "trilha de auditoria e identifica hotspots de reducao."
+        ),
+        tags=["carbono", "GEE", "SBCE", "GHG Protocol", "clima"],
+        examples=[
+            "Calcule as emissoes de carbono da minha empresa",
+            "Gere o inventario GHG Protocol completo",
+        ],
+    )
+    _add_skill(
+        card,
+        id="escopo3_fornecedores",
+        name="Escopo 3 Fornecedores",
+        description=(
+            "Rastreia emissoes de Escopo 3 na cadeia de fornecedores, "
+            "consolida as 15 categorias do GHG Protocol, gera scores "
+            "de maturidade ESG por fornecedor e relatorios IFRS S2/CBAM."
+        ),
+        tags=["escopo3", "fornecedores", "cadeia", "CBAM", "IFRS S2"],
+        examples=[
+            "Avalie as emissoes Escopo 3 dos meus fornecedores",
+            "Gere relatorio de cadeia conforme IFRS S2",
+        ],
+    )
+    _add_skill(
+        card,
+        id="canal_denuncias",
+        name="Canal de Denuncias",
+        description=(
+            "Canal omnichannel (WhatsApp, web, email) com anonimato garantido. "
+            "Triagem automatica por categoria, fluxo de investigacao e "
+            "relatorios semestrais para CIPA. Integracao com NR-1."
+        ),
+        tags=["denuncias", "CIPA", "assedio", "Lei 14.457", "ouvidoria"],
+        examples=[
+            "Configure o canal de denuncias da empresa",
+            "Classifique esta denuncia recebida",
+        ],
+    )
+    _add_skill(
+        card,
+        id="igualdade_salarial",
+        name="Igualdade Salarial",
+        description=(
+            "Analisa equidade salarial por cargo/genero/raca conforme "
+            "Lei 14.611/2023. Gera relatorios semestrais no formato "
+            "MTE/Portal Emprega Brasil e planos de acao."
+        ),
+        tags=["igualdade salarial", "diversidade", "MTE", "genero", "inclusao"],
+        examples=[
+            "Analise a equidade salarial da folha de pagamento",
+            "Gere o relatorio semestral para o MTE",
+        ],
+    )
+    _add_skill(
+        card,
+        id="compliance_anticorrupcao",
+        name="Compliance Anticorrupcao",
+        description=(
+            "Estrutura programas de integridade conforme Lei 12.846/2013 "
+            "e Decreto 11.129/2022. Diagnosticos CGU, codigos de etica, "
+            "due diligence de terceiros e relatorios para licitacoes."
+        ),
+        tags=["anticorrupcao", "integridade", "CGU", "licitacoes", "etica"],
+        examples=[
+            "Estruture o programa de integridade da empresa",
+            "Realize due diligence deste fornecedor",
         ],
     )
 
