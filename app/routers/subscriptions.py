@@ -32,6 +32,9 @@ async def create_checkout(req: CreateCheckoutRequest):
     from src.monetization.stripe_client import StripeClient
 
     settings = Settings()
+    plan_config = settings.plans_config.get(req.plan_id)
+    if not plan_config:
+        raise HTTPException(status_code=400, detail=f"Plano {req.plan_id} nao encontrado no config.yaml")
     stripe_client = StripeClient(settings)
     url = stripe_client.create_checkout_session(
         req.plan_id, req.success_url, req.cancel_url, req.customer_email
