@@ -214,16 +214,40 @@ stripe:
     starter:
       name: "Starter - Spec Analyst"
       amount_cents: 99700
-      price_id: "price_1TlxRCQjQffMYsbZnheWGEmB"
+      price_id: "price_1TlxVRQn4rfjkSvEpsCuJBy6"
     professional:
       name: "Professional - 3 Agentes"
       amount_cents: 239100
-      price_id: "price_1TlxRDQjQffMYsbZmDgONh8K"
+      price_id: "price_1TlxVSQn4rfjkSvEwWLP6n8N"
     enterprise:
       name: "Enterprise - 5 Agentes"
       amount_cents: 468500
-      price_id: "price_1TlxREQjQffMYsbZwbPkrOdK"
+      price_id: "price_1TlxVSQn4rfjkSvEXodTHfNA"
     full_suite:
       name: "Full Suite - 21 Agentes"
       amount_cents: 949700
-      price_id: "price_1TlxRFQjQffMYsbZEYKJRWMd"
+      price_id: "price_1TlxVTQn4rfjkSvEn41gegAl"
+    compliance_pack:
+      name: "Compliance Pack - PGRS/PGRSS"
+      amount_cents: 239100
+      price_id: "price_1TlxVUQn4rfjkSvEAFoHn8zw"
+    regulatory_starter:
+      name: "Regulatory Starter - NR-1 + LGPD"
+      amount_cents: 59000
+      price_id: "price_1TlxVVQn4rfjkSvEpiBqaCSf"
+    regulatory_professional:
+      name: "Regulatory Professional - 5 Agentes"
+      amount_cents: 149000
+      price_id: "price_1TlxVVQn4rfjkSvEam443ZCP"
+    regulatory_full:
+      name: "Regulatory Full - 9 Agentes"
+      amount_cents: 349000
+      price_id: "price_1TlxVWQn4rfjkSvECMbmtApk"
+    esg_carbon_pack:
+      name: "ESG + Carbono"
+      amount_cents: 249000
+      price_id: "price_1TlxVXQn4rfjkSvEl6uCfYgk"
+    microsoft_pack:
+      name: "Microsoft Pack - 6 Agentes"
+      amount_cents: 448200
+      price_id: "price_1TlxVXQn4rfjkSvExSnW6XmL"
