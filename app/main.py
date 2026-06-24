@@ -13,6 +13,7 @@ from app.routers.salesforce_marketplace import router as salesforce_router
 from app.routers.subscriptions import router as subscriptions_router
 from app.routers.health import router as health_router
 from app.routers.aip_security import router as aip_router
+from app.routers.microsoft_marketplace import router as microsoft_router
 
 settings = Settings()
 
@@ -49,6 +50,7 @@ app.include_router(salesforce_router, prefix="/salesforce", tags=["salesforce"])
 app.include_router(subscriptions_router, prefix="/api/subscriptions", tags=["subscriptions"])
 app.include_router(health_router, prefix="/api", tags=["health"])
 app.include_router(aip_router)
+app.include_router(microsoft_router, prefix="/microsoft", tags=["microsoft"])
 
 
 @app.get("/")
