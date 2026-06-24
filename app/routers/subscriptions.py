@@ -30,18 +30,24 @@ class CreateCheckoutRequest(BaseModel):
 async def create_checkout(req: CreateCheckoutRequest):
     from src.config import Settings
     from src.monetization.stripe_client import StripeClient
+    import traceback
 
-    settings = Settings()
-    plan_config = settings.plans_config.get(req.plan_id)
-    if not plan_config:
-        raise HTTPException(status_code=400, detail=f"Plano {req.plan_id} nao encontrado no config.yaml")
-    stripe_client = StripeClient(settings)
-    url = stripe_client.create_checkout_session(
-        req.plan_id, req.success_url, req.cancel_url, req.customer_email
-    )
-    if not url:
-        raise HTTPException(status_code=400, detail="Falha ao criar sessao de checkout")
-    return {"checkout_url": url}
+    try:
+        settings = Settings()
+        plan_config = settings.plans_config.get(req.plan_id)
+        if not plan_config:
+            raise HTTPException(status_code=400, detail=f"Plano {req.plan_id} nao encontrado")
+        stripe_client = StripeClient(settings)
+        url = stripe_client.create_checkout_session(
+            req.plan_id, req.success_url, req.cancel_url, req.customer_email
+        )
+        if not url:
+            raise HTTPException(status_code=400, detail="Falha ao criar sessao de checkout")
+        return {"checkout_url": url}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
 
 
 @router.post("/webhook")
