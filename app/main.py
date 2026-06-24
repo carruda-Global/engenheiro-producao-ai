@@ -9,6 +9,10 @@ from src.core.orchestrator import HMASOrchestrator
 from src.monitoring.agent_dashboard import AgentDashboard
 from src.security.circuit_breaker import CircuitBreaker
 
+from src.a2a_bridge import setup_a2a_routes
+from app.routers.salesforce_marketplace import router as salesforce_router
+from app.routers.subscriptions import router as subscriptions_router
+
 settings = Settings()
 
 app = FastAPI(
@@ -38,6 +42,13 @@ async def startup():
     logger.info("Inicializando H-MAS com 27 agentes...")
     await orchestrator.initialize()
     logger.info("Sistema pronto. 27/27 agentes ativos.")
+    try:
+        setup_a2a_routes(app, settings, base_url="https://engenheiro-producao-ai.onrender.com")
+        logger.info("A2A Protocol routes mounted.")
+    except Exception as e:
+        logger.warning(f"A2A setup skipped: {e}")
+    app.include_router(salesforce_router, prefix="/salesforce", tags=["salesforce"])
+    app.include_router(subscriptions_router, prefix="/api/subscriptions", tags=["subscriptions"])
 
 
 @app.get("/")
