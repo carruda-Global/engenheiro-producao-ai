@@ -12,6 +12,7 @@ from src.security.circuit_breaker import CircuitBreaker
 from app.routers.salesforce_marketplace import router as salesforce_router
 from app.routers.subscriptions import router as subscriptions_router
 from app.routers.health import router as health_router
+from app.routers.aip_security import router as aip_router
 
 settings = Settings()
 
@@ -47,6 +48,7 @@ async def startup():
 app.include_router(salesforce_router, prefix="/salesforce", tags=["salesforce"])
 app.include_router(subscriptions_router, prefix="/api/subscriptions", tags=["subscriptions"])
 app.include_router(health_router, prefix="/api", tags=["health"])
+app.include_router(aip_router)
 
 
 @app.get("/")
