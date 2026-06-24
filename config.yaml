@@ -208,3 +208,22 @@ orchestrator:
   circuit_breaker_reset_seconds: 60
   retry_attempts: 3
   retry_delay_seconds: 1.0
+
+stripe:
+  plans:
+    starter:
+      name: "Starter - Spec Analyst"
+      amount_cents: 99700
+      price_id: "price_1TlxRCQjQffMYsbZnheWGEmB"
+    professional:
+      name: "Professional - 3 Agentes"
+      amount_cents: 239100
+      price_id: "price_1TlxRDQjQffMYsbZmDgONh8K"
+    enterprise:
+      name: "Enterprise - 5 Agentes"
+      amount_cents: 468500
+      price_id: "price_1TlxREQjQffMYsbZwbPkrOdK"
+    full_suite:
+      name: "Full Suite - 21 Agentes"
+      amount_cents: 949700
+      price_id: "price_1TlxRFQjQffMYsbZEYKJRWMd"
