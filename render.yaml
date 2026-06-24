@@ -2,7 +2,7 @@ services:
   - type: web
     name: hmas-orchestrator
     env: docker
-    repo: https://github.com/your-org/hmas-27-agents
+    repo: https://github.com/carruda-Global/engenheiro-producao-ai.git
     branch: main
     dockerfilePath: ./Dockerfile
     dockerCommand: uvicorn app.main:app --host 0.0.0.0 --port 8000
@@ -11,6 +11,10 @@ services:
         value: production
       - key: LOG_LEVEL
         value: INFO
+      - key: A2A_ENABLED
+        value: "true"
+      - key: A2A_BASE_URL
+        value: https://engenheiro-producao-ai.onrender.com
       - key: DEEPSEEK_API_KEY
         sync: false
       - key: SUPABASE_URL
@@ -18,6 +22,10 @@ services:
       - key: SUPABASE_API_KEY
         sync: false
       - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
         sync: false
     healthCheckPath: /
     numInstances: 1
