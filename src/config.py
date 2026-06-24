@@ -74,7 +74,7 @@ class Settings:
         self.microsoft_client_id: str = microsoft.get("client_id", os.getenv("AZURE_CLIENT_ID", ""))
         self.microsoft_client_secret: str = microsoft.get("client_secret", os.getenv("AZURE_CLIENT_SECRET", ""))
         self.microsoft_fulfillment_api_version: str = microsoft.get("fulfillment_api_version", "2018-08-31")
-        self.microsoft_enabled: bool = microsoft.get("enabled", False)
+        self.microsoft_enabled: bool = microsoft.get("enabled", True)
 
         self.agents_config: dict = self.config.get("agents", {})
         self.plans_config: dict = self.config.get("stripe", {}).get("plans", {})

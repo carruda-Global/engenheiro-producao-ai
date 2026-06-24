@@ -209,6 +209,14 @@ orchestrator:
   retry_attempts: 3
   retry_delay_seconds: 1.0
 
+marketplace:
+  microsoft:
+    enabled: true
+    tenant_id: "cb5ac0c5-38eb-4805-b0f7-097dddbca380"
+    client_id: "9d781521-1c9c-4604-9e49-03f29c0f3091"
+    client_secret: ${AZURE_CLIENT_SECRET}
+    fulfillment_api_version: "2018-08-31"
+
 stripe:
   plans:
     starter:
