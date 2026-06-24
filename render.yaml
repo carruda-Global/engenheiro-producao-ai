@@ -1,21 +1,23 @@
 services:
   - type: web
-    name: ecosystem-aec-api
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    name: hmas-orchestrator
+    env: docker
+    repo: https://github.com/your-org/hmas-27-agents
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerCommand: uvicorn app.main:app --host 0.0.0.0 --port 8000
     envVars:
+      - key: APP_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
       - key: DEEPSEEK_API_KEY
-        sync: false
-      - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: STRIPE_PUBLISHABLE_KEY
-        sync: false
-      - key: STRIPE_WEBHOOK_SECRET
         sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_API_KEY
         sync: false
-      - key: APP_ENV
-        value: production
+      - key: STRIPE_SECRET_KEY
+        sync: false
+    healthCheckPath: /
+    numInstances: 1

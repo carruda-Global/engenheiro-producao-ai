@@ -10,3 +10,9 @@ dist/
 .vite/
 .pytest_cache/
 chave api- projeto engenharia.txt
+data/snapshots/
+data/audit/
+data/trust_history/
+*.pem
+*.key
+microsoft ids.txt

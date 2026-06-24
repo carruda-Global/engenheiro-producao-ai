@@ -28,7 +28,7 @@ def _resolve_env_recursive(obj):
 
 def load_config(config_path: str | None = None) -> dict:
     if config_path is None:
-        config_path = Path(__file__).parent.parent / "config.yaml"
+        config_path = Path(__file__).parent.parent.parent / "config.yaml"
     with open(config_path, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
     return _resolve_env_recursive(config)
@@ -45,10 +45,6 @@ class Settings:
         self.deepseek_api_base: str = self.config.get("deepseek", {}).get("api_base", "https://api.deepseek.com/v1")
         self.deepseek_timeout: int = self.config.get("deepseek", {}).get("timeout", 120)
 
-        self.stripe_secret_key: str = os.getenv("STRIPE_SECRET_KEY", "")
-        self.stripe_publishable_key: str = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
-        self.stripe_webhook_secret: str = os.getenv("STRIPE_WEBHOOK_SECRET", "")
-
         self.supabase_url: str = os.getenv("SUPABASE_URL", "")
         self.supabase_api_key: str = os.getenv("SUPABASE_API_KEY", "")
 
@@ -56,35 +52,18 @@ class Settings:
         self.log_level: str = os.getenv("LOG_LEVEL", "INFO")
         self.debug: bool = self.config.get("app", {}).get("debug", False)
 
-        self.aws_access_key_id: str = os.getenv("AWS_ACCESS_KEY_ID", "")
-        self.aws_secret_access_key: str = os.getenv("AWS_SECRET_ACCESS_KEY", "")
-        aws = self.config.get("marketplace", {}).get("aws", {})
-        self.aws_region: str = aws.get("region", "us-east-1")
-        self.aws_product_code: str = aws.get("product_code", "")
-        self.aws_sns_topic_arn: str = aws.get("sns_topic_arn", "")
-        self.aws_subscribe_redirect_url: str = os.getenv("AWS_SUBSCRIBE_REDIRECT_URL", "")
-
-        oracle = self.config.get("marketplace", {}).get("oracle", {})
-        self.oracle_product_id: str = oracle.get("product_id", "")
-        self.oracle_seller_id: str = oracle.get("seller_id", "")
-        self.oracle_enabled: bool = oracle.get("enabled", False)
-
-        microsoft = self.config.get("marketplace", {}).get("microsoft", {})
-        self.microsoft_tenant_id: str = microsoft.get("tenant_id", os.getenv("AZURE_TENANT_ID", ""))
-        self.microsoft_client_id: str = microsoft.get("client_id", os.getenv("AZURE_CLIENT_ID", ""))
-        self.microsoft_client_secret: str = microsoft.get("client_secret", os.getenv("AZURE_CLIENT_SECRET", ""))
-        self.microsoft_fulfillment_api_version: str = microsoft.get("fulfillment_api_version", "2018-08-31")
-        self.microsoft_enabled: bool = microsoft.get("enabled", False)
-
-        self.agents_config: dict = self.config.get("agents", {})
-        self.plans_config: dict = self.config.get("stripe", {}).get("plans", {})
-        self.cross_selling_config: dict = self.config.get("cross_selling", {})
-
         self.orchestrator_config = self.config.get("orchestrator", {})
         self.clusters_config = self.config.get("clusters", {})
+        self.memory_config = self.config.get("memory", {})
+        self.rag_config = self.config.get("rag", {})
+        self.evolution_config = self.config.get("evolution", {})
+        self.rl_config = self.config.get("rl", {})
+        self.monitoring_config = self.config.get("monitoring", {})
+        self.security_config = self.config.get("security", {})
+        self.budget_config = self.config.get("budget", {})
 
     def validate(self) -> list[str]:
-        errors: list[str] = []
+        errors = []
         if not self.deepseek_api_key:
             errors.append("DEEPSEEK_API_KEY nao configurada")
         return errors

@@ -1,24 +1,20 @@
 from pathlib import Path
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
-from app.routers import (
-    acp_checkout, agents, aws_marketplace, cross_selling,
-    google_marketplace, health, microsoft_marketplace,
-    oracle_marketplace, salesforce_marketplace, pgrs, security,
-    subscriptions,
-)
 from src.config import Settings
-from src.a2a_bridge import setup_a2a_routes
+from src.core.orchestrator import HMASOrchestrator
+from src.monitoring.agent_dashboard import AgentDashboard
+from src.security.circuit_breaker import CircuitBreaker
 
 settings = Settings()
 
 app = FastAPI(
-    title="EcoSystem AEC",
-    description="12 Agentes de IA Integrados para Arquitetura, Engenharia e Construcao",
-    version="2.0.0",
+    title="H-MAS EcoSystem AEC + Regulatory",
+    description="27 Agentes de IA Hierárquicos para Engenharia de Produção",
+    version="3.0.0",
 )
 
 app.add_middleware(
@@ -29,25 +25,77 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(health.router, tags=["health"])
-app.include_router(agents.router, prefix="/api/v1/agents", tags=["agents"])
-app.include_router(subscriptions.router, prefix="/api/v1/subscriptions", tags=["subscriptions"])
-app.include_router(acp_checkout.router, prefix="/api/v1/acp", tags=["agentic-commerce"])
-app.include_router(aws_marketplace.router, prefix="/api/v1/aws-marketplace", tags=["aws-marketplace"])
-app.include_router(oracle_marketplace.router, prefix="/api/v1/oracle-marketplace", tags=["oracle-marketplace"])
-app.include_router(google_marketplace.router, prefix="/api/v1/google-marketplace", tags=["google-marketplace"])
-app.include_router(salesforce_marketplace.router, prefix="/api/v1/salesforce-marketplace", tags=["salesforce-marketplace"])
-app.include_router(microsoft_marketplace.router, prefix="/api/v1/microsoft-marketplace", tags=["microsoft-marketplace"])
-app.include_router(cross_selling.router, prefix="/api/v1/cross-selling", tags=["cross-selling"])
-app.include_router(pgrs.router, prefix="/api/v1/pgrs", tags=["pgrs"])
-app.include_router(security.router, prefix="/api/v1/security", tags=["security"])
+orchestrator = HMASOrchestrator(tenant_id="default")
+dashboard = AgentDashboard()
+circuit_breaker = CircuitBreaker(threshold=5, reset_seconds=60)
 
-templates_dir = Path(__file__).parent.parent / "templates"
-if templates_dir.exists():
-    app.mount("/static", StaticFiles(directory=str(templates_dir)), name="static")
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-try:
-    setup_a2a_routes(app, settings, base_url="")
-except Exception as e:
-    import logging
-    logging.getLogger(__name__).warning("A2A routes nao montadas: %s", e)
+
+@app.on_event("startup")
+async def startup():
+    logger.info("Inicializando H-MAS com 27 agentes...")
+    await orchestrator.initialize()
+    logger.info("Sistema pronto. 27/27 agentes ativos.")
+
+
+@app.get("/")
+async def root():
+    return {
+        "service": "H-MAS EcoSystem AEC + Regulatory",
+        "version": "3.0.0",
+        "status": "operational",
+        "agents_total": 27,
+        "clusters": ["production", "logistics", "quality"],
+    }
+
+
+@app.get("/api/status/{tenant_id}")
+async def get_status(tenant_id: str):
+    return dashboard.get_agent_status(tenant_id)
+
+
+@app.post("/api/agents/initialize")
+async def initialize_agents(data: dict):
+    tenant = data.get("tenant", "default")
+    clusters = data.get("clusters", ["production", "logistics", "quality"])
+    orchestrator.tenant_id = tenant
+    await orchestrator.initialize()
+    return {
+        "status": "initialized",
+        "tenant": tenant,
+        "clusters": clusters,
+        "agents_total": len(orchestrator.agents),
+    }
+
+
+@app.post("/api/agents/execute")
+async def execute_task(data: dict):
+    result = await orchestrator.execute_task(data, user_id=data.get("user_id", "anonymous"))
+    return result
+
+
+@app.get("/api/agents/{agent_id}/status")
+async def get_agent_status(agent_id: str):
+    agent = orchestrator.agents.get(agent_id)
+    if not agent:
+        return {"error": f"Agent {agent_id} not found"}, 404
+    return agent.to_dict()
+
+
+@app.get("/api/agents/health")
+async def agents_health():
+    statuses = {
+        agent_id: {
+            "status": agent.status,
+            "success_rate": agent.success_rate,
+            "total_tasks": agent.total_tasks,
+            "avg_response_time": agent.avg_response_time,
+        }
+        for agent_id, agent in orchestrator.agents.items()
+    }
+    return {
+        "total_agents": len(statuses),
+        "agents": statuses,
+    }

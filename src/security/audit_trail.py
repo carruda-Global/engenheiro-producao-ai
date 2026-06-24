@@ -1,123 +1,55 @@
-"""
-Trilha de auditoria criptografica para compliance com LGPD e CREA.
-Registra todas as execucoes de agentes com hash imutavel.
-
-- LGPD: rastreabilidade de dados pessoais
-- CREA: responsabilidade tecnica sobre documentos gerados
-"""
-import hashlib
-import hmac
 import json
-import logging
-import time
-from datetime import datetime
-from typing import Any
-
-logger = logging.getLogger(__name__)
-
-_SECRET_KEY = b"ecosystem-aec-audit-secret-2026"
+import hashlib
+from datetime import datetime, timezone
+from typing import Any, Optional
 
 
 class AuditTrail:
-    def __init__(self, secret_key: bytes = _SECRET_KEY):
-        self.secret_key = secret_key
-        self._chain: list[dict[str, Any]] = []
-        self._last_hash = "0" * 64
+    def __init__(self, storage_path: str = "data/audit/"):
+        self.storage_path = storage_path
+        self.chain: list[dict] = []
+        self.last_hash = "0" * 64
 
-    def record(
-        self,
-        agent_id: str,
-        action: str,
-        user_id: str,
-        input_summary: str,
-        output_summary: str,
-        metadata: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def record(self, action: str, agent_id: str, tenant_id: str, data: dict) -> dict:
         entry = {
-            "timestamp": datetime.utcnow().isoformat(),
-            "epoch_ms": int(time.time() * 1000),
-            "agent_id": agent_id,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "action": action,
-            "user_id": user_id,
-            "input_hash": self._hash(input_summary),
-            "output_hash": self._hash(output_summary),
-            "previous_hash": self._last_hash,
-            "metadata": metadata or {},
+            "agent_id": agent_id,
+            "tenant_id": tenant_id,
+            "data": data,
+            "previous_hash": self.last_hash,
         }
 
-        entry_hash = self._hash(json.dumps(entry, sort_keys=True))
-        entry_signature = hmac.new(
-            self.secret_key, entry_hash.encode(), hashlib.sha256
-        ).hexdigest()
+        entry["hash"] = self._calculate_hash(entry)
+        self.last_hash = entry["hash"]
+        self.chain.append(entry)
 
-        entry["entry_hash"] = entry_hash
-        entry["signature"] = entry_signature
+        if len(self.chain) > 10000:
+            self.chain = self.chain[-10000:]
 
-        self._chain.append(entry)
-        self._last_hash = entry_hash
-
-        logger.info(
-            "AUDIT: %s/%s por %s - hash=%s...",
-            agent_id, action, user_id, entry_hash[:12],
-        )
         return entry
 
-    def verify_chain(self) -> tuple[bool, list[str]]:
-        errors = []
-        previous = "0" * 64
-        for i, entry in enumerate(self._chain):
-            expected_prev = previous
-            actual_prev = entry.get("previous_hash", "")
-            if actual_prev != expected_prev:
-                errors.append(
-                    f"Entry {i}: previous_hash mismatch "
-                    f"(expected {expected_prev[:12]}..., got {actual_prev[:12]}...)"
-                )
+    def _calculate_hash(self, entry: dict) -> str:
+        content = json.dumps(entry, sort_keys=True, default=str)
+        return hashlib.sha256(content.encode()).hexdigest()
 
-            computed_hash = self._hash(json.dumps(
-                {k: v for k, v in entry.items() if k not in ("entry_hash", "signature")},
-                sort_keys=True,
-            ))
-            if computed_hash != entry.get("entry_hash", ""):
-                errors.append(f"Entry {i}: entry_hash tampered")
+    def verify_chain(self) -> bool:
+        for i in range(1, len(self.chain)):
+            if self.chain[i]["previous_hash"] != self.chain[i - 1]["hash"]:
+                return False
+        return True
 
-            computed_sig = hmac.new(
-                self.secret_key, computed_hash.encode(), hashlib.sha256
-            ).hexdigest()
-            if computed_sig != entry.get("signature", ""):
-                errors.append(f"Entry {i}: signature invalid")
-
-            previous = computed_hash
-
-        return len(errors) == 0, errors
-
-    def get_chain(self, agent_id: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
-        entries = self._chain
+    def get_history(self, agent_id: str = None, tenant_id: str = None, limit: int = 100) -> list[dict]:
+        filtered = self.chain
         if agent_id:
-            entries = [e for e in entries if e["agent_id"] == agent_id]
-        return entries[-limit:]
+            filtered = [e for e in filtered if e["agent_id"] == agent_id]
+        if tenant_id:
+            filtered = [e for e in filtered if e["tenant_id"] == tenant_id]
+        return filtered[-limit:]
 
-    def get_lgpd_report(self, user_id: str) -> list[dict[str, Any]]:
-        return [
-            e for e in self._chain
-            if e["user_id"] == user_id
-        ]
-
-    def get_crea_report(self, agent_id: str | None = None) -> list[dict[str, Any]]:
-        entries = self._chain
-        if agent_id:
-            entries = [e for e in entries if e["agent_id"] == agent_id]
-        return [
-            {
-                "timestamp": e["timestamp"],
-                "agent_id": e["agent_id"],
-                "action": e["action"],
-                "user_id": e["user_id"],
-                "entry_hash": e["entry_hash"],
-                "signature": e["signature"],
-            }
-            for e in entries
-        ]
-
-    def _hash(self, data: str) -> str:
-        return hashlib.sha256(data.encode()).hexdigest()
+    def get_stats(self) -> dict:
+        return {
+            "total_entries": len(self.chain),
+            "chain_integrity": self.verify_chain(),
+            "last_hash": self.last_hash[:16] + "...",
+        }

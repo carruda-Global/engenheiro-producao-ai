@@ -31,7 +31,7 @@ class SupabaseClient:
 
     def health_check(self) -> bool:
         try:
-            self.client.table("users").select("id").limit(1).execute()
+            self.client.table("tenants").select("id").limit(1).execute()
             return True
         except Exception:
             return False

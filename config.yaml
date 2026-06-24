@@ -1,254 +1,210 @@
-agents:
-  spec_analyst:
-    enabled: true
-    max_docs_per_month: 50
-  procurement:
-    enabled: true
-  inventory:
-    enabled: true
-  logistics:
-    enabled: true
-  field_execution:
-    enabled: true
-  bim_coordinator:
-    enabled: true
-  requirements_analyst:
-    enabled: true
-  engineering_assistant:
-    enabled: true
-  work_synopsis:
-    enabled: true
-  photo_intelligence:
-    enabled: true
-  rfi_creation:
-    enabled: true
-  compliance:
-    enabled: true
-  nr1_psicossocial:
-    enabled: true
-  tributario_cbs_ibs:
-    enabled: true
-  lgpd_operacional:
-    enabled: true
-  esg_ifrs:
-    enabled: true
-  inventario_carbono:
-    enabled: true
-  escopo3_fornecedores:
-    enabled: true
-  canal_denuncias:
-    enabled: true
-  igualdade_salarial:
-    enabled: true
-  compliance_anticorrupcao:
-    enabled: true
-  regulatory_analyst:
-    enabled: true
-  compliance_pm:
-    enabled: true
-  channel_agent:
-    enabled: true
-  knowledge_agent:
-    enabled: true
-  facilitator_agent:
-    enabled: true
-  dev_experience:
-    enabled: true
 app:
+  name: "H-MAS EcoSystem AEC + Regulatory"
+  version: "3.0.0"
   debug: false
   log_level: INFO
-  name: EcoSystem AEC + Regulatory
-  version: 2.1.0
-cross_selling:
-  enabled: true
-  min_confidence: 0.7
-  upgrade_path:
-    starter: professional
-    professional: enterprise
-    enterprise: full_suite
-    regulatory_starter: regulatory_professional
-    regulatory_professional: regulatory_full
-    esg_carbon_pack: regulatory_full
-  compliance_upsell_targets:
-    - starter
-    - professional
-    - enterprise
+  environment: ${APP_ENV:-development}
 
-governance:
-  policy_engine:
+clusters:
+  production:
     enabled: true
-    rules_path: "src/governance/rules/default_rules.json"
-  critic_agent:
+    max_parallel: 10
+    agents:
+      planner_master: { enabled: true, budget_per_task: 0.10 }
+      demand_forecaster: { enabled: true, budget_per_task: 0.10 }
+      setup_optimizer: { enabled: true, budget_per_task: 0.08 }
+      inventory_controller: { enabled: true, budget_per_task: 0.08 }
+      capacity_analyst: { enabled: true, budget_per_task: 0.10 }
+      resource_manager: { enabled: true, budget_per_task: 0.08 }
+      energy_optimizer: { enabled: true, budget_per_task: 0.06 }
+      oee_monitor: { enabled: true, budget_per_task: 0.06 }
+      maintenance_agent: { enabled: true, budget_per_task: 0.10 }
+  logistics:
     enabled: true
-    review_on_complete: true
-  trust_scoring:
+    max_parallel: 10
+    agents:
+      route_planner: { enabled: true, budget_per_task: 0.10 }
+      fleet_manager: { enabled: true, budget_per_task: 0.08 }
+      delivery_predictor: { enabled: true, budget_per_task: 0.08 }
+      load_controller: { enabled: true, budget_per_task: 0.06 }
+      supplier_analyst: { enabled: true, budget_per_task: 0.10 }
+      purchase_manager: { enabled: true, budget_per_task: 0.10 }
+      warehouse_controller: { enabled: true, budget_per_task: 0.08 }
+      returns_manager: { enabled: true, budget_per_task: 0.06 }
+      cost_analyst: { enabled: true, budget_per_task: 0.08 }
+  quality:
     enabled: true
-    history_path: "data/trust_history.json"
+    max_parallel: 10
+    agents:
+      visual_inspector: { enabled: true, budget_per_task: 0.10 }
+      statistical_analyst: { enabled: true, budget_per_task: 0.08 }
+      nonconformance_manager: { enabled: true, budget_per_task: 0.08 }
+      root_cause_analyst: { enabled: true, budget_per_task: 0.10 }
+      certification_manager: { enabled: true, budget_per_task: 0.06 }
+      test_optimizer: { enabled: true, budget_per_task: 0.08 }
+      complaint_analyst: { enabled: true, budget_per_task: 0.08 }
+      traceability_manager: { enabled: true, budget_per_task: 0.10 }
+      improvement_agent: { enabled: true, budget_per_task: 0.10 }
+
 deepseek:
   api_base: https://api.deepseek.com/v1
+  model: deepseek-chat
   max_tokens: 16384
-  model: deepseek-v4-flash
   temperature: 0.3
   timeout: 120
-stripe:
-  plans:
-    starter:
-      amount_cents: 99700
-      name: Starter - Spec Analyst
-      price_id: price_1TkpyaQjQffMYsbZSpTKqSZP
-    professional:
-      amount_cents: 239100
-      name: Professional - 3 Agentes
-      price_id: ""
-    enterprise:
-      amount_cents: 468500
-      name: Enterprise - 5 Agentes
-      price_id: ""
-    full_suite:
-      amount_cents: 949700
-      name: Full Suite - 21 Agentes
-      price_id: ""
-    compliance_pack:
-      amount_cents: 239100
-      name: Compliance Pack - PGRS/PGRSS
-      price_id: ""
-    regulatory_starter:
-      amount_cents: 59000
-      name: Regulatory Starter - NR-1 + LGPD
-      price_id: ""
-    regulatory_professional:
-      amount_cents: 149000
-      name: Regulatory Professional - 5 Agentes
-      price_id: ""
-    regulatory_full:
-      amount_cents: 349000
-      name: Regulatory Full - 9 Agentes
-      price_id: ""
-    esg_carbon_pack:
-      amount_cents: 249000
-      name: ESG + Carbono
-      price_id: ""
-supabase:
-  table_projects: projects
-  table_subscriptions: subscriptions
-  table_users: users
 
-a2a_protocol:
-  enabled: true
-  base_url: "https://engenheiro-producao-ai.onrender.com"
-  enable_v0_3_compat: false
+memory:
+  hybrid:
+    enabled: true
+    max_episodes_per_agent: 1000
+    max_total_episodes: 50000
+    reflection_interval: 10
+  episodic:
+    enabled: true
+    max_size: 5000
+  semantic:
+    enabled: true
+    knowledge_path: data/semantic_knowledge.json
+  working:
+    enabled: true
+    ttl_seconds: 3600
 
-marketplace:
-  openstall:
+rag:
+  hybrid:
     enabled: true
-    agent_owner: EngenheiroProducaoAI
-    base_price_credits: 500
-  swarms_cloud:
+    top_k: 5
+    fusion_strategy: reciprocal_rank
+    cache_size: 500
+  text_retriever:
     enabled: true
-    api_base: https://swarmcloud-285321057562.us-central1.run.app
-  microsoft:
+    method: bm25
+  graph_retriever:
     enabled: true
-    offer_type: SaaS
-    category: AI Apps and Agents
-    tenant_id: "cb5ac0c5-38eb-4805-b0f7-097dddbca380"
-    client_id: "e5db2874-a728-49eb-b863-66ecb63b029c"
-    client_secret: "${AZURE_CLIENT_SECRET}"
-    fulfillment_api_version: "2018-08-31"
-  google:
-    enabled: true
-    product_id: "ecosystem-aec-v2"
-    category: "AI Agents and Apps"
-    plans:
-      starter:
-        price_monthly_usd: 199.00
-        description: "Starter - Spec Analyst (1 agente)"
-      professional:
-        price_monthly_usd: 399.00
-        description: "Professional - 3 Agentes"
-      enterprise:
-        price_monthly_usd: 799.00
-        description: "Enterprise - 5 Agentes"
-      full_suite:
-        price_monthly_usd: 1599.00
-        description: "Full Suite - 21 Agentes"
-      compliance_pack:
-        price_monthly_usd: 399.00
-        description: "Compliance Pack - PGRS/PGRSS"
-      regulatory_starter:
-        price_monthly_usd: 119.00
-        description: "Regulatory Starter - NR-1 + LGPD"
-      regulatory_professional:
-        price_monthly_usd: 299.00
-        description: "Regulatory Professional - 5 Agentes"
-      regulatory_full:
-        price_monthly_usd: 699.00
-        description: "Regulatory Full - 9 Agentes"
-      esg_carbon_pack:
-        price_monthly_usd: 499.00
-        description: "ESG + Carbono"
+    max_depth: 3
 
-  oracle:
+evolution:
+  gea:
     enabled: true
-    product_id: "ecosystem-aec-v2"
-    seller_id: ""
-    pricing_model: flat_rate
-    contract_durations:
-      - monthly
-      - annual
-    billing_frequencies:
-      - monthly
-    plans:
-      starter:
-        price_monthly_usd: 199.00
-        description: "Starter - Spec Analyst"
-      professional:
-        price_monthly_usd: 399.00
-        description: "Professional - 3 Agentes"
-      enterprise:
-        price_monthly_usd: 799.00
-        description: "Enterprise - 5 Agentes"
-      full_suite:
-        price_monthly_usd: 1599.00
-        description: "Full Suite - 21 Agentes"
-      compliance_pack:
-        price_monthly_usd: 399.00
-        description: "Compliance Pack - PGRS/PGRSS"
-      regulatory_starter:
-        price_monthly_usd: 119.00
-        description: "Regulatory Starter - NR-1 + LGPD"
-      regulatory_professional:
-        price_monthly_usd: 299.00
-        description: "Regulatory Professional - 5 Agentes"
-      regulatory_full:
-        price_monthly_usd: 699.00
-        description: "Regulatory Full - 9 Agentes"
-      esg_carbon_pack:
-        price_monthly_usd: 499.00
-        description: "ESG + Carbono"
+    population_size: 27
+    mutation_rate: 0.1
+    crossover_rate: 0.7
+    selection_pressure: 0.3
+    generation_interval_minutes: 60
+  reflection:
+    enabled: true
+    pattern_analysis_interval: 5
+  performance_selection:
+    enabled: true
+    novelty_weight: 0.3
+    performance_weight: 0.7
 
-  aws:
+rl:
+  local:
+    enabled: true
+    algorithm: ppo
+    learning_rate: 0.001
+    discount_factor: 0.95
+    clip_epsilon: 0.2
+  global:
+    enabled: true
+    algorithm: ppo
+    learning_rate: 0.0005
+    discount_factor: 0.9
+  federated:
     enabled: false
-    product_code: engproai-v1
-    region: us-east-1
-    sns_topic_arn: ""
-    plans:
-      starter:
-        price_monthly_usd: 199.00
-        description: "Starter - Spec Analyst"
-        dimensions:
-          - spec_analyst_seats
-      professional:
-        price_monthly_usd: 299.00
-        description: "Professional - Spec Analyst + Procurement"
-        dimensions:
-          - professional_seats
-      enterprise:
-        price_monthly_usd: 599.00
-        description: "Enterprise - 4 Agentes"
-        dimensions:
-          - enterprise_seats
-      full_suite:
-        price_monthly_usd: 699.00
-        description: "Full Suite - 21 Agentes"
-        dimensions:
-          - full_suite_seats
+    sync_interval_minutes: 60
+  reward:
+    dimensions:
+      - success_rate
+      - response_time
+      - cost_efficiency
+      - novelty
+    weights:
+      success_rate: 0.4
+      response_time: 0.2
+      cost_efficiency: 0.3
+      novelty: 0.1
+
+monitoring:
+  metrics:
+    enabled: true
+    prometheus_port: 8000
+    collection_interval_seconds: 15
+  alerts:
+    response_time_threshold: 5.0
+    error_rate_threshold: 0.05
+    budget_usage_threshold: 0.80
+    slack_webhook: ${SLACK_WEBHOOK:-}
+    email_alerts: ${ALERT_EMAIL:-}
+  dashboard:
+    enabled: true
+    refresh_interval_seconds: 5
+    max_history_points: 1000
+  logging:
+    elasticsearch_enabled: false
+    logstash_host: logstash
+    logstash_port: 5000
+
+security:
+  multi_tenant:
+    enabled: true
+    isolation_level: schema
+  rbac:
+    enabled: true
+    roles:
+      - admin
+      - manager
+      - operator
+      - viewer
+  pii_masking:
+    enabled: true
+    patterns:
+      - cpf
+      - email
+      - phone
+      - credit_card
+  dlp:
+    enabled: true
+    max_data_exposure: 1000
+  audit:
+    enabled: true
+    hash_chain_enabled: true
+    storage_path: data/audit/
+
+rate_limiting:
+  enabled: true
+  requests_per_second: 100
+  burst_size: 200
+  per_agent_limit: 10
+
+budget:
+  per_task_default: 0.10
+  per_agent_monthly: 100.0
+  per_tenant_monthly: 1000.0
+  alerts_enabled: true
+  auto_fallback: true
+  fallback_model: deepseek-chat
+
+cache:
+  embeddings:
+    enabled: true
+    max_size_mb: 512
+    ttl_hours: 24
+  responses:
+    enabled: true
+    max_entries: 10000
+    ttl_hours: 48
+
+agent_versioning:
+  enabled: true
+  snapshots_path: data/snapshots/
+  max_snapshots: 50
+  rollback_enabled: true
+
+orchestrator:
+  max_parallel_agents: 10
+  task_timeout_seconds: 30
+  circuit_breaker_threshold: 5
+  circuit_breaker_reset_seconds: 60
+  retry_attempts: 3
+  retry_delay_seconds: 1.0
