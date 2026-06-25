@@ -2,11 +2,18 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 
-const planIcons = { starter: '🔍', professional: '🛒', enterprise: '🏢', full_suite: '🚀', compliance_pack: '⚖️',
-  regulatory_starter: '🧠', regulatory_professional: '⚖️', regulatory_full: '🏛️', esg_carbon_pack: '🌱' };
-const planColors = { starter: '#3b82f6', professional: '#8b5cf6', enterprise: '#f59e0b', full_suite: '#10b981',
-  compliance_pack: '#ef4444', regulatory_starter: '#6366f1', regulatory_professional: '#8b5cf6',
-  regulatory_full: '#7c3aed', esg_carbon_pack: '#059669' };
+const PLAN_MAP = {
+  compliance_essencial: { id: 'regulatory_starter', name: 'Compliance Essencial — NR-1 + LGPD', price: 59000, agents: ['NR-1', 'LGPD'], features: ['NR-1 Riscos Psicossociais (Portaria MTE 1.419/2024)', 'LGPD Operacional (Lei 13.709/2018)', 'Inventario FRPRT e plano de acao', 'RoPA e mapeamento de dados', 'Relatorios para fiscalizacao', 'Resultado em 48h'] },
+  regulatory_pro: { id: 'regulatory_professional', name: 'Regulatory Pro — Obrigacoes Completas', price: 149000, agents: ['NR-1', 'LGPD', 'Denuncias', 'Igualdade', 'Anticorrupcao'], features: ['NR-1 Psicossocial', 'LGPD Operacional', 'Canal de Denuncias (Lei 14.457/2022)', 'Igualdade Salarial (Lei 14.611/2023)', 'Compliance Anticorrupcao (Lei 12.846/2013)'] },
+  esg_carbon: { id: 'esg_carbon_pack', name: 'ESG + Carbono PME', price: 249000, agents: ['ESG', 'Carbono', 'Escopo 3'], features: ['ESG IFRS S1/S2 (Res. CVM 193/2023)', 'Inventario de Carbono Escopo 1/2 (GHG Protocol)', 'Escopo 3 Fornecedores (SBCE + CBAM)', 'Relatorios para SBCE e IFRS'] },
+  full_suite: { id: 'full_suite', name: 'Full Suite — Todos os Agentes', price: 949700, agents: ['27 agentes'], features: ['AEC Core + Especializados + Conformidade', 'Regulatorios + ESG + Carbono + Escopo 3', 'Microsoft Pack completo (6 agentes M365)', 'Suporte prioritario 24/7'] },
+  microsoft_pack: { id: 'microsoft_pack', name: 'Microsoft Compliance Pack', price: 448200, agents: ['Reg Analyst', 'Compliance PM', 'Channel', 'Knowledge', 'Facilitator', 'Dev Exp'], features: ['Regulatory Analyst (SharePoint/OneDrive)', 'Compliance PM (Planner)', 'Channel Agent Regulatorio (Teams)', 'Knowledge Agent com RAG', 'Facilitator Agent (reunioes)', 'Dev Experience Agent (PRs)'] },
+};
+
+const ACTIVE_PLANS = ['compliance_essencial', 'regulatory_pro', 'esg_carbon', 'full_suite', 'microsoft_pack'];
+const planIcons = { compliance_essencial: '⚖️', regulatory_pro: '⚡', esg_carbon: '🌱', full_suite: '🚀', microsoft_pack: '🪟' };
+const planColors = { compliance_essencial: '#25D366', regulatory_pro: '#6366f1', esg_carbon: '#059669', full_suite: '#10b981', microsoft_pack: '#0078d4' };
+const planOrder = ['compliance_essencial', 'regulatory_pro', 'esg_carbon', 'full_suite', 'microsoft_pack'];
 
 export default function Subscription() {
   const { t } = useTranslation();
@@ -15,11 +22,22 @@ export default function Subscription() {
   const [checkoutLoading, setCheckoutLoading] = useState(null);
 
   useEffect(() => {
-    api.plans()
-      .then((d) => setPlans(d.plans))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    setPlans(ACTIVE_PLANS.map((k) => PLAN_MAP[k]).filter(Boolean));
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const planParam = params.get('plan');
+    if (planParam) {
+      setTimeout(() => {
+        const el = document.getElementById(`plan-${planParam}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 500);
+    }
+  }, [plans]);
+
+  const sortedPlans = [...plans].sort((a, b) => planOrder.indexOf(a.id) - planOrder.indexOf(b.id));
 
   const formatPrice = (cents) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
@@ -27,7 +45,8 @@ export default function Subscription() {
   const handleSubscribe = async (planId) => {
     setCheckoutLoading(planId);
     try {
-      const data = await api.createCheckout(planId);
+      const mappedId = PLAN_MAP[planId]?.id || planId;
+      const data = await api.createCheckout(mappedId);
       if (data.checkout_url) {
         window.location.href = data.checkout_url;
       } else {
@@ -48,8 +67,8 @@ export default function Subscription() {
       <p className="subtitle">{t('subscription.subtitle')}</p>
 
       <div className="plans-grid">
-        {plans.map((plan) => (
-          <div key={plan.id} className="plan-card"
+        {sortedPlans.map((plan) => (
+          <div key={plan.id} id={`plan-${plan.id}`} className="plan-card"
                style={{ borderTop: `4px solid ${planColors[plan.id] || '#3b82f6'}` }}>
             <div className="plan-icon">{planIcons[plan.id] || '🤖'}</div>
             <h3>{plan.name}</h3>
@@ -80,7 +99,6 @@ export default function Subscription() {
 
       <div className="upgrade-info" style={{ marginTop: 32, padding: 20, background: '#f8fafc', borderRadius: 12 }}>
         <h3>🔄 {t('subscription.upgrade_title')}</h3>
-        <p>{t('subscription.upgrade_path')}</p>
         <p style={{ fontSize: '0.9rem', color: '#64748b' }}>
           {t('subscription.trial_info')}
         </p>

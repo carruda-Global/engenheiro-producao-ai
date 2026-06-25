@@ -23,6 +23,9 @@ const agents = [
   { id: 'canal-denuncias', navKey: 'canal_denuncias', icon: '🛡️' },
   { id: 'igualdade-salarial', navKey: 'igualdade_salarial', icon: '⚖️' },
   { id: 'compliance-anticorrupcao', navKey: 'compliance_anticorrupcao', icon: '🔐' },
+  { id: 'onboarding-funcionarios', navKey: 'onboarding_funcionarios', icon: '👋' },
+  { id: 'atendimento-cliente-ptbr', navKey: 'atendimento_cliente_ptbr', icon: '💬' },
+  { id: 'conciliacao-financeira', navKey: 'conciliacao_financeira', icon: '💰' },
 ];
 
 export default function Sidebar() {
@@ -75,6 +78,17 @@ export default function Sidebar() {
           💳 {t('nav.plans')}
         </NavLink>
       </nav>
+      <div className="sidebar-footer" style={{ padding: '16px', borderTop: '1px solid #e5e7eb', marginTop: 'auto' }}>
+        <NavLink to="/support" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} style={{ fontSize: '0.8rem' }}>
+          🆘 Suporte
+        </NavLink>
+        <NavLink to="/privacy" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} style={{ fontSize: '0.8rem' }}>
+          🔒 Privacidade
+        </NavLink>
+        <NavLink to="/terms" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} style={{ fontSize: '0.8rem' }}>
+          📜 Termos
+        </NavLink>
+      </div>
     </aside>
   );
 }

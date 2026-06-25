@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://engenheiro-producao-ai.onrender.com';
 
 async function request(path, options = {}) {
   const token = localStorage.getItem('token');
@@ -13,40 +13,12 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  health: () => request('/health'),
-  agents: () => request('/api/v1/agents'),
-  analyzeDocument: (document) =>
-    request('/api/v1/agents/spec-analyst/analyze', {
-      method: 'POST', body: JSON.stringify({ document }),
-    }),
-  processOrder: (materials) =>
-    request('/api/v1/agents/procurement/process-order', {
-      method: 'POST', body: JSON.stringify({ materials }),
-    }),
-  checkStock: (items) =>
-    request('/api/v1/agents/inventory/check-stock', {
-      method: 'POST', body: JSON.stringify({ items }),
-    }),
-  trackShipment: (shipment) =>
-    request('/api/v1/agents/logistics/track-shipment', {
-      method: 'POST', body: JSON.stringify({ shipment }),
-    }),
-  fieldInstructions: (specs) =>
-    request('/api/v1/agents/field-execution/instructions', {
-      method: 'POST', body: JSON.stringify({ specs }),
-    }),
-  agentAction: (agentId, action, data) =>
-    request(`/api/v1/agents/${agentId}/${action}`, {
-      method: 'POST', body: JSON.stringify(data),
-    }),
-  runWorkflow: (document) =>
-    request('/api/v1/agents/workflow', {
-      method: 'POST', body: JSON.stringify({ document }),
-    }),
-  plans: () => request('/api/v1/subscriptions/plans'),
-  getPlan: (id) => request(`/api/v1/subscriptions/plans/${id}`),
+  health: () => request('/api/health'),
+  agents: () => request('/api/agents/health'),
+  plans: () => request('/api/subscriptions/plans'),
+  getPlan: (id) => request(`/api/subscriptions/plans/${id}`),
   createCheckout: (planId, successUrl, cancelUrl) =>
-    request('/api/v1/subscriptions/checkout', {
+    request('/api/subscriptions/checkout', {
       method: 'POST',
       body: JSON.stringify({
         plan_id: planId,
@@ -54,7 +26,15 @@ export const api = {
         cancel_url: cancelUrl || window.location.origin + '/subscription?canceled=true',
       }),
     }),
-  upgradePlan: (subscriptionId, newPlanId) =>
-    request('/api/v1/cross-selling/upgrade/' + newPlanId),
-  getUpsells: (planId) => request('/api/v1/cross-selling/upsell/' + planId),
+  executeTask: (data) =>
+    request('/api/agents/execute', {
+      method: 'POST', body: JSON.stringify(data),
+    }),
+  agentStatus: (agentId) =>
+    request(`/api/agents/${agentId}/status`),
+  initializeAgents: (tenant, clusters) =>
+    request('/api/agents/initialize', {
+      method: 'POST',
+      body: JSON.stringify({ tenant, clusters }),
+    }),
 };

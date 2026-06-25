@@ -3,6 +3,9 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import AgentDetail from './pages/AgentDetail';
 import Subscription from './pages/Subscription';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Support from './pages/Support';
 
 export default function App() {
   return (
@@ -12,6 +15,9 @@ export default function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/agent/:agentId" element={<AgentDetail />} />
           <Route path="/subscription" element={<Subscription />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/support" element={<Support />} />
         </Route>
       </Routes>
     </BrowserRouter>

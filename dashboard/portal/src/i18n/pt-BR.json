@@ -1,8 +1,8 @@
 {
   "app": {
-    "title": "EcoSystem AEC",
-    "subtitle": "Sistema Multiagente de IA para Engenharia e Conformidade Regulatória",
-    "version": "v2.1.0"
+    "title": "Alias",
+    "subtitle": "Compliance Regulatório com IA",
+    "version": "v3.0.0"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -28,7 +28,10 @@
     "escopo3_fornecedores": "Escopo 3 Fornecedores",
     "canal_denuncias": "Canal de Denúncias",
     "igualdade_salarial": "Igualdade Salarial",
-    "compliance_anticorrupcao": "Compliance Anticorrupção"
+    "compliance_anticorrupcao": "Compliance Anticorrupção",
+    "onboarding_funcionarios": "Onboarding Funcionários",
+    "atendimento_cliente_ptbr": "Atendimento PT-BR",
+    "conciliacao_financeira": "Conciliação Financeira"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -61,7 +64,10 @@
     "escopo3_fornecedores": { "name": "Escopo 3 Fornecedores", "description": "Rastreabilidade de cadeia, 15 categorias GHG.", "icon": "🔗" },
     "canal_denuncias": { "name": "Canal de Denúncias", "description": "Canal omnichannel, triagem e relatórios CIPA.", "icon": "🛡️" },
     "igualdade_salarial": { "name": "Igualdade Salarial", "description": "Análise de equidade, relatório MTE e diversidade.", "icon": "⚖️" },
-    "compliance_anticorrupcao": { "name": "Compliance Anticorrupção", "description": "Programa de integridade, código de ética e due diligence.", "icon": "🔐" }
+    "compliance_anticorrupcao": { "name": "Compliance Anticorrupção", "description": "Programa de integridade, código de ética e due diligence.", "icon": "🔐" },
+    "onboarding_funcionarios": { "name": "Onboarding de Funcionários", "description": "Automatiza admissão, contratos, checklist de documentos e provisionamento de acessos.", "icon": "👋" },
+    "atendimento_cliente_ptbr": { "name": "Atendimento ao Cliente PT-BR", "description": "Resolve tickets L1 automaticamente via WhatsApp e Teams em português.", "icon": "💬" },
+    "conciliacao_financeira": { "name": "Conciliação Financeira", "description": "Automatiza conciliação de NFs com extratos, faturas de cartão e boletos.", "icon": "💰" }
   },
   "agent_detail": {
     "not_found": "Agente não encontrado",
@@ -72,14 +78,13 @@
   },
   "subscription": {
     "title": "Planos e Assinaturas",
-    "subtitle": "Escolha o plano ideal para sua empresa de engenharia",
+    "subtitle": "Escolha o plano ideal para sua empresa",
     "agents": "agentes",
     "agent": "agente",
     "subscribe": "Assinar Agora",
     "redirecting": "Redirecionando...",
     "loading": "Carregando planos...",
-    "upgrade_title": "Upgrade a qualquer momento",
-    "upgrade_path": "Starter → Professional → Enterprise → Full Suite",
+    "upgrade_title": "Expanda conforme suas obrigacoes crescem",
     "trial_info": "Todos os planos incluem 15 dias de trial gratuito. Cancele quando quiser.",
     "per_month": "/mês"
   },
