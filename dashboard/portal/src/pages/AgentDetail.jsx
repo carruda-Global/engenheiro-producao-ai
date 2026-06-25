@@ -52,6 +52,18 @@ const agentConfig = {
     key: 'compliance', fields: [{ key: 'project_data', type: 'textarea', placeholderKey: 'Descreva o projeto...' }],
     action: (d) => api.agentAction('compliance', 'check-compliance', { project_data: d.project_data }),
   },
+  'onboarding-funcionarios': {
+    key: 'onboarding_funcionarios', fields: [{ key: 'employee_data', type: 'textarea', placeholderKey: 'Dados do funcionario (nome, cargo, documento)...' }],
+    action: (d) => api.agentAction('onboarding-funcionarios', 'run-onboarding', { employee_data: d.employee_data }),
+  },
+  'atendimento-cliente-ptbr': {
+    key: 'atendimento_cliente_ptbr', fields: [{ key: 'ticket', type: 'textarea', placeholderKey: 'Descreva o ticket de atendimento...' }],
+    action: (d) => api.agentAction('atendimento-cliente-ptbr', 'resolve-ticket', { ticket: d.ticket }),
+  },
+  'conciliacao-financeira': {
+    key: 'conciliacao_financeira', fields: [{ key: 'financial_data', type: 'textarea', placeholderKey: 'Dados para conciliacao (NFs, extratos)...' }],
+    action: (d) => api.agentAction('conciliacao-financeira', 'run-conciliation', { financial_data: d.financial_data }),
+  },
 };
 
 const fieldLabels = {
@@ -60,6 +72,8 @@ const fieldLabels = {
   description: 'Descrição do Elemento', requirements: 'Requisitos',
   question: 'Pergunta', task_data: 'Dados da Tarefa',
   photo_description: 'Descrição da Foto', project_data: 'Dados do Projeto',
+  employee_data: 'Dados do Funcionário', ticket: 'Ticket de Atendimento',
+  financial_data: 'Dados Financeiros',
 };
 
 export default function AgentDetail() {

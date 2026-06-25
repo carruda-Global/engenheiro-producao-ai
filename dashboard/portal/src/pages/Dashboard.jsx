@@ -9,6 +9,7 @@ const agentKeys = [
   'nr1_psicossocial', 'tributario_cbs_ibs', 'lgpd_operacional', 'esg_ifrs',
   'inventario_carbono', 'escopo3_fornecedores', 'canal_denuncias',
   'igualdade_salarial', 'compliance_anticorrupcao',
+  'onboarding_funcionarios', 'atendimento_cliente_ptbr', 'conciliacao_financeira',
 ];
 
 const agentTags = {
@@ -33,6 +34,9 @@ const agentTags = {
   canal_denuncias: ['CIPA', '14.457'],
   igualdade_salarial: ['14.611', 'MTE'],
   compliance_anticorrupcao: ['CGU', '12.846'],
+  onboarding_funcionarios: ['eSocial', 'RH'],
+  atendimento_cliente_ptbr: ['WhatsApp', 'L1'],
+  conciliacao_financeira: ['NFs', 'Extratos'],
 };
 
 export default function Dashboard() {

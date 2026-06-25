@@ -8,6 +8,11 @@ const PLANS_DATA = [
   { key: 'esg_carbon', id: 'esg_carbon_pack', name: 'ESG + Carbono PME', price: 249000, agents: ['ESG', 'Carbono', 'Escopo 3'], features: ['ESG IFRS S1/S2 (Res. CVM 193/2023)', 'Inventario de Carbono Escopo 1/2 (GHG Protocol)', 'Escopo 3 Fornecedores (SBCE + CBAM)', 'Relatorios para SBCE e IFRS'], icon: '🌱', color: '#059669' },
   { key: 'full_suite', id: 'full_suite', name: 'Full Suite — Todos os Agentes', price: 949700, agents: ['27 agentes'], features: ['AEC Core + Especializados + Conformidade', 'Regulatorios + ESG + Carbono + Escopo 3', 'Microsoft Pack completo (6 agentes M365)', 'Suporte prioritario 24/7'], icon: '🚀', color: '#10b981' },
   { key: 'microsoft_pack', id: 'microsoft_pack', name: 'Microsoft Compliance Pack', price: 448200, agents: ['Reg Analyst', 'Compliance PM', 'Channel', 'Knowledge', 'Facilitator', 'Dev Exp'], features: ['Regulatory Analyst (SharePoint/OneDrive)', 'Compliance PM (Planner)', 'Channel Agent Regulatorio (Teams)', 'Knowledge Agent com RAG', 'Facilitator Agent (reunioes)', 'Dev Experience Agent (PRs)'], icon: '🪟', color: '#0078d4' },
+  { key: 'starter', id: 'starter', name: 'Starter — Spec Analyst', price: 99700, agents: ['Spec Analyst'], features: ['Analise de ate 50 documentos/mes', 'Extracao de requisitos tecnicos', 'Sinalizacao de nao-conformidades'], icon: '🔍', color: '#6366f1', hidden: true },
+  { key: 'professional', id: 'professional', name: 'Professional — 3 Agentes AEC', price: 239100, agents: ['Spec Analyst', 'Procurement', 'Inventory'], features: ['Analise de documentos ilimitada', 'Compras e pedidos automatizados', 'Monitoramento de estoque'], icon: '🛒', color: '#6366f1', hidden: true },
+  { key: 'enterprise', id: 'enterprise', name: 'Enterprise — 5 Agentes AEC', price: 468500, agents: ['Spec Analyst', 'Procurement', 'Inventory', 'Logistics', 'Field Exec'], features: ['Logistica e rastreamento', 'Instrucoes de campo com IA', 'Cross-selling automatico'], icon: '🏢', color: '#6366f1', hidden: true },
+  { key: 'compliance_pack', id: 'compliance_pack', name: 'Compliance Pack — Conformidade AEC', price: 239100, agents: ['Photo Intelligence', 'RFI Creation', 'Compliance'], features: ['Photo Intelligence para obras', 'Criacao automatica de RFIs', 'Gestao de conformidade PGRS/PGRSS'], icon: '⚖️', color: '#6366f1', hidden: true },
+  { key: 'regulatory_full', id: 'regulatory_full', name: 'Regulatory Full — Todos os Regulatorios', price: 349000, agents: ['9 agentes'], features: ['Todos os 9 agentes regulatorios', 'Tributario CBS/IBS', 'ESG IFRS S1/S2', 'Inventario Carbono + Escopo 3'], icon: '🏛️', color: '#6366f1', hidden: true },
 ];
 
 export default function Subscription() {
@@ -52,7 +57,7 @@ export default function Subscription() {
       <p className="subtitle">{t('subscription.subtitle')}</p>
 
       <div className="plans-grid">
-        {PLANS_DATA.map((plan) => (
+        {PLANS_DATA.filter(p => !p.hidden).map((plan) => (
           <div key={plan.key} id={`plan-${plan.id}`} className="plan-card"
                style={{ borderTop: `4px solid ${plan.color}` }}>
             <div className="plan-icon">{plan.icon}</div>

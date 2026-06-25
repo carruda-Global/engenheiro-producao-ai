@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'https://engenheiro-producao-ai.onrender.com';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 async function request(path, options = {}) {
   const token = localStorage.getItem('token');
@@ -13,7 +13,7 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  health: () => request('/api/health'),
+  health: () => request('/health'),
   agents: () => request('/api/agents/health'),
   plans: () => request('/api/subscriptions/plans'),
   getPlan: (id) => request(`/api/subscriptions/plans/${id}`),
