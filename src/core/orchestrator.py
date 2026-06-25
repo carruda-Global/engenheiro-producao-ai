@@ -64,10 +64,17 @@ class HMASOrchestrator:
     async def initialize(self):
         for cluster_name, cluster_agents in CLUSTERS.items():
             for agent_id, agent_class in cluster_agents.items():
-                agent = agent_class(config={"budget_per_task": 0.10})
-                agent.set_memory(self.memory)
-                agent.set_rag(self.rag)
-                agent.set_critic(self.critic)
+                try:
+                    agent = agent_class(config={"budget_per_task": 0.10})
+                    agent.set_memory(self.memory)
+                    agent.set_rag(self.rag)
+                    agent.set_critic(self.critic)
+                except TypeError:
+                    from src.config import Settings
+                    from src.api.deepseek_client import DeepSeekClient
+                    settings = Settings()
+                    llm = DeepSeekClient(settings)
+                    agent = agent_class(settings, llm)
                 self.agents[agent_id] = agent
                 self.evolution.register_agent(agent_id)
 

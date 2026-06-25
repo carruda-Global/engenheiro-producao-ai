@@ -76,6 +76,8 @@ class Settings:
         self.microsoft_fulfillment_api_version: str = microsoft.get("fulfillment_api_version", "2018-08-31")
         self.microsoft_enabled: bool = microsoft.get("enabled", True)
 
+        self.base_url: str = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
+
         self.agents_config: dict = self.config.get("agents", {})
         self.plans_config: dict = self.config.get("stripe", {}).get("plans", {})
         self.cross_selling_config: dict = self.config.get("cross_selling", {})

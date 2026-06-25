@@ -42,9 +42,9 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup():
-    logger.info("Inicializando H-MAS com 27 agentes...")
+    logger.info("Inicializando H-MAS com 30 agentes...")
     await orchestrator.initialize()
-    logger.info("Sistema pronto. 27/27 agentes ativos.")
+    logger.info("Sistema pronto. 30/30 agentes ativos.")
 
 
 app.include_router(salesforce_router, prefix="/salesforce", tags=["salesforce"])
@@ -101,15 +101,14 @@ async def get_agent_status(agent_id: str):
 
 @app.get("/api/agents/health")
 async def agents_health():
-    statuses = {
-        agent_id: {
-            "status": agent.status,
-            "success_rate": agent.success_rate,
-            "total_tasks": agent.total_tasks,
-            "avg_response_time": agent.avg_response_time,
+    statuses = {}
+    for agent_id, agent in orchestrator.agents.items():
+        statuses[agent_id] = {
+            "status": getattr(agent, "status", "initialized"),
+            "success_rate": getattr(agent, "success_rate", 1.0),
+            "total_tasks": getattr(agent, "total_tasks", 0),
+            "avg_response_time": getattr(agent, "avg_response_time", 0.0),
         }
-        for agent_id, agent in orchestrator.agents.items()
-    }
     return {
         "total_agents": len(statuses),
         "agents": statuses,

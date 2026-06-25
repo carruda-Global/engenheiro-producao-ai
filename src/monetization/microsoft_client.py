@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Any
 
 import httpx
@@ -11,9 +12,9 @@ logger = logging.getLogger(__name__)
 class MicrosoftMarketplaceClient:
     def __init__(self, settings: Settings):
         self.settings = settings
-        self.tenant_id = settings.microsoft_tenant_id
-        self.client_id = settings.microsoft_client_id
-        self.client_secret = settings.microsoft_client_secret
+        self.tenant_id = settings.microsoft_tenant_id or os.getenv("AZURE_TENANT_ID", "")
+        self.client_id = settings.microsoft_client_id or os.getenv("AZURE_CLIENT_ID", "")
+        self.client_secret = settings.microsoft_client_secret or os.getenv("AZURE_CLIENT_SECRET", "")
         self.api_version = settings.microsoft_fulfillment_api_version
         self._access_token: str | None = None
 
