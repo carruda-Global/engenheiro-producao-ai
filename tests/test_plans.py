@@ -5,7 +5,7 @@ from src.monetization.plans import PLANS, get_plan, get_plan_for_agents
 @pytest.mark.unit
 class TestPlans:
     def test_plans_have_correct_structure(self):
-        assert len(PLANS) == 10
+        assert len(PLANS) == 9
         for plan in PLANS:
             assert "id" in plan
             assert "name" in plan
@@ -14,24 +14,24 @@ class TestPlans:
             assert "agents" in plan
             assert "features" in plan
 
-    def test_starter_plan_price(self):
-        plan = get_plan("starter")
+    def test_compliance_essencial_plan_price(self):
+        plan = get_plan("compliance_essencial")
         assert plan is not None
-        assert plan["price"] == 99700
+        assert plan["price"] == 59000
 
-    def test_full_suite_has_all_original_agents(self):
+    def test_full_suite_has_all_30_agents(self):
         plan = get_plan("full_suite")
         assert plan is not None
-        assert len(plan["agents"]) == 21
+        assert len(plan["agents"]) == 30
 
     def test_get_plan_invalid_returns_none(self):
         plan = get_plan("invalid_plan")
         assert plan is None
 
     def test_get_plan_for_agents_matches_correctly(self):
-        plan = get_plan_for_agents(["spec_analyst"])
+        plan = get_plan_for_agents(["nr1_psicossocial", "lgpd_operacional"])
         assert plan is not None
-        assert plan["id"] == "starter"
+        assert plan["id"] == "compliance_essencial"
 
     def test_get_plan_for_agents_full_suite(self):
         all_agents = [
@@ -45,6 +45,12 @@ class TestPlans:
             "inventario_carbono", "escopo3_fornecedores",
             "canal_denuncias", "igualdade_salarial",
             "compliance_anticorrupcao",
+            "regulatory_analyst", "compliance_pm",
+            "channel_agent", "knowledge_agent",
+            "facilitator_agent", "dev_experience",
+            "onboarding_funcionarios",
+            "atendimento_cliente_ptbr",
+            "conciliacao_financeira",
         ]
         plan = get_plan_for_agents(all_agents)
         assert plan is not None

@@ -26,8 +26,9 @@ pip install -r requirements.txt -q
 echo "[4/8] Subindo infraestrutura Docker..."
 docker compose up -d
 
-echo "[5/8] Aguardando servicos..."
-sleep 10
+echo "[5/8] Aguardando orquestrador ficar saudavel..."
+timeout 120 bash -c 'until curl -sf http://localhost:8000/ > /dev/null; do sleep 3; done'
+echo "  Orquestrador pronto."
 
 echo "[6/8] Inicializando 27 agentes..."
 curl -s -X POST http://localhost:8000/api/agents/initialize \
@@ -35,7 +36,6 @@ curl -s -X POST http://localhost:8000/api/agents/initialize \
   -d '{"tenant": "default", "clusters": ["production", "logistics", "quality"]}' || echo "  (Orquestrador pode estar inicializando...)"
 
 echo "[7/8] Verificando status..."
-sleep 3
 curl -s http://localhost:8000/api/status/default | python -m json.tool 2>/dev/null || echo "  (Aguardando orquestrador...)"
 curl -s http://localhost:8000/ | python -m json.tool 2>/dev/null || echo "  (OK)"
 

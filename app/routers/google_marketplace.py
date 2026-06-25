@@ -41,7 +41,7 @@ _active_subscriptions: dict[str, dict] = {}
 
 @router.get("/subscribe")
 async def subscribe(
-    plan: str = Query(default="full_suite"),
+    plan: str = Query(default="compliance_essencial"),
     customer_id: str = Query(default=""),
 ):
     if not customer_id:
@@ -119,7 +119,7 @@ async def handle_webhook(request: Request):
         _active_subscriptions[customer_id] = {
             "subscription_id": subscription_id,
             "customer_id": customer_id,
-            "plan_id": payload.get("planId", "full_suite"),
+            "plan_id": payload.get("planId", "compliance_essencial"),
             "status": "active",
             "created_at": now,
         }
@@ -146,7 +146,7 @@ async def fulfill_subscription(request: Request):
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
 
     entitlement_id = payload.get("entitlementId") or payload.get("entitlement_id", "")
-    plan_id = payload.get("planId") or payload.get("plan_id", "full_suite")
+    plan_id = payload.get("planId") or payload.get("plan_id", "compliance_essencial")
     customer_email = payload.get("customerEmail") or payload.get("customer_email", "")
 
     if not entitlement_id:

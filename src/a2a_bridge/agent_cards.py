@@ -16,14 +16,12 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
     card = AgentCard(
         name="Engenheiro de Produção AI",
         description=(
-            "Sistema multiagente com 21 agentes de IA para Arquitetura, Engenharia, "
-            "Construção (AEC) e Conformidade Regulatória Brasileira. "
-            "Inclui agentes AEC: Análise de Especificações, Compras, Estoque, "
-            "Logística, Execução, BIM, RFI. Agentes Regulatórios: NR-1 Psicossocial, "
-            "Tributário CBS/IBS, LGPD, ESG, Carbono, Escopo 3, Canal de Denúncias, "
-            "Igualdade Salarial, Compliance Anticorrupção, Regulatory Analyst, "
-            "Compliance PM, Channel Agent, Knowledge Agent, Facilitator Agent e "
-            "Dev Experience Agent."
+            "Sistema multiagente com 30 agentes de IA para Arquitetura, Engenharia, "
+            "Construcao (AEC), Conformidade Regulatoria Brasileira e Automacao "
+            "Empresarial. Inclui agentes AEC, Regulatorios (NR-1, Tributario, "
+            "LGPD, ESG, Carbono, Canal de Denuncias, Igualdade Salarial, "
+            "Anticorrupcao), Microsoft Pack (6 agentes M365), e Cross-Sell "
+            "(Onboarding de Funcionarios, Atendimento PT-BR, Conciliacao Financeira)."
         ),
         version="2.1.0",
         documentation_url="https://engenheiro-producao-ai.onrender.com/docs",
@@ -448,6 +446,56 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
         examples=[
             "Revise este Pull Request para conformidade LGPD",
             "Gere relatorio de qualidade do repositorio",
+        ],
+    )
+    _add_skill(
+        card,
+        id="onboarding_funcionarios",
+        name="Onboarding de Funcionarios",
+        description=(
+            "Automatiza o ciclo completo de admissao de funcionarios: "
+            "geracao de contratos, checklist de documentos (RG, CPF, CTPS), "
+            "provisionamento de acessos (email, Teams, sistemas), integracao "
+            "com eSocial e envio de comunicados via Teams/WhatsApp. "
+            "Foco em PMEs brasileiras com 50-500 funcionarios."
+        ),
+        tags=["RH", "admissao", "onboarding", "contratos", "eSocial"],
+        examples=[
+            "Gere o checklist de admissao para um novo funcionario",
+            "Provisione acessos para o novo colaborador no Teams e sistemas",
+        ],
+    )
+    _add_skill(
+        card,
+        id="atendimento_cliente_ptbr",
+        name="Atendimento ao Cliente PT-BR",
+        description=(
+            "Resolve tickets de atendimento nivel 1 (L1) automaticamente "
+            "via WhatsApp e Microsoft Teams em portugues brasileiro. "
+            "Cobre duvidas sobre produtos, status de pedidos, agendamentos, "
+            "cancelamentos e FAQs. Escala para L2 com contexto quando necessario."
+        ),
+        tags=["atendimento", "suporte", "WhatsApp", "Teams", "FAQ"],
+        examples=[
+            "Responda este ticket de atendimento sobre status de pedido",
+            "Classifique este ticket e sugira a melhor resposta",
+        ],
+    )
+    _add_skill(
+        card,
+        id="conciliacao_financeira",
+        name="Conciliacao Financeira",
+        description=(
+            "Automatiza o fechamento mensal com conciliacao de notas fiscais "
+            "(NFe/NFCe) com extratos bancarios, conciliacao de faturas de "
+            "cartao de credito e boletos emitidos vs pagos. Identifica "
+            "divergencias e gera relatorios executivos de fechamento. "
+            "Padroes brasileiros: PIX, TED, boleto, cartao."
+        ),
+        tags=["financeiro", "conciliacao", "NF", "fechamento", "contabilidade"],
+        examples=[
+            "Concilie estas notas fiscais com o extrato bancario do mes",
+            "Gere relatorio de fechamento mensal com divergencias",
         ],
     )
 

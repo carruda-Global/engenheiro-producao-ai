@@ -5,6 +5,14 @@ from src.monetization.plans import PLANS, get_plan
 
 logger = logging.getLogger(__name__)
 
+import logging
+from datetime import datetime, timedelta
+from typing import Any
+
+from src.monetization.plans import PLANS, get_plan
+
+logger = logging.getLogger(__name__)
+
 AGENT_CHAIN = [
     "spec_analyst",
     "procurement",
@@ -33,15 +41,206 @@ AGENT_CHAIN = [
     "knowledge_agent",
     "facilitator_agent",
     "dev_experience",
+    "onboarding_funcionarios",
+    "atendimento_cliente_ptbr",
+    "conciliacao_financeira",
 ]
 
 UPGRADE_PATH = {
-    "starter": "professional",
-    "professional": "enterprise",
-    "enterprise": "full_suite",
+    "compliance_essencial": "regulatory_pro",
+    "regulatory_pro": "full_suite",
+    "esg_carbon": "full_suite",
+    "aec_full": "full_suite",
+    "microsoft_pack": "full_suite",
 }
 
-COMPLIANCE_UPSELL_TARGETS = ["starter", "professional", "enterprise"]
+JOURNEY_TRIGGERS = {
+    "onboarding_funcionarios": {
+        "next": "nr1_psicossocial",
+        "trigger_condition": "employee_count > 0",
+        "message": "Novo colaborador admitido requer inventario NR-1 psicossocial (Portaria MTE 1.419/2024)",
+        "discount_pct": 15,
+        "journey": "A",
+    },
+    "nr1_psicossocial": {
+        "next": "igualdade_salarial",
+        "trigger_condition": "payroll_data_available",
+        "message": "Relatorio de Igualdade Salarial (Lei 14.611/2023) vence em marco — configure agora",
+        "discount_pct": 15,
+        "journey": "A",
+    },
+    "igualdade_salarial": {
+        "next": "lgpd_operacional",
+        "trigger_condition": "salary_data_collected",
+        "message": "Dados salariais geram necessidade de LGPD — dados de RH sao dados pessoais sensiveis, RoPA obrigatorio (Lei 13.709/2018)",
+        "discount_pct": 15,
+        "journey": "A",
+    },
+    "lgpd_operacional": {
+        "next": "canal_denuncias",
+        "trigger_condition": "has_employee_data",
+        "message": "Empresa com dados de funcionarios precisa de Canal de Denuncias (Lei 14.457/2022) — obrigatorio para empresas com CIPA",
+        "discount_pct": 15,
+        "journey": "A",
+    },
+    "canal_denuncias": {
+        "next": "atendimento_cliente_ptbr",
+        "trigger_condition": "ticket_volume > 50",
+        "message": "Volume de atendimento alto — ative Atendimento ao Cliente PT-BR para resolver tickets L1 automaticamente via WhatsApp + Teams",
+        "discount_pct": 15,
+        "journey": "A",
+    },
+    "atendimento_cliente_ptbr": {
+        "next": "conciliacao_financeira",
+        "trigger_condition": "nf_volume > 100",
+        "message": "Alto volume de transacoes — automatize a conciliacao financeira de NFs e extratos bancarios",
+        "discount_pct": 15,
+        "journey": "A",
+    },
+    "tributario_cbs_ibs": {
+        "next": "compliance_anticorrupcao",
+        "trigger_condition": "has_public_contracts or revenue > 500000",
+        "message": "Empresa com contratos publicos precisa de programa de integridade (Lei 12.846/2013)",
+        "discount_pct": 15,
+        "journey": "B",
+    },
+    "compliance_anticorrupcao": {
+        "next": "esg_ifrs",
+        "trigger_condition": "in_public_bidding",
+        "message": "Empresa em licitacao precisa de ESG para fornecedores — diagnostico ESG IFRS S1/S2 (Res. CVM 193/2023)",
+        "discount_pct": 15,
+        "journey": "B",
+    },
+    "esg_ifrs": {
+        "next": "inventario_carbono",
+        "trigger_condition": "esg_diagnosis_complete",
+        "message": "Diagnostico ESG concluido — calcule Escopo 1/2 conforme Lei 15.042/2024 e GHG Protocol",
+        "discount_pct": 15,
+        "journey": "B",
+    },
+    "inventario_carbono": {
+        "next": "escopo3_fornecedores",
+        "trigger_condition": "scope_1_2_complete",
+        "message": "Escopo 1/2 calculado — rastreie sua cadeia de fornecedores para CBAM e IFRS S2 (15 categorias GHG)",
+        "discount_pct": 15,
+        "journey": "B",
+    },
+    "escopo3_fornecedores": {
+        "next": "lgpd_operacional",
+        "trigger_condition": "supplier_data_collected",
+        "message": "Dados de fornecedores podem conter dados pessoais — mapeamento LGPD obrigatorio",
+        "discount_pct": 15,
+        "journey": "B",
+    },
+    "compliance": {
+        "next": "nr1_psicossocial",
+        "trigger_condition": "has_workers",
+        "message": "Obra com funcionarios requer inventario NR-1 psicossocial (Portaria MTE 1.419/2024)",
+        "discount_pct": 15,
+        "journey": "C",
+    },
+    "regulatory_analyst": {
+        "next": "onboarding_funcionarios",
+        "trigger_condition": "team_growing",
+        "message": "Equipe crescendo — automatize o onboarding de novos colaboradores no Teams",
+        "discount_pct": 15,
+        "journey": "C",
+    },
+    "dev_experience": {
+        "next": "atendimento_cliente_ptbr",
+        "trigger_condition": "support_volume_high",
+        "message": "Alto volume de demandas — ative o Atendimento ao Cliente PT-BR para resolver tickets via WhatsApp",
+        "discount_pct": 15,
+        "journey": "C",
+    },
+}
+
+REGULATORY_DEADLINES = {
+    "nr1_psicossocial": {"regulation": "Portaria MTE 1.419/2024", "deadline_days": 180},
+    "igualdade_salarial": {"regulation": "Lei 14.611/2023", "deadline_days": 90},
+    "lgpd_operacional": {"regulation": "Lei 13.709/2018", "deadline_days": 30},
+    "canal_denuncias": {"regulation": "Lei 14.457/2022", "deadline_days": 60},
+    "tributario_cbs_ibs": {"regulation": "LC 214/2025", "deadline_days": 120},
+    "esg_ifrs": {"regulation": "Res. CVM 193/2023", "deadline_days": 180},
+    "inventario_carbono": {"regulation": "Lei 15.042/2024", "deadline_days": 90},
+    "escopo3_fornecedores": {"regulation": "CBAM + IFRS S2", "deadline_days": 180},
+    "compliance_anticorrupcao": {"regulation": "Lei 12.846/2013", "deadline_days": 120},
+}
+
+
+def eval_condition(condition: str, tenant_context: dict) -> bool:
+    try:
+        employee_count = tenant_context.get("employee_count", 0)
+        payroll_data_available = tenant_context.get("payroll_data_available", False)
+        salary_data_collected = tenant_context.get("salary_data_collected", False)
+        has_employee_data = tenant_context.get("has_employee_data", False)
+        ticket_volume = tenant_context.get("ticket_volume", 0)
+        nf_volume = tenant_context.get("nf_volume", 0)
+        has_public_contracts = tenant_context.get("has_public_contracts", False)
+        revenue = tenant_context.get("revenue", 0)
+        in_public_bidding = tenant_context.get("in_public_bidding", False)
+        esg_diagnosis_complete = tenant_context.get("esg_diagnosis_complete", False)
+        scope_1_2_complete = tenant_context.get("scope_1_2_complete", False)
+        supplier_data_collected = tenant_context.get("supplier_data_collected", False)
+        has_workers = tenant_context.get("has_workers", False)
+        team_growing = tenant_context.get("team_growing", False)
+        support_volume_high = tenant_context.get("support_volume_high", False)
+        result = eval(condition)
+        return bool(result)
+    except Exception as e:
+        logger.warning("Erro ao avaliar condicao '%s': %s", condition, e)
+        return False
+
+
+def get_regulatory_deadline(agent_id: str) -> dict | None:
+    deadline_info = REGULATORY_DEADLINES.get(agent_id)
+    if not deadline_info:
+        return None
+    days_remaining = deadline_info["deadline_days"]
+    due_date = datetime.now() + timedelta(days=days_remaining)
+    return {
+        "regulation": deadline_info["regulation"],
+        "deadline_days": days_remaining,
+        "due_date": due_date.strftime("%Y-%m-%d"),
+        "is_urgent": days_remaining <= 30,
+    }
+
+
+def get_cross_sell_recommendation(current_agent: str, tenant_context: dict) -> dict | None:
+    trigger = JOURNEY_TRIGGERS.get(current_agent)
+    if not trigger:
+        return None
+    if not eval_condition(trigger["trigger_condition"], tenant_context):
+        return None
+    return {
+        "recommended_agent": trigger["next"],
+        "recommended_agent_name": get_agent_name(trigger["next"]),
+        "message": trigger["message"],
+        "discount_pct": trigger["discount_pct"],
+        "journey": trigger["journey"],
+        "urgency": get_regulatory_deadline(trigger["next"]),
+    }
+
+
+def get_journey_progress(tenant_context: dict) -> dict:
+    active_agents = tenant_context.get("active_agents", [])
+    journeys = {"A": [], "B": [], "C": []}
+    for agent_id in active_agents:
+        for trigger_id, trigger in JOURNEY_TRIGGERS.items():
+            if trigger_id == agent_id:
+                j = trigger["journey"]
+                journeys[j].append({
+                    "current": agent_id,
+                    "current_name": get_agent_name(agent_id),
+                    "next": trigger["next"],
+                    "next_name": get_agent_name(trigger["next"]),
+                    "condition": trigger["trigger_condition"],
+                    "can_advance": eval_condition(trigger["trigger_condition"], tenant_context),
+                })
+    return {
+        "journeys": [{"id": k, "steps": v, "progress": f"{sum(1 for s in v if s['can_advance'])}/{len(v)}"} for k, v in journeys.items() if v],
+        "total_recommendations": sum(1 for v in journeys.values() for s in v if s["can_advance"]),
+    }
 
 
 def get_next_upgrade(current_plan_id: str) -> dict | None:
@@ -53,10 +252,10 @@ def get_next_upgrade(current_plan_id: str) -> dict | None:
 
 def get_upsell_plans(current_plan_id: str) -> list[dict]:
     plans = []
-    if current_plan_id in COMPLIANCE_UPSELL_TARGETS:
-        compliance = get_plan("compliance_pack")
-        if compliance:
-            plans.append(compliance)
+    if current_plan_id in ["compliance_essencial"]:
+        pro = get_plan("regulatory_pro")
+        if pro:
+            plans.append(pro)
     next_up = get_next_upgrade(current_plan_id)
     if next_up:
         plans.append(next_up)
@@ -123,5 +322,8 @@ def get_agent_name(agent_id: str) -> str:
         "knowledge_agent": "Knowledge Agent",
         "facilitator_agent": "Facilitator Agent",
         "dev_experience": "Dev Experience Agent",
+        "onboarding_funcionarios": "Onboarding de Funcionários",
+        "atendimento_cliente_ptbr": "Atendimento ao Cliente PT-BR",
+        "conciliacao_financeira": "Conciliação Financeira",
     }
     return names.get(agent_id, agent_id)

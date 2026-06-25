@@ -1,5 +1,9 @@
 venv/
 .env
+.env.*
+!.env.example
+EcoSystem 2.0.env
+EcoSystem_2_0.env
 __pycache__/
 *.pyc
 *.pyo
@@ -10,9 +14,13 @@ dist/
 .vite/
 .pytest_cache/
 chave api- projeto engenharia.txt
+chave_api.txt
 data/snapshots/
 data/audit/
 data/trust_history/
 *.pem
 *.key
 microsoft ids.txt
+.env.render
+
+src/security/aip/credentials/*.json

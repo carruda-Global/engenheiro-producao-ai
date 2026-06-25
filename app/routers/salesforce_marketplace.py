@@ -36,7 +36,7 @@ async def handle_webhook(request: Request):
     if event_type in ("SubscriptionCreate", "SubscriptionActivate"):
         _active_subscriptions[subscriber_id] = {
             "subscriber_id": subscriber_id,
-            "plan_id": payload.get("plan_id", "full_suite"),
+            "plan_id": payload.get("plan_id", "compliance_essencial"),
             "status": "active",
         }
     elif event_type in ("SubscriptionCancel", "SubscriptionExpire"):
@@ -48,7 +48,7 @@ async def handle_webhook(request: Request):
 
 @router.get("/subscribe")
 async def subscribe(
-    plan: str = Query(default="full_suite"),
+    plan: str = Query(default="compliance_essencial"),
     subscriber_id: str = Query(default=""),
 ):
     if not subscriber_id:

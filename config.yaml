@@ -1,50 +1,75 @@
 app:
   name: "H-MAS EcoSystem AEC + Regulatory"
-  version: "3.0.0"
+  version: "2.1.0"
   debug: false
   log_level: INFO
   environment: ${APP_ENV:-development}
 
+llm_routing:
+  default: deepseek
+  sensitive_agents:
+    - nr1_psicossocial
+    - lgpd_operacional
+    - canal_denuncias
+    - igualdade_salarial
+    - compliance_anticorrupcao
+  sensitive_llm: gemini
+
 clusters:
-  production:
+  aec_core:
     enabled: true
     max_parallel: 10
     agents:
-      planner_master: { enabled: true, budget_per_task: 0.10 }
-      demand_forecaster: { enabled: true, budget_per_task: 0.10 }
-      setup_optimizer: { enabled: true, budget_per_task: 0.08 }
-      inventory_controller: { enabled: true, budget_per_task: 0.08 }
-      capacity_analyst: { enabled: true, budget_per_task: 0.10 }
-      resource_manager: { enabled: true, budget_per_task: 0.08 }
-      energy_optimizer: { enabled: true, budget_per_task: 0.06 }
-      oee_monitor: { enabled: true, budget_per_task: 0.06 }
-      maintenance_agent: { enabled: true, budget_per_task: 0.10 }
-  logistics:
+      spec_analyst: { enabled: true, budget_per_task: 0.10 }
+      procurement: { enabled: true, budget_per_task: 0.10 }
+      inventory: { enabled: true, budget_per_task: 0.08 }
+      logistics: { enabled: true, budget_per_task: 0.08 }
+      field_execution: { enabled: true, budget_per_task: 0.10 }
+  aec_specialized:
     enabled: true
     max_parallel: 10
     agents:
-      route_planner: { enabled: true, budget_per_task: 0.10 }
-      fleet_manager: { enabled: true, budget_per_task: 0.08 }
-      delivery_predictor: { enabled: true, budget_per_task: 0.08 }
-      load_controller: { enabled: true, budget_per_task: 0.06 }
-      supplier_analyst: { enabled: true, budget_per_task: 0.10 }
-      purchase_manager: { enabled: true, budget_per_task: 0.10 }
-      warehouse_controller: { enabled: true, budget_per_task: 0.08 }
-      returns_manager: { enabled: true, budget_per_task: 0.06 }
-      cost_analyst: { enabled: true, budget_per_task: 0.08 }
-  quality:
+      bim_coordinator: { enabled: true, budget_per_task: 0.08 }
+      requirements_analyst: { enabled: true, budget_per_task: 0.08 }
+      engineering_assistant: { enabled: true, budget_per_task: 0.06 }
+      work_synopsis: { enabled: true, budget_per_task: 0.06 }
+  aec_compliance:
     enabled: true
     max_parallel: 10
     agents:
-      visual_inspector: { enabled: true, budget_per_task: 0.10 }
-      statistical_analyst: { enabled: true, budget_per_task: 0.08 }
-      nonconformance_manager: { enabled: true, budget_per_task: 0.08 }
-      root_cause_analyst: { enabled: true, budget_per_task: 0.10 }
-      certification_manager: { enabled: true, budget_per_task: 0.06 }
-      test_optimizer: { enabled: true, budget_per_task: 0.08 }
-      complaint_analyst: { enabled: true, budget_per_task: 0.08 }
-      traceability_manager: { enabled: true, budget_per_task: 0.10 }
-      improvement_agent: { enabled: true, budget_per_task: 0.10 }
+      photo_intelligence: { enabled: true, budget_per_task: 0.10 }
+      rfi_creation: { enabled: true, budget_per_task: 0.08 }
+      compliance: { enabled: true, budget_per_task: 0.08 }
+  regulatory:
+    enabled: true
+    max_parallel: 10
+    agents:
+      nr1_psicossocial: { enabled: true, budget_per_task: 0.10 }
+      tributario_cbs_ibs: { enabled: true, budget_per_task: 0.10 }
+      lgpd_operacional: { enabled: true, budget_per_task: 0.08 }
+      esg_ifrs: { enabled: true, budget_per_task: 0.08 }
+      inventario_carbono: { enabled: true, budget_per_task: 0.08 }
+      escopo3_fornecedores: { enabled: true, budget_per_task: 0.10 }
+      canal_denuncias: { enabled: true, budget_per_task: 0.06 }
+      igualdade_salarial: { enabled: true, budget_per_task: 0.08 }
+      compliance_anticorrupcao: { enabled: true, budget_per_task: 0.10 }
+  microsoft:
+    enabled: true
+    max_parallel: 10
+    agents:
+      regulatory_analyst: { enabled: true, budget_per_task: 0.10 }
+      compliance_pm: { enabled: true, budget_per_task: 0.08 }
+      channel_agent: { enabled: true, budget_per_task: 0.08 }
+      knowledge_agent: { enabled: true, budget_per_task: 0.06 }
+      facilitator_agent: { enabled: true, budget_per_task: 0.06 }
+      dev_experience: { enabled: true, budget_per_task: 0.10 }
+  cross_sell:
+    enabled: true
+    max_parallel: 10
+    agents:
+      onboarding_funcionarios: { enabled: true, budget_per_task: 0.08 }
+      atendimento_cliente_ptbr: { enabled: true, budget_per_task: 0.06 }
+      conciliacao_financeira: { enabled: true, budget_per_task: 0.10 }
 
 deepseek:
   api_base: https://api.deepseek.com/v1
@@ -128,7 +153,7 @@ rl:
 monitoring:
   metrics:
     enabled: true
-    prometheus_port: 8000
+    prometheus_port: 9091
     collection_interval_seconds: 15
   alerts:
     response_time_threshold: 5.0
@@ -212,13 +237,89 @@ orchestrator:
 marketplace:
   microsoft:
     enabled: true
-    tenant_id: "cb5ac0c5-38eb-4805-b0f7-097dddbca380"
-    client_id: "9d781521-1c9c-4604-9e49-03f29c0f3091"
+    tenant_id: ${AZURE_TENANT_ID}
+    client_id: ${AZURE_CLIENT_ID}
     client_secret: ${AZURE_CLIENT_SECRET}
     fulfillment_api_version: "2018-08-31"
 
 stripe:
+  # Planos consolidados v2.1.0 — 6 tiers (reduzido de 10 para eliminar paradoxo da escolha)
+  # price_ids originais preservados para não quebrar assinaturas ativas
   plans:
+    compliance_essencial:
+      name: "Compliance Essencial — NR-1 + LGPD"
+      agents: ["#13 nr1_psicossocial", "#15 lgpd_operacional"]
+      amount_cents: 59000
+      price_id: "price_1TlxVVQn4rfjkSvEpiBqaCSf"
+      positioning: "Porta de entrada — compliance mínimo legal"
+
+    regulatory_pro:
+      name: "Regulatory Pro — Obrigações Completas"
+      agents: ["#13", "#14", "#15", "#19", "#20", "#21"]
+      amount_cents: 149000
+      price_id: "price_1TlxVVQn4rfjkSvEam443ZCP"
+      positioning: "PME com obrigações trabalhistas e LGPD completas"
+
+    esg_carbon:
+      name: "ESG + Carbono"
+      agents: ["#16", "#17", "#18"]
+      amount_cents: 249000
+      price_id: "price_1TlxVXQn4rfjkSvEl6uCfYgk"
+      positioning: "Empresas com exigências ESG e SBCE"
+
+    aec_full:
+      name: "AEC Full — Engenharia e Construção"
+      agents: ["#1 ao #12"]
+      amount_cents: 468500
+      price_id: "price_1TlxVSQn4rfjkSvEXodTHfNA"
+      positioning: "Construtoras, incorporadoras e escritórios de engenharia"
+
+    microsoft_pack:
+      name: "Microsoft Pack — 6 Agentes M365"
+      agents: ["#22 ao #27"]
+      amount_cents: 448200
+      price_id: "price_1TlxVXQn4rfjkSvExSnW6XmL"
+      positioning: "Empresas Microsoft 365 / Azure"
+
+    full_suite:
+      name: "Full Suite — 30 Agentes"
+      agents: ["todos os 30 agentes"]
+      amount_cents: 949700
+      price_id: "price_1TlxVTQn4rfjkSvEn41gegAl"
+      positioning: "Âncora / Enterprise — referência de preço máximo"
+
+    tributario_entrada:
+      name: "Tributário CBS/IBS - Starter"
+      amount_cents: 39000
+      price_id: "price_1Tm0gYQn4rfjkSvE1YFsQqq1"
+    tributario_full:
+      name: "Tributário CBS/IBS - Full"
+      amount_cents: 149000
+      price_id: "price_1Tm0gZQn4rfjkSvEAX0DjgNe"
+
+    cross_sell_harmony:
+      name: "Cross-Sell Harmony — Onboarding"
+      agents: ["onboarding_funcionarios"]
+      amount_cents: 49000
+      price_id: "price_crossell_onboarding"
+      positioning: "Entrada jornada RH — onboarding automatizado"
+
+    atendimento_plus:
+      name: "Atendimento Plus — Suporte PT-BR"
+      agents: ["atendimento_cliente_ptbr"]
+      amount_cents: 39000
+      price_id: "price_atendimento_ptbr"
+      positioning: "Upsell suporte — tickets L1 automaticos via WhatsApp"
+
+    conciliacao_pro:
+      name: "Conciliacao Pro — Fechamento Mensal"
+      agents: ["conciliacao_financeira"]
+      amount_cents: 79000
+      price_id: "price_conciliacao_financeira"
+      positioning: "Upsell financeiro — conciliacao automatica de NFs e extratos"
+
+  # Planos legados — manter ativos para assinaturas existentes, não exibir para novos clientes
+  legacy_plans:
     starter:
       name: "Starter - Spec Analyst"
       amount_cents: 99700
@@ -227,35 +328,11 @@ stripe:
       name: "Professional - 3 Agentes"
       amount_cents: 239100
       price_id: "price_1TlxVSQn4rfjkSvEwWLP6n8N"
-    enterprise:
-      name: "Enterprise - 5 Agentes"
-      amount_cents: 468500
-      price_id: "price_1TlxVSQn4rfjkSvEXodTHfNA"
-    full_suite:
-      name: "Full Suite - 21 Agentes"
-      amount_cents: 949700
-      price_id: "price_1TlxVTQn4rfjkSvEn41gegAl"
     compliance_pack:
       name: "Compliance Pack - PGRS/PGRSS"
       amount_cents: 239100
       price_id: "price_1TlxVUQn4rfjkSvEAFoHn8zw"
-    regulatory_starter:
-      name: "Regulatory Starter - NR-1 + LGPD"
-      amount_cents: 59000
-      price_id: "price_1TlxVVQn4rfjkSvEpiBqaCSf"
-    regulatory_professional:
-      name: "Regulatory Professional - 5 Agentes"
-      amount_cents: 149000
-      price_id: "price_1TlxVVQn4rfjkSvEam443ZCP"
     regulatory_full:
       name: "Regulatory Full - 9 Agentes"
       amount_cents: 349000
       price_id: "price_1TlxVWQn4rfjkSvECMbmtApk"
-    esg_carbon_pack:
-      name: "ESG + Carbono"
-      amount_cents: 249000
-      price_id: "price_1TlxVXQn4rfjkSvEl6uCfYgk"
-    microsoft_pack:
-      name: "Microsoft Pack - 6 Agentes"
-      amount_cents: 448200
-      price_id: "price_1TlxVXQn4rfjkSvExSnW6XmL"

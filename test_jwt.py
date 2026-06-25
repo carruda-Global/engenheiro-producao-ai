@@ -1,10 +1,16 @@
-import jwt, time, requests, os
+import os
+import jwt
+import time
+import requests
 from cryptography.hazmat.primitives import serialization
 from dotenv import load_dotenv
 
 load_dotenv()
 
-key_path = r"C:\Users\crist\Projetos\A2A - Projato engenharia de produção\engenheiro-producao-ai\marketplace-integration\salesforce\salesforce.key"
+key_path = os.getenv(
+    "SALESFORCE_KEY_PATH",
+    "marketplace-integration/salesforce/salesforce.key"
+)
 
 with open(key_path, "rb") as f:
     key = serialization.load_pem_private_key(f.read(), password=None)

@@ -1,9 +1,9 @@
 {
   "$schema": "https://schema.mp.azure.com/schema/2024-03-01/offer.json",
-  "id": "ecosystem_aec_regulatory",
-  "name": "EcoSystem AEC + Regulatory",
-  "alias": "ecosystem-aec-regulatory",
-  "description": "21 Agentes de IA Integrados para Arquitetura, Engenharia, Construcao (AEC) e Conformidade Regulatoria Brasileira. Inclui agentes AEC: analise de especificacoes, compras, estoque, logistica, execucao de campo, BIM, RFI. Agentes regulatorios: NR-1 Psicossocial, Tributario CBS/IBS, LGPD, ESG, Carbono, Escopo 3, Canal de Denuncias, Igualdade Salarial e Compliance Anticorrupcao.",
+  "id": "alias-compliance-regulatorio",
+  "name": "Alias — Compliance Regulatório com IA",
+  "alias": "alias-compliance-regulatorio",
+  "description": "Alias: Agentes de IA para Compliance Regulatorio Brasileiro. NR-1 Psicossocial (Portaria MTE 1.419/2024), LGPD Operacional (Lei 13.709/2018), Igualdade Salarial (Lei 14.611/2023), Canal de Denuncias (Lei 14.457/2022) e mais. Arquitetura RAG hibrida (BM25 + vetorial + grafo de normas) com controle de custo por token (R$ 0,10/tarefa) e fallback automatico DeepSeek/Gemini para dados sensiveis. Comece por R$ 590/mes.",
   "publisher": {
     "id": "projato_engenharia",
     "name": "Projato Engenharia"
@@ -20,114 +20,9 @@
   ],
   "plans": [
     {
-      "id": "starter",
-      "name": "Starter - Spec Analyst",
-      "description": "1 agente de IA para analise de especificacoes tecnicas. Agentes: Spec Analyst.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 199.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Starter - Spec Analyst",
-          "type": "SaaS",
-          "description": "1 agente de IA para analise de especificacoes tecnicas",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "professional",
-      "name": "Professional - 3 Agentes",
-      "description": "Spec Analyst + Procurement + Inventory. Agentes: Spec Analyst, Procurement, Inventory.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 399.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Professional - 3 Agentes",
-          "type": "SaaS",
-          "description": "Spec Analyst + Procurement + Inventory",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "enterprise",
-      "name": "Enterprise - 5 Agentes",
-      "description": "5 agentes do nucleo AEC: analise, compras, estoque, logistica, campo. Agentes: Spec Analyst, Procurement, Inventory, Logistics, Field Execution.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 799.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Enterprise - 5 Agentes",
-          "type": "SaaS",
-          "description": "5 agentes do nucleo AEC: analise, compras, estoque, logistica, campo",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "full_suite",
-      "name": "Full Suite - 21 Agentes",
-      "description": "Ecossistema completo de 21 agentes de IA para AEC e conformidade regulatoria brasileira. Agentes: Spec Analyst, Procurement, Inventory, Logistics, Field Execution, BIM Coordinator, Requirements Analyst, Engineering Assistant, Work Synopsis, Photo Intelligence, RFI Creation, Compliance Agent, NR-1 Psicossocial, Tributario CBS/IBS, LGPD Operacional, ESG IFRS S1/S2, Inventario de Carbono, Escopo 3 Fornecedores, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 1599.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Full Suite - 21 Agentes",
-          "type": "SaaS",
-          "description": "Ecossistema completo de 21 agentes de IA para AEC e conformidade regulatoria brasileira",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "compliance_pack",
-      "name": "Compliance Pack - PGRS/PGRSS",
-      "description": "Photo Intelligence + RFI Creation + Compliance Agent. Agentes: Photo Intelligence, RFI Creation, Compliance Agent.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 399.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Compliance Pack - PGRS/PGRSS",
-          "type": "SaaS",
-          "description": "Photo Intelligence + RFI Creation + Compliance Agent",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "regulatory_starter",
-      "name": "Regulatory Starter - NR-1 + LGPD",
-      "description": "NR-1 Riscos Psicossociais + LGPD Operacional. Agentes: NR-1 Psicossocial, LGPD Operacional.",
+      "id": "compliance_essencial",
+      "name": "Compliance Essencial — NR-1 + LGPD",
+      "description": "NR-1 Riscos Psicossociais + LGPD Operacional. Arquitetura RAG hibrida com controle de custo por token e fallback automatico para dados sensiveis (Gemini). Agentes: NR-1 Psicossocial, LGPD Operacional.",
       "pricing": {
         "type": "recurring",
         "interval": "month",
@@ -137,7 +32,7 @@
       "hidden": false,
       "components": [
         {
-          "name": "Regulatory Starter - NR-1 + LGPD",
+          "name": "Compliance Essencial — NR-1 + LGPD",
           "type": "SaaS",
           "description": "NR-1 Riscos Psicossociais + LGPD Operacional",
           "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
@@ -146,9 +41,9 @@
       ]
     },
     {
-      "id": "regulatory_professional",
-      "name": "Regulatory Professional - 5 Agentes",
-      "description": "NR-1, LGPD, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao. Agentes: NR-1 Psicossocial, LGPD Operacional, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao.",
+      "id": "regulatory_pro",
+      "name": "Regulatory Pro — Obrigacoes Completas",
+      "description": "6 agentes regulatorios brasileiros com RAG hibrido e memoria entre sessoes — o agente lembra do contexto da empresa sem precisar reexplicar. Agentes: NR-1, Tributario CBS/IBS, LGPD, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao.",
       "pricing": {
         "type": "recurring",
         "interval": "month",
@@ -158,39 +53,18 @@
       "hidden": false,
       "components": [
         {
-          "name": "Regulatory Professional - 5 Agentes",
+          "name": "Regulatory Pro — Obrigacoes Completas",
           "type": "SaaS",
-          "description": "NR-1, LGPD, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao",
+          "description": "6 agentes regulatorios brasileiros",
           "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
           "provisioning_type": "redirect"
         }
       ]
     },
     {
-      "id": "regulatory_full",
-      "name": "Regulatory Full - 9 Agentes",
-      "description": "Todos os 9 agentes regulatorios brasileiros. Agentes: NR-1 Psicossocial, Tributario CBS/IBS, LGPD Operacional, ESG IFRS S1/S2, Inventario de Carbono, Escopo 3 Fornecedores, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 699.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Regulatory Full - 9 Agentes",
-          "type": "SaaS",
-          "description": "Todos os 9 agentes regulatorios brasileiros",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "esg_carbon_pack",
+      "id": "esg_carbon",
       "name": "ESG + Carbono",
-      "description": "ESG IFRS S1/S2 + Inventario de Carbono + Escopo 3 Fornecedores. Agentes: ESG IFRS S1/S2, Inventario de Carbono, Escopo 3 Fornecedores.",
+      "description": "ESG IFRS S1/S2 + Inventario de Carbono + Escopo 3 Fornecedores. RAG hibrido com grafo de normas regulatorias para respostas precisas sem alucinacao.",
       "pricing": {
         "type": "recurring",
         "interval": "month",
@@ -203,6 +77,69 @@
           "name": "ESG + Carbono",
           "type": "SaaS",
           "description": "ESG IFRS S1/S2 + Inventario de Carbono + Escopo 3 Fornecedores",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "aec_full",
+      "name": "AEC Full — Engenharia e Construcao",
+      "description": "12 agentes AEC com orquestracao hierarquica Multi-Agent System (HMAS), RAG hibrido e algoritmo genetico (GEA) para otimizacao automatica dos agentes.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 799.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "AEC Full — Engenharia e Construcao",
+          "type": "SaaS",
+          "description": "12 agentes AEC com HMAS e RAG",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "microsoft_pack",
+      "name": "Microsoft Compliance Pack",
+      "description": "6 agentes M365 (SharePoint, Teams, Planner, GitHub) com RAG hibrido, controle de custo por token (budget R$ 0,10/tarefa) e fallback automatico. Para empresas Microsoft 365/Azure.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 899.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Microsoft Compliance Pack",
+          "type": "SaaS",
+          "description": "6 agentes M365 com RAG e controle de custo",
+          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
+          "provisioning_type": "redirect"
+        }
+      ]
+    },
+    {
+      "id": "full_suite",
+      "name": "Full Suite — 30 Agentes",
+      "description": "Ecossistema completo de 30 agentes de IA. RAG hibrido (BM25 + vetorial + grafo de normas), controle de custo por token (budget R$ 0,10/tarefa), fallback automatico DeepSeek -> Gemini, memoria hibrida entre sessoes, 30 agentes orquestrados em um unico painel. Comece por R$ 119/mes e expanda conforme obrigacoes surgem.",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_usd": 1599.0,
+        "currency": "USD"
+      },
+      "hidden": false,
+      "components": [
+        {
+          "name": "Full Suite — 30 Agentes",
+          "type": "SaaS",
+          "description": "30 agentes de IA com RAG hibrido, fallback e memoria",
           "provisioning_url": "https://engenheiro-producao-ai.onrender.com/api/v1/microsoft-marketplace/subscribe",
           "provisioning_type": "redirect"
         }

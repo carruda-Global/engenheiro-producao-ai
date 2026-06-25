@@ -36,7 +36,7 @@ _active_subscriptions: dict[str, dict] = {}
 @router.get("/subscribe")
 async def subscribe(
     token: str = Query(default="", alias="token"),
-    plan: str = Query(default="full_suite"),
+    plan: str = Query(default="compliance_essencial"),
 ):
     if not token:
         raise HTTPException(

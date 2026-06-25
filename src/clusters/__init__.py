@@ -7,6 +7,9 @@ from src.clusters.all_agents import (
     VisualInspector, StatisticalAnalyst, NonConformanceManager, RootCauseAnalyst,
     CertificationManager, TestOptimizer, ComplaintAnalyst, TraceabilityManager, ImprovementAgent,
 )
+from src.agents.onboarding_funcionarios import OnboardingFuncionariosAgent
+from src.agents.atendimento_cliente_ptbr import AtendimentoClientePTBRAgent
+from src.agents.conciliacao_financeira import ConciliacaoFinanceiraAgent
 
 
 CLUSTER_PRODUCTION = {
@@ -45,8 +48,15 @@ CLUSTER_QUALITY = {
     "improvement_agent": ImprovementAgent,
 }
 
+CLUSTER_CROSS_SELL = {
+    "onboarding_funcionarios": OnboardingFuncionariosAgent,
+    "atendimento_cliente_ptbr": AtendimentoClientePTBRAgent,
+    "conciliacao_financeira": ConciliacaoFinanceiraAgent,
+}
+
 CLUSTERS = {
     "production": CLUSTER_PRODUCTION,
     "logistics": CLUSTER_LOGISTICS,
     "quality": CLUSTER_QUALITY,
+    "cross_sell": CLUSTER_CROSS_SELL,
 }

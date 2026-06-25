@@ -27,6 +27,9 @@ from .channel_agent import ChannelAgentAgent
 from .knowledge_agent import KnowledgeAgent
 from .facilitator_agent import FacilitatorAgentAgent
 from .dev_experience import DevExperienceAgent
+from .onboarding_funcionarios import OnboardingFuncionariosAgent
+from .atendimento_cliente_ptbr import AtendimentoClientePTBRAgent
+from .conciliacao_financeira import ConciliacaoFinanceiraAgent
 
 __all__ = [
     "SpecAnalystAgent",
@@ -58,4 +61,7 @@ __all__ = [
     "KnowledgeAgent",
     "FacilitatorAgentAgent",
     "DevExperienceAgent",
+    "OnboardingFuncionariosAgent",
+    "AtendimentoClientePTBRAgent",
+    "ConciliacaoFinanceiraAgent",
 ]

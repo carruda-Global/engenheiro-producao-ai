@@ -39,7 +39,7 @@ class OracleSubscriptionResponse(BaseModel):
 async def activate(
     token: str = Query(default="", alias="token"),
     product_id: str = Query(default="", alias="product_id"),
-    plan: str = Query(default="full_suite"),
+    plan: str = Query(default="compliance_essencial"),
 ):
     if not token:
         raise HTTPException(

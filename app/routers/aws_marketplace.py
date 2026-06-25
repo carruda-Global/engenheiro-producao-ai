@@ -37,7 +37,7 @@ _active_subscriptions: dict[str, dict] = {}
 @router.get("/subscribe")
 async def subscribe(
     x_amzn_marketplace_token: str = Query(default="", alias="x-amzn-marketplace-token"),
-    plan: str = Query(default="full_suite"),
+    plan: str = Query(default="compliance_essencial"),
 ):
     if not x_amzn_marketplace_token:
         raise HTTPException(
@@ -114,7 +114,7 @@ async def sns_notification(request: Request):
             _active_subscriptions[customer_id] = {
                 "subscription_id": f"aws_{uuid.uuid4().hex[:12]}",
                 "customer_id": customer_id,
-                "plan_id": "full_suite",
+                "plan_id": "compliance_essencial",
                 "status": "active",
                 "created_at": datetime.utcnow().isoformat(),
             }
@@ -136,7 +136,7 @@ async def check_entitlement(customer_id: str):
         return EntitlementResponse(
             active=True,
             customer_id=customer_id,
-            dimension=local_sub.get("plan_id", "full_suite"),
+            dimension=local_sub.get("plan_id", "compliance_essencial"),
         )
 
     aws_entitlement = aws.get_entitlement(customer_id)
@@ -153,7 +153,7 @@ async def check_entitlement(customer_id: str):
 @router.get("/verify")
 async def verify_subscription(
     customer_id: str = Query(...),
-    plan: str = Query(default="full_suite"),
+    plan: str = Query(default="compliance_essencial"),
 ):
     settings = Settings()
     aws = AWSMarketplaceClient(settings)

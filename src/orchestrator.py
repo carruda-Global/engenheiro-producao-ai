@@ -31,6 +31,9 @@ from src.agents import (
     KnowledgeAgent,
     FacilitatorAgentAgent,
     DevExperienceAgent,
+    OnboardingFuncionariosAgent,
+    AtendimentoClientePTBRAgent,
+    ConciliacaoFinanceiraAgent,
 )
 
 
@@ -74,6 +77,9 @@ class Orchestrator:
             "knowledge_agent": KnowledgeAgent,
             "facilitator_agent": FacilitatorAgentAgent,
             "dev_experience": DevExperienceAgent,
+            "onboarding_funcionarios": OnboardingFuncionariosAgent,
+            "atendimento_cliente_ptbr": AtendimentoClientePTBRAgent,
+            "conciliacao_financeira": ConciliacaoFinanceiraAgent,
         }
 
         for agent_id, agent_class in _agent_map.items():
@@ -116,6 +122,9 @@ class Orchestrator:
             "knowledge_agent",
             "facilitator_agent",
             "dev_experience",
+            "onboarding_funcionarios",
+            "atendimento_cliente_ptbr",
+            "conciliacao_financeira",
         ]
 
         for agent_id in workflow_chain:
@@ -162,6 +171,9 @@ class Orchestrator:
             "knowledge_agent": lambda: agent.indexar_documento(input_data.get("documento", ""), input_data.get("lang", "pt")),
             "facilitator_agent": lambda: agent.facilitar_reuniao(input_data.get("ata", ""), input_data.get("lang", "pt")),
             "dev_experience": lambda: agent.revisar_pr(input_data.get("pr_data", ""), input_data.get("lang", "pt")),
+            "onboarding_funcionarios": lambda: agent.gerar_checklist_admissao(input_data.get("dados_funcionario", ""), input_data.get("lang", "pt")),
+            "atendimento_cliente_ptbr": lambda: agent.responder_ticket(input_data.get("mensagem_cliente", ""), input_data.get("contexto", ""), input_data.get("lang", "pt")),
+            "conciliacao_financeira": lambda: agent.conciliar_extrato_nf(input_data.get("extrato", ""), input_data.get("notas_fiscais", ""), input_data.get("lang", "pt")),
         }
 
         handler = dispatch.get(agent_id)
@@ -259,6 +271,16 @@ class Orchestrator:
         elif agent_id == "dev_experience":
             pr = context.get("document", "") or context.get("pr_data", "")
             return agent.revisar_pr(pr) if pr else None
+        elif agent_id == "onboarding_funcionarios":
+            dados = context.get("document", "") or context.get("dados_funcionario", "")
+            return agent.gerar_checklist_admissao(dados) if dados else None
+        elif agent_id == "atendimento_cliente_ptbr":
+            msg = context.get("document", "") or context.get("mensagem_cliente", "")
+            return agent.responder_ticket(msg) if msg else None
+        elif agent_id == "conciliacao_financeira":
+            extrato = context.get("document", "") or context.get("extrato", "")
+            nfs = context.get("notas_fiscais", "")
+            return agent.conciliar_extrato_nf(extrato, nfs) if extrato else None
         return None
 
     def _needs_procurement(self, analysis: str) -> bool:

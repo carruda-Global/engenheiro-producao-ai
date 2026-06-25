@@ -14,13 +14,14 @@ from app.routers.subscriptions import router as subscriptions_router
 from app.routers.health import router as health_router
 from app.routers.aip_security import router as aip_router
 from app.routers.microsoft_marketplace import router as microsoft_router
+from app.routers.cross_selling import router as cross_selling_router
 
 settings = Settings()
 
 app = FastAPI(
     title="H-MAS EcoSystem AEC + Regulatory",
     description="27 Agentes de IA Hierárquicos para Engenharia de Produção",
-    version="3.0.0",
+    version="2.1.0",
 )
 
 app.add_middleware(
@@ -51,6 +52,7 @@ app.include_router(subscriptions_router, prefix="/api/subscriptions", tags=["sub
 app.include_router(health_router, prefix="/api", tags=["health"])
 app.include_router(aip_router)
 app.include_router(microsoft_router, prefix="/microsoft", tags=["microsoft"])
+app.include_router(cross_selling_router, prefix="/api/cross-sell", tags=["cross-sell"])
 
 
 @app.get("/")
@@ -59,8 +61,8 @@ async def root():
         "service": "H-MAS EcoSystem AEC + Regulatory",
         "version": "3.0.0",
         "status": "operational",
-        "agents_total": 27,
-        "clusters": ["production", "logistics", "quality"],
+        "agents_total": 30,
+        "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft"],
     }
 
 
@@ -72,7 +74,7 @@ async def get_status(tenant_id: str):
 @app.post("/api/agents/initialize")
 async def initialize_agents(data: dict):
     tenant = data.get("tenant", "default")
-    clusters = data.get("clusters", ["production", "logistics", "quality"])
+    clusters = data.get("clusters", ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft"])
     orchestrator.tenant_id = tenant
     await orchestrator.initialize()
     return {
