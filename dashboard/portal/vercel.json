@@ -15,7 +15,7 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "@api_url"
+    "VITE_API_URL": "https://engenheiro-producao-ai.onrender.com"
   },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
