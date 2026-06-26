@@ -216,3 +216,32 @@ async def agents_health():
         "total_agents": len(statuses),
         "agents": statuses,
     }
+
+
+MCP_SERVERS = {
+    "regulatory": {
+        "url": "https://engenheiro-producao-ai.onrender.com/mcp/regulatory/sse",
+        "tools": ["nr1_psicossocial", "lgpd_operacional", "tributario_cbs_ibs", "canal_denuncias", "igualdade_salarial", "compliance_anticorrupcao", "onboarding_funcionarios", "conciliacao_financeira"],
+    },
+    "esg": {
+        "url": "https://engenheiro-producao-ai.onrender.com/mcp/esg/sse",
+        "tools": ["esg_ifrs_diagnostico", "inventario_carbono", "escopo3_fornecedores", "cbam_certificate"],
+    },
+    "erp": {
+        "url": "https://engenheiro-producao-ai.onrender.com/mcp/erp/sse",
+        "tools": ["dynamics_sales", "dynamics_finance", "dynamics_hr", "agentforce_sdr", "agentforce_contracts", "oracle_erp_compliance", "oracle_hcm_regulatory", "sap_compliance_bridge", "sap_cbam_export", "powerbi_compliance"],
+    },
+}
+
+
+@app.get("/mcp/servers")
+async def list_mcp_servers():
+    return {"servers": MCP_SERVERS, "total": len(MCP_SERVERS)}
+
+
+@app.get("/mcp/{server_id}/manifest")
+async def mcp_server_manifest(server_id: str):
+    server = MCP_SERVERS.get(server_id)
+    if not server:
+        raise HTTPException(status_code=404, detail=f"MCP server '{server_id}' not found")
+    return {"id": server_id, "name": f"Ecosystem {server_id.title()} MCP", "description": f"MCP server for {server_id} agents", "tools": [{"name": t} for t in server["tools"]]}

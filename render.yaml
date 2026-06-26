@@ -17,6 +17,10 @@ services:
         value: https://engenheiro-producao-ai.onrender.com
       - key: DEEPSEEK_API_KEY
         sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CLAUDE_API_KEY
+        sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_API_KEY
@@ -42,6 +46,65 @@ services:
       - key: KAFKA_BOOTSTRAP_SERVERS
         sync: false
     healthCheckPath: /
+    numInstances: 1
+
+  - type: web
+    name: hmas-mcp-regulatory
+    env: docker
+    repo: https://github.com/carruda-Global/engenheiro-producao-ai.git
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerCommand: uvicorn src.mcp.regulatory_server:regulatory_app --host 0.0.0.0 --port 8010
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+    healthCheckPath: /health
+    numInstances: 1
+
+  - type: web
+    name: hmas-mcp-esg
+    env: docker
+    repo: https://github.com/carruda-Global/engenheiro-producao-ai.git
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerCommand: uvicorn src.mcp.esg_server:esg_app --host 0.0.0.0 --port 8011
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEEPSEEK_API_KEY
+        sync: false
+    healthCheckPath: /health
+    numInstances: 1
+
+  - type: web
+    name: hmas-mcp-erp
+    env: docker
+    repo: https://github.com/carruda-Global/engenheiro-producao-ai.git
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerCommand: uvicorn src.mcp.erp_server:erp_app --host 0.0.0.0 --port 8012
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: DYNAMICS_CLIENT_ID
+        sync: false
+      - key: DYNAMICS_CLIENT_SECRET
+        sync: false
+      - key: DYNAMICS_TENANT_ID
+        sync: false
+      - key: ORACLE_TENANT_ID
+        sync: false
+      - key: SAP_BTP_CLIENT_ID
+        sync: false
+      - key: SAP_BTP_CLIENT_SECRET
+        sync: false
+    healthCheckPath: /health
     numInstances: 1
 
 databases:
