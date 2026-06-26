@@ -71,14 +71,15 @@ async def process_microsoft_subscription(action: str, subscription_id: str, data
 @router.get("/landing")
 async def landing_page(token: str = Query(default="")):
     try:
-        db = SupabaseClient(get_settings())
+        settings = get_settings()
+        db = SupabaseClient(settings)
         db.client.table("microsoft_subscriptions").insert({
             "token": token,
             "status": "pending_activation",
             "source": "microsoft_marketplace",
         }).execute()
     except Exception as e:
-        logger.warning(f"Erro ao salvar landing no Supabase: {e}")
+        logger.warning(f"Supabase indisponivel no landing: {e}")
     return RedirectResponse(
         url=f"https://global-engenharia.com/ecosystem/activate?token={token}"
     )
