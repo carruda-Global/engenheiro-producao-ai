@@ -74,6 +74,9 @@ export default function Sidebar() {
             {a.icon} {t(`nav.${a.navKey}`)}
           </NavLink>
         ))}
+        <NavLink to="/journey" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+          🗺️ Jornadas
+        </NavLink>
         <NavLink to="/subscription" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
           💳 {t('nav.plans')}
         </NavLink>

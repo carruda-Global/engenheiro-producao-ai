@@ -1,21 +1,25 @@
 import json
 import logging
 import uuid
-from datetime import datetime, timezone
 
-from fastapi import APIRouter, HTTPException, Query, Request, Response
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
-from src.config import Settings
+from src.config import get_settings, Settings
 from src.monetization.microsoft_client import MicrosoftMarketplaceClient
 from src.monetization.plans import PLANS, get_plan
+from src.monetization.subscription_activator import (
+    activate_subscription,
+    deactivate_subscription,
+    get_subscription as get_active_sub,
+    get_subscription_by_id,
+    update_subscription_plan,
+)
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# ── Modelos ──────────────────────────────────────────────
 
 class MicrosoftActivationResponse(BaseModel):
     status: str
@@ -33,126 +37,49 @@ class MicrosoftWebhookResponse(BaseModel):
 class MicrosoftFulfillmentRequest(BaseModel):
     token: str
 
-# ── Estado em memória ────────────────────────────────────
 
-_active_subscriptions: dict[str, dict] = {}
+def _get_settings() -> Settings:
+    return get_settings()
 
-# ── HELPERS ──────────────────────────────────────────────
-
-def _get_or_create_settings() -> Settings:
-    return Settings()
-
-def _build_subscription_record(
-    subscription_id: str,
-    customer_id: str,
-    plan_id: str,
-    status: str = "active",
-    extra: dict | None = None,
-) -> dict:
-    record = {
-        "subscription_id": subscription_id,
-        "customer_id": customer_id,
-        "plan_id": plan_id,
-        "plan_name": (get_plan(plan_id) or {}).get("name", plan_id),
-        "status": status,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    if extra:
-        record.update(extra)
-    return record
-
-# ── FULFILLMENT (Azure Marketplace SaaS API v2) ──────────
-#
-# O Azure chama este endpoint SINCRONAMENTE quando um
-# cliente finaliza a assinatura no portal. O Azure espera
-# receber um 200 + application/json com o subscription
-# resolvido. Sem este endpoint a assinatura nunca é ativada.
-#
-# Documentação:
-# https://learn.microsoft.com/en-us/partner-center/marketplace/
-#   partner-center-portal/pc-saas-fulfillment-api-v2#resolve-a-purchased-subscription
 
 @router.post("/fulfill")
 async def fulfill_subscription(payload: MicrosoftFulfillmentRequest):
-    """
-    Endpoint de fulfillment chamado pelo Azure Marketplace
-    quando um cliente assina o SaaS.
-
-    O Azure envia { "token": "..." } e espera que o ISV
-    resolva o token via API de fulfillment da Microsoft e
-    devolva os dados da subscription.
-
-    NOTA: Durante a validação automática do preview, a Microsoft
-    envia tokens de teste que NÃO podem ser resolvidos na API real.
-    Nestes casos, geramos uma subscription temporária para que a
-    validação passe (sempre retornamos 200).
-    """
     if not payload.token:
         raise HTTPException(status_code=400, detail="token é obrigatório")
 
-    settings = _get_or_create_settings()
+    settings = _get_settings()
     client = MicrosoftMarketplaceClient(settings)
-
-    subscription_id = f"ms_test_{uuid.uuid4().hex[:12]}"
-    plan_id = "compliance_essencial"
-    customer_id = f"preview_customer_{uuid.uuid4().hex[:8]}"
-    customer_name = "Preview Customer"
-    activated = False
 
     try:
         resolved = client.resolve_purchase(payload.token)
-        if resolved:
-            subscription_id = resolved["subscription_id"]
-            plan_id = resolved.get("plan_id", plan_id)
-            customer_id = resolved["customer_id"]
-            customer_name = resolved.get("customer_name", customer_name)
-
-            plan_info = get_plan(plan_id)
-            if not plan_info:
-                logger.warning("Plano %s não encontrado nos planos locais, usando como está", plan_id)
-
-            _active_subscriptions[subscription_id] = _build_subscription_record(
-                subscription_id=subscription_id,
-                customer_id=customer_id,
-                plan_id=plan_id,
-                extra={
-                    "customer_name": customer_name,
-                    "purchaser_email": resolved.get("purchaser_email", ""),
-                    "purchaser_tenant_id": resolved.get("purchaser_tenant_id", ""),
-                },
-            )
-
-            activated = client.activate_subscription(subscription_id, plan_id)
-            if activated:
-                _active_subscriptions[subscription_id]["status"] = "active"
-            else:
-                _active_subscriptions[subscription_id]["status"] = "pending_activation"
-
-            logger.info(
-                "Fulfillment Azure: sub=%s customer=%s plan=%s activated=%s",
-                subscription_id, customer_id, plan_id, activated,
-            )
-        else:
-            logger.info(
-                "Fulfillment em modo preview: token=%s (não resolvido pela API, gerando sub fictícia)",
-                payload.token[:20],
-            )
-            _active_subscriptions[subscription_id] = _build_subscription_record(
-                subscription_id=subscription_id,
-                customer_id=customer_id,
-                plan_id=plan_id,
-                status="pending_activation",
-                extra={"customer_name": customer_name, "preview": True},
-            )
     except Exception as e:
-        logger.warning("Fulfillment com fallback (preview/token inválido): %s", e)
-        _active_subscriptions[subscription_id] = _build_subscription_record(
-            subscription_id=subscription_id,
-            customer_id=customer_id,
-            plan_id=plan_id,
-            status="pending_activation",
-            extra={"customer_name": customer_name, "preview": True},
-        )
+        logger.exception("resolve_purchase failed: token=%s", payload.token[:20])
+        raise HTTPException(status_code=502, detail=f"Falha ao resolver token Azure: {e}")
+
+    if not resolved:
+        raise HTTPException(status_code=502, detail="Token Azure resolvido mas sem dados de subscription")
+
+    subscription_id = resolved["subscription_id"]
+    plan_id = resolved.get("plan_id", "compliance_essencial")
+    customer_id = resolved["customer_id"]
+    customer_email = resolved.get("purchaser_email", "")
+    customer_name = resolved.get("customer_name", "Microsoft Customer")
+
+    activate_subscription(
+        source="microsoft",
+        external_id=subscription_id,
+        customer_id=customer_id,
+        plan_id=plan_id,
+        customer_email=customer_email,
+        customer_name=customer_name,
+    )
+
+    activated = client.activate_subscription(subscription_id, plan_id)
+
+    logger.info(
+        "Fulfillment Azure: sub=%s customer=%s plan=%s activated=%s",
+        subscription_id, customer_id, plan_id, activated,
+    )
 
     return {
         "subscriptionId": subscription_id,
@@ -163,8 +90,6 @@ async def fulfill_subscription(payload: MicrosoftFulfillmentRequest):
         "status": "fulfilled" if activated else "pending",
     }
 
-
-# ── SUBSCRIBE (landing page) ─────────────────────────────
 
 @router.get("/subscribe")
 async def subscribe(
@@ -181,10 +106,14 @@ async def subscribe(
     if not plan_info:
         raise HTTPException(status_code=404, detail="Plano nao encontrado")
 
-    settings = _get_or_create_settings()
+    settings = _get_settings()
     client = MicrosoftMarketplaceClient(settings)
 
-    resolved = client.resolve_purchase(token)
+    try:
+        resolved = client.resolve_purchase(token)
+    except Exception:
+        resolved = None
+
     if not resolved:
         raise HTTPException(
             status_code=400,
@@ -193,35 +122,32 @@ async def subscribe(
 
     subscription_id = resolved["subscription_id"]
     customer_id = resolved["customer_id"]
-    now = datetime.now(timezone.utc).isoformat()
+    customer_email = resolved.get("purchaser_email", "")
+    customer_name = resolved.get("customer_name", "")
 
-    _active_subscriptions[customer_id] = {
-        "subscription_id": subscription_id,
-        "customer_id": customer_id,
-        "customer_name": resolved.get("customer_name", ""),
-        "plan_id": plan,
-        "plan_name": plan_info["name"],
-        "status": "pending_activation",
-        "created_at": now,
-    }
+    activate_subscription(
+        source="microsoft",
+        external_id=subscription_id,
+        customer_id=customer_id,
+        plan_id=plan,
+        customer_email=customer_email,
+        customer_name=customer_name,
+    )
 
     activated = client.activate_subscription(subscription_id, plan)
-    if activated:
-        _active_subscriptions[customer_id]["status"] = "active"
 
-    status = "active" if activated else "pending_activation"
     logger.info(
-        "Microsoft subscribe: customer=%s plan=%s sub=%s status=%s",
-        customer_id, plan, subscription_id, status,
+        "Microsoft subscribe: customer=%s plan=%s sub=%s activated=%s",
+        customer_id, plan, subscription_id, activated,
     )
 
     redirect_url = (
-        f"https://engenheiro-producao-ai.onrender.com/dashboard?"
+        f"{settings.base_url}/dashboard?"
         f"subscription_id={subscription_id}&source=microsoft"
     )
 
     return MicrosoftActivationResponse(
-        status=status,
+        status="active" if activated else "pending_activation",
         subscription_id=subscription_id,
         customer_id=customer_id,
         plan=plan,
@@ -230,10 +156,34 @@ async def subscribe(
     )
 
 
-# ── WEBHOOK (notificações de mudança de estado) ──────────
-
 @router.post("/webhook")
-async def handle_webhook(request: Request):
+async def handle_webhook(request: Request, settings: Settings = Depends(get_settings)):
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        logger.warning("Microsoft webhook sem Authorization header")
+        raise HTTPException(status_code=401, detail="Authorization header ausente")
+
+    token = auth_header[7:]
+    try:
+        from jose import jwt
+        import httpx as httpx_jwks
+
+        jwks_url = f"https://login.microsoftonline.com/{settings.microsoft_tenant_id}/discovery/v2.0/keys"
+        async with httpx_jwks.AsyncClient() as http:
+            jwks_resp = await http.get(jwks_url)
+        jwks = jwks_resp.json()
+
+        jwt.decode(
+            token,
+            jwks,
+            algorithms=["RS256"],
+            audience=settings.microsoft_client_id,
+            issuer=f"https://sts.windows.net/{settings.microsoft_tenant_id}/",
+        )
+    except Exception:
+        logger.exception("Microsoft webhook com JWT invalido")
+        raise HTTPException(status_code=401, detail="Token Microsoft invalido")
+
     try:
         payload = await request.json()
     except json.JSONDecodeError:
@@ -241,40 +191,13 @@ async def handle_webhook(request: Request):
 
     event_type = payload.get("eventType", "")
     subscription_id = payload.get("subscriptionId", "")
+    logger.info("Microsoft webhook: %s sub=%s", event_type, subscription_id)
 
     if event_type == "Unsubscribe":
-        for _, sub in _active_subscriptions.items():
-            if sub.get("subscription_id") == subscription_id:
-                sub["status"] = "cancelled"
-        logger.info("Microsoft unsubscribe: sub=%s", subscription_id)
-
-    elif event_type == "Suspend":
-        for _, sub in _active_subscriptions.items():
-            if sub.get("subscription_id") == subscription_id:
-                sub["status"] = "suspended"
-        logger.info("Microsoft suspend: sub=%s", subscription_id)
-
-    elif event_type == "Reinstate":
-        for _, sub in _active_subscriptions.items():
-            if sub.get("subscription_id") == subscription_id:
-                sub["status"] = "active"
-        logger.info("Microsoft reinstate: sub=%s", subscription_id)
-
+        deactivate_subscription("microsoft", subscription_id)
     elif event_type == "ChangePlan":
         new_plan_id = payload.get("planId", "")
-        for _, sub in _active_subscriptions.items():
-            if sub.get("subscription_id") == subscription_id:
-                sub["plan_id"] = new_plan_id
-        logger.info("Microsoft change plan: sub=%s plan=%s", subscription_id, new_plan_id)
-
-    elif event_type == "Renew":
-        for _, sub in _active_subscriptions.items():
-            if sub.get("subscription_id") == subscription_id:
-                sub["status"] = "active"
-        logger.info("Microsoft renew: sub=%s", subscription_id)
-
-    else:
-        logger.info("Microsoft webhook evento desconhecido: %s", event_type)
+        update_subscription_plan("microsoft", subscription_id, new_plan_id)
 
     return MicrosoftWebhookResponse(
         received=True,
@@ -283,13 +206,13 @@ async def handle_webhook(request: Request):
     )
 
 
-# ── CONSULTA ─────────────────────────────────────────────
-
 @router.get("/subscription/{subscription_id}")
 async def get_subscription(subscription_id: str):
-    sub = _active_subscriptions.get(subscription_id)
+    sub = get_active_sub("microsoft", subscription_id)
     if not sub:
-        settings = _get_or_create_settings()
+        sub = get_subscription_by_id(subscription_id)
+    if not sub:
+        settings = _get_settings()
         client = MicrosoftMarketplaceClient(settings)
         remote = client.get_subscription(subscription_id)
         if remote:

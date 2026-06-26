@@ -185,6 +185,41 @@ async def run_workflow(req: WorkflowRequest, accept_language: str = Header(defau
     return {"results": results, "lang": lang}
 
 
+@router.get("/registry")
+async def list_agent_registry(cluster: str | None = None, status: str = "active"):
+    from src.database.postgres_client import get_conn
+    query = "SELECT * FROM agent_registry WHERE status = $1"
+    params = [status]
+    if cluster:
+        query += " AND cluster = $2"
+        params.append(cluster)
+    query += " ORDER BY cluster, name"
+
+    try:
+        async with get_conn() as conn:
+            rows = await conn.fetch(query, *params)
+        return {"agents": [dict(r) for r in rows]}
+    except Exception:
+        return {"agents": [], "note": "banco indisponivel"}
+
+
+@router.get("/registry/{agent_id}")
+async def get_agent_from_registry(agent_id: str):
+    from src.database.postgres_client import get_conn
+    try:
+        async with get_conn() as conn:
+            row = await conn.fetchrow(
+                "SELECT * FROM agent_registry WHERE id = $1", agent_id
+            )
+        if not row:
+            raise HTTPException(status_code=404, detail="Agente nao encontrado")
+        return dict(row)
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=503, detail="Banco indisponivel")
+
+
 @router.get("")
 async def list_agents(accept_language: str = Header(default="pt")):
     lang = _resolve_lang(None, accept_language)

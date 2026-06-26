@@ -1,9 +1,9 @@
 version: "3.9"
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: hmas-postgres
+  timescaledb:
+    image: timescale/timescaledb:2-pg16
+    container_name: hmas-timescaledb
     environment:
       POSTGRES_DB: hmas
       POSTGRES_USER: hmas
@@ -11,25 +11,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hmas"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  timescaledb:
-    image: timescale/timescaledb:2-pg16
-    container_name: hmas-timescaledb
-    environment:
-      POSTGRES_DB: hmas_metrics
-      POSTGRES_USER: hmas
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hmas_secret_2024}
-    ports:
-      - "5433:5432"
-    volumes:
       - timescaledb_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U hmas"]
       interval: 5s
@@ -85,32 +68,6 @@ services:
       timeout: 5s
       retries: 5
 
-  kafka:
-    image: confluentinc/cp-kafka:7.6.0
-    container_name: hmas-kafka
-    depends_on:
-      kafka-zookeeper:
-        condition: service_started
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: kafka-zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-    ports:
-      - "9093:9093"
-    volumes:
-      - kafka_data:/var/lib/kafka/data
-
-  kafka-zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.0
-    container_name: hmas-zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
   minio:
     image: minio/minio:latest
     container_name: hmas-minio
@@ -157,72 +114,6 @@ services:
     depends_on:
       - prometheus
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
-    container_name: hmas-elasticsearch
-    environment:
-      discovery.type: single-node
-      xpack.security.enabled: false
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
-    ports:
-      - "9200:9200"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.12.0
-    container_name: hmas-logstash
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./monitoring/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    depends_on:
-      - elasticsearch
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.12.0
-    container_name: hmas-kibana
-    environment:
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-
-  orchestrator:
-    build: .
-    container_name: hmas-orchestrator
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
-    volumes:
-      - ./config.yaml:/app/config.yaml
-      - ./data:/app/data
-    depends_on:
-      postgres:
-        condition: service_healthy
-      timescaledb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      neo4j:
-        condition: service_healthy
-      chromadb:
-        condition: service_healthy
-      kafka:
-        condition: service_started
-      minio:
-        condition: service_healthy
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
-      interval: 30s
-      timeout: 10s
-      start_period: 40s
-      retries: 3
-
   vault:
     image: hashicorp/vault:latest
     container_name: hmas-vault
@@ -236,15 +127,74 @@ services:
     volumes:
       - vault_data:/vault/file
 
+  orchestrator:
+    build: .
+    container_name: hmas-orchestrator
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - ./data:/app/data
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      chromadb:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+
+  mcp-regulatory:
+    build: .
+    container_name: hmas-mcp-regulatory
+    ports:
+      - "8010:8010"
+    env_file:
+      - .env
+    command: uvicorn src.mcp.regulatory_server:regulatory_app --host 0.0.0.0 --port 8010
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+
+  mcp-esg:
+    build: .
+    container_name: hmas-mcp-esg
+    ports:
+      - "8011:8011"
+    env_file:
+      - .env
+    command: uvicorn src.mcp.esg_server:esg_app --host 0.0.0.0 --port 8011
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8011/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+
 volumes:
-  postgres_data:
   timescaledb_data:
   redis_data:
   neo4j_data:
   chromadb_data:
-  kafka_data:
   minio_data:
   prometheus_data:
   grafana_data:
-  elasticsearch_data:
   vault_data:

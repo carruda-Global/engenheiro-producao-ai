@@ -1,5 +1,6 @@
 import os
 import re
+from functools import lru_cache
 from pathlib import Path
 from dotenv import load_dotenv
 import yaml
@@ -48,6 +49,12 @@ class Settings:
         self.stripe_secret_key: str = os.getenv("STRIPE_SECRET_KEY", "")
         self.stripe_publishable_key: str = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
         self.stripe_webhook_secret: str = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+        self.stripe_webhook_secret_production: str = os.getenv("STRIPE_WEBHOOK_SECRET_PRODUCTION", "")
+        self.stripe_webhook_secret_test: str = os.getenv("STRIPE_WEBHOOK_SECRET_TEST", "")
+
+        self.abacatepay_api_key: str = os.getenv("ABACATEPAY_API_KEY", "")
+        self.abacatepay_webhook_secret: str = os.getenv("ABACATEPAY_WEBHOOK_SECRET", "")
+        self.abacatepay_sandbox_mode: bool = os.getenv("ABACATEPAY_SANDBOX_MODE", "false").lower() == "true"
 
         self.supabase_url: str = os.getenv("SUPABASE_URL", "")
         self.supabase_api_key: str = os.getenv("SUPABASE_API_KEY", "")
@@ -78,15 +85,42 @@ class Settings:
 
         self.base_url: str = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
 
-        self.agents_config: dict = self.config.get("agents", {})
+        clusters = self.config.get("clusters", {})
+        self.agents_config: dict = {}
+        for cluster_name, cluster_cfg in clusters.items():
+            cluster_agents = cluster_cfg.get("agents", {})
+            for agent_id, agent_cfg in cluster_agents.items():
+                self.agents_config[agent_id] = agent_cfg
         self.plans_config: dict = self.config.get("stripe", {}).get("plans", {})
         self.cross_selling_config: dict = self.config.get("cross_selling", {})
 
         self.orchestrator_config = self.config.get("orchestrator", {})
         self.clusters_config = self.config.get("clusters", {})
 
+        self.llm_routing_config: dict = self.config.get("llm_routing", {})
+
     def validate(self) -> list[str]:
         errors: list[str] = []
         if not self.deepseek_api_key:
             errors.append("DEEPSEEK_API_KEY nao configurada")
+        sk = self.stripe_secret_key
+        if sk and ("sk_live_51Tkp" in sk or "sk_test_" not in sk):
+            if not sk.startswith("sk_live_") and not sk.startswith("sk_test_"):
+                errors.append("STRIPE_SECRET_KEY parece invalida — deve comecar com sk_live_ ou sk_test_")
+        if not self.stripe_secret_key:
+            errors.append("STRIPE_SECRET_KEY nao configurada")
+        if not self.supabase_url:
+            errors.append("SUPABASE_URL nao configurada")
+        if self.app_env != "test":
+            gemini_key = os.getenv("GEMINI_API_KEY", "")
+            claude_key = os.getenv("CLAUDE_API_KEY", "")
+            if not gemini_key:
+                errors.append("GEMINI_API_KEY nao configurada (necessaria para agentes sensiveis)")
+            if not claude_key:
+                errors.append("CLAUDE_API_KEY nao configurada (necessaria para orchestrator, critic, evolution)")
         return errors
+
+
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    return Settings()

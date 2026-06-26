@@ -360,13 +360,13 @@ Sem setup, sem contrato mínimo, ativa em 24h."
 
 ## 7. CHECKLIST DE IMPLEMENTAÇÃO
 
-- [ ] Adicionar `JOURNEY_TRIGGERS` ao `src/cross_selling.py`
-- [ ] Criar notificação de upsell no `dashboard/portal`
-- [ ] Adicionar campo `recommended_next_agent` na resposta da API de cada agente
-- [ ] Criar endpoint `GET /api/cross-sell/{tenant_id}` no `app/routers/cross_selling.py`
-- [ ] Adicionar desconto de ativação (15%) no Stripe para cross-sell triggers
-- [ ] Atualizar listings Microsoft e Salesforce com argumento RAG técnico (seção 5)
-- [ ] Criar página de "jornada do cliente" no portal mostrando os próximos agentes recomendados
+- [x] Adicionar `JOURNEY_TRIGGERS` ao `src/cross_selling.py`
+- [x] Criar notificação de upsell no `dashboard/portal` → `components/UpsellNotification.jsx`
+- [x] Adicionar campo `recommended_next_agent` na resposta da API de cada agente → exibido no `AgentDetail.jsx`
+- [x] Criar endpoint `GET /api/cross-sell/recommend/{tenant_id}` no `app/routers/cross_selling.py`
+- [ ] Adicionar desconto de ativação (15%) no Stripe para cross-sell triggers → script `scripts/setup_stripe_agentic_commerce.py` (executar manualmente)
+- [ ] Atualizar listings Microsoft e Salesforce com argumento RAG técnico (seção 5) — documentação manual
+- [x] Criar página de "jornada do cliente" no portal → `pages/Journey.jsx` (rota `/journey`)
 
 ---
 

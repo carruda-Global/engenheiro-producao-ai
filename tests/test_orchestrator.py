@@ -17,15 +17,26 @@ class TestOrchestrator:
             "inventario_carbono", "escopo3_fornecedores",
             "canal_denuncias", "igualdade_salarial",
             "compliance_anticorrupcao",
-            "regulatory_analyst",
-            "compliance_pm",
-            "channel_agent",
-            "knowledge_agent",
-            "facilitator_agent",
-            "dev_experience",
+            "regulatory_analyst", "compliance_pm",
+            "channel_agent", "knowledge_agent",
+            "facilitator_agent", "dev_experience",
             "onboarding_funcionarios",
             "atendimento_cliente_ptbr",
             "conciliacao_financeira",
+            "dynamics_sales", "dynamics_finance",
+            "dynamics_supply_chain", "dynamics_hr",
+            "dynamics_customer_service", "powerbi_compliance",
+            "agentforce_sdr", "agentforce_field_service",
+            "agentforce_contracts", "agentforce_revenue",
+            "agentforce_sustainability",
+            "oracle_erp_compliance", "oracle_hcm_regulatory",
+            "oracle_supply_chain_esg", "oracle_cx_sales",
+            "sap_compliance_bridge", "sap_predictive_maintenance",
+            "sap_cbam_export",
+            "master_orchestrator", "cross_platform_bridge",
+            "regulatory_watch", "client_intelligence",
+            "quality_critic", "meta_learning",
+            "ecosystem_evolution", "federated_knowledge",
         ]:
             assert agent_id in orchestrator.agents
 
@@ -33,7 +44,7 @@ class TestOrchestrator:
         orchestrator = Orchestrator(settings)
         result = orchestrator.health_check()
         assert result["status"] == "healthy"
-        assert len(result["agents"]) == 30
+        assert len(result["agents"]) == 56
 
     def test_run_agent_valid(self, settings, llm_mock):
         orchestrator = Orchestrator(settings)

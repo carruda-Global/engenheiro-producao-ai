@@ -5,7 +5,23 @@ from src.config import Settings
 class StripeClient:
     def __init__(self, settings: Settings):
         self.settings = settings
-        stripe.api_key = settings.stripe_secret_key
+        self._configure_api()
+
+    def _configure_api(self):
+        key = self.settings.stripe_secret_key
+        if not key or key.startswith("sk_live_51Tkp"):
+            import warnings
+            warnings.warn(
+                "Stripe live key seems exposed or invalid. Set STRIPE_SECRET_KEY via env var only."
+            )
+        stripe.api_key = key
+
+    def _get_webhook_secret(self) -> str:
+        env = self.settings.app_env
+        secret = getattr(self.settings, f"stripe_webhook_secret_{env}", None)
+        if not secret:
+            secret = self.settings.stripe_webhook_secret
+        return secret
 
     def create_checkout_session(
         self,
@@ -95,6 +111,6 @@ class StripeClient:
             return None
 
     def handle_webhook(self, payload: bytes, sig_header: str) -> dict:
-        endpoint_secret = self.settings.stripe_webhook_secret
+        endpoint_secret = self._get_webhook_secret()
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
         return {"type": event.type, "data": event.data.object}

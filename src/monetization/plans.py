@@ -145,9 +145,104 @@ PLANS: List[Dict] = [
         ],
     },
     {
-        "id": "full_suite",
-        "name": "Full Suite — 30 Agentes",
-        "price": 949700,
+        "id": "dynamics_pack",
+        "name": "Microsoft Dynamics Pack — 6 Agentes",
+        "price": 399000,
+        "currency": "brl",
+        "agents": [
+            "dynamics_sales", "dynamics_finance",
+            "dynamics_supply_chain", "dynamics_hr",
+            "dynamics_customer_service", "powerbi_compliance",
+        ],
+        "trial_days": 15,
+        "features": [
+            "Dynamics Sales Agent",
+            "Dynamics Finance Agent",
+            "Dynamics Supply Chain Agent",
+            "Dynamics HR Agent",
+            "Dynamics Customer Service Agent",
+            "Power BI Compliance Dashboard",
+        ],
+    },
+    {
+        "id": "agentforce_pack",
+        "name": "Salesforce Agentforce Pack — 5 Agentes",
+        "price": 369000,
+        "currency": "brl",
+        "agents": [
+            "agentforce_sdr", "agentforce_field_service",
+            "agentforce_contracts", "agentforce_revenue",
+            "agentforce_sustainability",
+        ],
+        "trial_days": 15,
+        "features": [
+            "Agentforce SDR Agent",
+            "Agentforce Field Service Agent",
+            "Agentforce Contract Intelligence",
+            "Agentforce Revenue Intelligence",
+            "Agentforce Sustainability Agent",
+        ],
+    },
+    {
+        "id": "oracle_pack",
+        "name": "Oracle Fusion Pack — 4 Agentes",
+        "price": 399000,
+        "currency": "brl",
+        "agents": [
+            "oracle_erp_compliance", "oracle_hcm_regulatory",
+            "oracle_supply_chain_esg", "oracle_cx_sales",
+        ],
+        "trial_days": 15,
+        "features": [
+            "Oracle ERP Compliance Agent",
+            "Oracle HCM Regulatory Agent",
+            "Oracle Supply Chain ESG Agent",
+            "Oracle CX Sales Intelligence Agent",
+        ],
+    },
+    {
+        "id": "sap_pack",
+        "name": "SAP Integration Pack — 3 Agentes",
+        "price": 429000,
+        "currency": "brl",
+        "agents": [
+            "sap_compliance_bridge", "sap_predictive_maintenance",
+            "sap_cbam_export",
+        ],
+        "trial_days": 15,
+        "features": [
+            "SAP Joule Compliance Bridge Agent",
+            "SAP Predictive Maintenance Agent",
+            "SAP CBAM Export Compliance Agent",
+            "Integracao com SAP S/4HANA e BTP",
+        ],
+    },
+    {
+        "id": "erp_full_bridge",
+        "name": "ERP Full Bridge — 18 Agentes",
+        "price": 1299000,
+        "currency": "brl",
+        "agents": [
+            "dynamics_sales", "dynamics_finance", "dynamics_supply_chain",
+            "dynamics_hr", "dynamics_customer_service", "powerbi_compliance",
+            "agentforce_sdr", "agentforce_field_service", "agentforce_contracts",
+            "agentforce_revenue", "agentforce_sustainability",
+            "oracle_erp_compliance", "oracle_hcm_regulatory",
+            "oracle_supply_chain_esg", "oracle_cx_sales",
+            "sap_compliance_bridge", "sap_predictive_maintenance", "sap_cbam_export",
+        ],
+        "trial_days": 15,
+        "features": [
+            "18 agentes ERP (Dynamics + Agentforce + Oracle + SAP)",
+            "Cross-Platform Bridge incluso",
+            "Suporte prioritario 24/7",
+            "Onboarding dedicado",
+        ],
+    },
+    {
+        "id": "full_suite_56",
+        "name": "Full Suite — 56 Agentes",
+        "price": 1999700,
         "currency": "brl",
         "agents": [
             "spec_analyst", "procurement", "inventory",
@@ -166,18 +261,42 @@ PLANS: List[Dict] = [
             "onboarding_funcionarios",
             "atendimento_cliente_ptbr",
             "conciliacao_financeira",
+            "dynamics_sales", "dynamics_finance",
+            "dynamics_supply_chain", "dynamics_hr",
+            "dynamics_customer_service", "powerbi_compliance",
+            "agentforce_sdr", "agentforce_field_service",
+            "agentforce_contracts", "agentforce_revenue",
+            "agentforce_sustainability",
+            "oracle_erp_compliance", "oracle_hcm_regulatory",
+            "oracle_supply_chain_esg", "oracle_cx_sales",
+            "sap_compliance_bridge", "sap_predictive_maintenance",
+            "sap_cbam_export",
+            "master_orchestrator", "cross_platform_bridge",
+            "regulatory_watch", "client_intelligence",
+            "quality_critic", "meta_learning",
+            "ecosystem_evolution", "federated_knowledge",
         ],
         "trial_days": 15,
         "features": [
-            "Todos os 30 agentes de IA",
+            "Todos os 56 agentes de IA",
             "AEC Core + Especializados + Conformidade",
             "Regulatorios + ESG + Carbono + Escopo 3",
-            "Microsoft Pack completo (6 agentes M365)",
-            "Cross-Sell: Onboarding, Atendimento, Conciliacao",
+            "Microsoft Pack (6 agentes M365)",
+            "Dynamics, Agentforce, Oracle, SAP",
+            "Master Orchestrator + Quality Critic",
+            "Regulatory Watch + Client Intelligence",
+            "Meta-Learning + Ecosystem Evolution",
+            "Cross-Platform Bridge incluso",
             "Suporte prioritario 24/7",
         ],
     },
 ]
+
+def get_plan(plan_id: str) -> dict | None:
+    for plan in PLANS:
+        if plan["id"] == plan_id:
+            return plan
+    return None
 
 
 def get_plan(plan_id: str) -> dict | None:

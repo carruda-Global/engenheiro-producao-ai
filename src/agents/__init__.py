@@ -30,6 +30,32 @@ from .dev_experience import DevExperienceAgent
 from .onboarding_funcionarios import OnboardingFuncionariosAgent
 from .atendimento_cliente_ptbr import AtendimentoClientePTBRAgent
 from .conciliacao_financeira import ConciliacaoFinanceiraAgent
+from .dynamics_sales import DynamicsSalesAgent
+from .dynamics_finance import DynamicsFinanceAgent
+from .dynamics_supply_chain import DynamicsSupplyChainAgent
+from .dynamics_hr import DynamicsHRAgent
+from .dynamics_customer_service import DynamicsCustomerServiceAgent
+from .powerbi_compliance import PowerBIComplianceAgent
+from .agentforce_sdr import AgentforceSDRAgent
+from .agentforce_field_service import AgentforceFieldServiceAgent
+from .agentforce_contracts import AgentforceContractIntelligenceAgent
+from .agentforce_revenue import AgentforceRevenueIntelligenceAgent
+from .agentforce_sustainability import AgentforceSustainabilityAgent
+from .oracle_erp_compliance import OracleERPComplianceAgent
+from .oracle_hcm_regulatory import OracleHCMRegulatoryAgent
+from .oracle_supply_chain_esg import OracleSupplyChainESGAgent
+from .oracle_cx_sales import OracleCXSalesIntelligenceAgent
+from .sap_compliance_bridge import SAPComplianceBridgeAgent
+from .sap_predictive_maintenance import SAPPredictiveMaintenanceAgent
+from .sap_cbam_export import SAPCBAMExportAgent
+from .master_orchestrator import MasterOrchestratorAgent
+from .cross_platform_bridge import CrossPlatformBridgeAgent
+from .regulatory_watch import RegulatoryWatchAgent
+from .client_intelligence import ClientIntelligenceAgent
+from .quality_critic import QualityCriticAgent
+from .meta_learning import MetaLearningAgent
+from .ecosystem_evolution import EcosystemEvolutionAgent
+from .federated_knowledge import FederatedKnowledgeAgent
 
 __all__ = [
     "SpecAnalystAgent",
@@ -64,4 +90,30 @@ __all__ = [
     "OnboardingFuncionariosAgent",
     "AtendimentoClientePTBRAgent",
     "ConciliacaoFinanceiraAgent",
+    "DynamicsSalesAgent",
+    "DynamicsFinanceAgent",
+    "DynamicsSupplyChainAgent",
+    "DynamicsHRAgent",
+    "DynamicsCustomerServiceAgent",
+    "PowerBIComplianceAgent",
+    "AgentforceSDRAgent",
+    "AgentforceFieldServiceAgent",
+    "AgentforceContractIntelligenceAgent",
+    "AgentforceRevenueIntelligenceAgent",
+    "AgentforceSustainabilityAgent",
+    "OracleERPComplianceAgent",
+    "OracleHCMRegulatoryAgent",
+    "OracleSupplyChainESGAgent",
+    "OracleCXSalesIntelligenceAgent",
+    "SAPComplianceBridgeAgent",
+    "SAPPredictiveMaintenanceAgent",
+    "SAPCBAMExportAgent",
+    "MasterOrchestratorAgent",
+    "CrossPlatformBridgeAgent",
+    "RegulatoryWatchAgent",
+    "ClientIntelligenceAgent",
+    "QualityCriticAgent",
+    "MetaLearningAgent",
+    "EcosystemEvolutionAgent",
+    "FederatedKnowledgeAgent",
 ]

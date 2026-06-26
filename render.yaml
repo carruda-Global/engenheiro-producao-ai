@@ -27,5 +27,26 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
+      - key: STRIPE_WEBHOOK_SECRET_PRODUCTION
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET_TEST
+        sync: false
+      - key: ABACATEPAY_API_KEY
+        sync: false
+      - key: ABACATEPAY_WEBHOOK_SECRET
+        sync: false
+      - key: ABACATEPAY_SANDBOX_MODE
+        value: "true"
+      - key: DATABASE_URL
+        sync: false
+      - key: KAFKA_BOOTSTRAP_SERVERS
+        sync: false
     healthCheckPath: /
     numInstances: 1
+
+databases:
+  - name: hmas-database
+    plan: starter
+    databaseName: hmas
+    user: hmas_user
+    region: ohio

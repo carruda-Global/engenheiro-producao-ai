@@ -5,6 +5,12 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from src.monetization.plans import PLANS, get_plan
+from src.monetization.subscription_activator import (
+    activate_subscription,
+    deactivate_subscription,
+    get_subscription as get_active_sub,
+    get_subscription_by_id,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +22,6 @@ class SalesforceActivationResponse(BaseModel):
     subscription_id: str | None = None
     plan: str | None = None
     redirect_url: str | None = None
-
-
-_active_subscriptions: dict[str, dict] = {}
 
 
 @router.post("/webhook")
@@ -34,14 +37,16 @@ async def handle_webhook(request: Request):
     logger.info("Salesforce webhook: %s subscriber=%s", event_type, subscriber_id)
 
     if event_type in ("SubscriptionCreate", "SubscriptionActivate"):
-        _active_subscriptions[subscriber_id] = {
-            "subscriber_id": subscriber_id,
-            "plan_id": payload.get("plan_id", "compliance_essencial"),
-            "status": "active",
-        }
+        activate_subscription(
+            source="salesforce",
+            external_id=subscriber_id,
+            customer_id=payload.get("customer_id", subscriber_id),
+            plan_id=payload.get("plan_id", "compliance_essencial"),
+            customer_email=payload.get("customer_email", ""),
+            customer_name=payload.get("customer_name", ""),
+        )
     elif event_type in ("SubscriptionCancel", "SubscriptionExpire"):
-        if subscriber_id in _active_subscriptions:
-            _active_subscriptions[subscriber_id]["status"] = "cancelled"
+        deactivate_subscription("salesforce", subscriber_id)
 
     return {"received": True, "event_type": event_type}
 
@@ -61,11 +66,12 @@ async def subscribe(
     if not plan_info:
         raise HTTPException(status_code=404, detail="Plano nao encontrado")
 
-    _active_subscriptions[subscriber_id] = {
-        "subscriber_id": subscriber_id,
-        "plan_id": plan,
-        "status": "active",
-    }
+    record = activate_subscription(
+        source="salesforce",
+        external_id=subscriber_id,
+        customer_id=subscriber_id,
+        plan_id=plan,
+    )
 
     redirect_url = (
         f"https://engenheiro-producao-ai.onrender.com/dashboard?"
@@ -73,11 +79,19 @@ async def subscribe(
     )
 
     return SalesforceActivationResponse(
-        status="active",
+        status=record["status"],
         subscription_id=subscriber_id,
         plan=plan,
         redirect_url=redirect_url,
     )
+
+
+@router.get("/subscription/{subscriber_id}")
+async def get_subscription(subscriber_id: str):
+    sub = get_active_sub("salesforce", subscriber_id)
+    if not sub:
+        raise HTTPException(status_code=404, detail="Assinatura nao encontrada")
+    return sub
 
 
 @router.get("/plans")

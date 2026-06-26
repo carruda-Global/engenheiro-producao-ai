@@ -1,13 +1,22 @@
-from pathlib import Path
+import uuid
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from src.config import Settings
-from src.core.orchestrator import HMASOrchestrator
+from src.orchestrator import Orchestrator as HMASOrchestrator
 from src.monitoring.agent_dashboard import AgentDashboard
 from src.security.circuit_breaker import CircuitBreaker
+try:
+    from src.database.postgres_client import init_pool, close_pool, get_conn
+except ImportError:
+    init_pool = close_pool = get_conn = None
+try:
+    from src.messaging.producer import init_producer, close_producer, enqueue_agent_task
+except ImportError:
+    init_producer = close_producer = enqueue_agent_task = None
 
 from app.routers.salesforce_marketplace import router as salesforce_router
 from app.routers.subscriptions import router as subscriptions_router
@@ -15,24 +24,40 @@ from app.routers.health import router as health_router
 from app.routers.aip_security import router as aip_router
 from app.routers.microsoft_marketplace import router as microsoft_router
 from app.routers.cross_selling import router as cross_selling_router
+from app.routers.google_marketplace import router as google_router
+from app.routers.aws_marketplace import router as aws_router
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+try:
+    from app.routers.oracle_marketplace import router as oracle_router
+except ImportError:
+    oracle_router = APIRouter()
+    logger.warning("Oracle router nao carregado (oci nao instalado)")
 
 settings = Settings()
 
+errors = settings.validate()
+if errors:
+    raise RuntimeError(f"Configuracao invalida no startup: {errors}")
+
 app = FastAPI(
     title="H-MAS EcoSystem AEC + Regulatory",
-    description="27 Agentes de IA Hierárquicos para Engenharia de Produção",
-    version="2.1.0",
+    description="56 Agentes de IA Hierárquicos para Engenharia de Produção",
+    version="3.0.0",
 )
 
+cors_origins = ["*"] if settings.app_env != "production" else [settings.base_url]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=False if cors_origins == ["*"] else True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-orchestrator = HMASOrchestrator(tenant_id="default")
+orchestrator = HMASOrchestrator(settings)
 dashboard = AgentDashboard()
 circuit_breaker = CircuitBreaker(threshold=5, reset_seconds=60)
 
@@ -42,9 +67,90 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup():
+    await init_pool()
+    await init_producer()
     logger.info("Inicializando H-MAS com 30 agentes...")
     await orchestrator.initialize()
-    logger.info("Sistema pronto. 30/30 agentes ativos.")
+    logger.info("Sistema pronto. 56/56 agentes ativos.")
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await close_producer()
+    await close_pool()
+
+
+class AgentExecuteRequest(BaseModel):
+    tenant_id: str = "default"
+    agent_id: str
+    task_type: str = "execute"
+    payload: dict = {}
+
+
+@app.post("/api/agents/execute")
+async def execute_task(request: AgentExecuteRequest):
+    task_id = str(uuid.uuid4())
+
+    try:
+        async with get_conn() as conn:
+            await conn.execute(
+                """
+                INSERT INTO agent_executions
+                    (id, tenant_id, agent_id, task_type, status, input_summary)
+                VALUES ($1, $2, $3, $4, 'queued', $5)
+                """,
+                task_id,
+                request.tenant_id,
+                request.agent_id,
+                request.task_type,
+                str(request.payload)[:500],
+            )
+    except Exception:
+        logger.warning("Banco indisponivel, executando síncrono")
+        result = await orchestrator.execute_task(request.dict(), user_id=request.tenant_id)
+        return result
+
+    try:
+        async with get_conn() as conn:
+            row = await conn.fetchrow(
+                "SELECT cluster FROM agent_registry WHERE id = $1 AND status = 'active'",
+                request.agent_id,
+            )
+    except Exception:
+        row = None
+
+    if row:
+        await enqueue_agent_task(
+            task_id=task_id,
+            tenant_id=request.tenant_id,
+            agent_id=request.agent_id,
+            cluster=row["cluster"],
+            task_type=request.task_type,
+            payload=request.payload,
+        )
+        return {
+            "task_id": task_id,
+            "status": "queued",
+            "poll_url": f"/api/tasks/{task_id}",
+            "message": "Task enfileirada. Use poll_url para acompanhar o resultado.",
+        }
+
+    result = await orchestrator.execute_task(request.dict(), user_id=request.tenant_id)
+    return result
+
+
+@app.get("/api/tasks/{task_id}")
+async def get_task_status(task_id: str):
+    try:
+        async with get_conn() as conn:
+            row = await conn.fetchrow(
+                "SELECT * FROM agent_executions WHERE id = $1", task_id,
+            )
+        if row:
+            return dict(row)
+    except Exception:
+        pass
+    raise HTTPException(status_code=404, detail="Task nao encontrada")
 
 
 app.include_router(salesforce_router, prefix="/salesforce", tags=["salesforce"])
@@ -53,6 +159,9 @@ app.include_router(health_router, prefix="/api", tags=["health"])
 app.include_router(aip_router)
 app.include_router(microsoft_router, prefix="/microsoft", tags=["microsoft"])
 app.include_router(cross_selling_router, prefix="/api/cross-sell", tags=["cross-sell"])
+app.include_router(google_router, prefix="/google", tags=["google"])
+app.include_router(aws_router, prefix="/aws", tags=["aws"])
+app.include_router(oracle_router, prefix="/oracle", tags=["oracle"])
 
 
 @app.get("/")
@@ -61,8 +170,8 @@ async def root():
         "service": "H-MAS EcoSystem AEC + Regulatory",
         "version": "3.0.0",
         "status": "operational",
-        "agents_total": 30,
-        "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft"],
+        "agents_total": 56,
+        "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "self_improvement"],
     }
 
 
@@ -74,7 +183,7 @@ async def get_status(tenant_id: str):
 @app.post("/api/agents/initialize")
 async def initialize_agents(data: dict):
     tenant = data.get("tenant", "default")
-    clusters = data.get("clusters", ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft"])
+    clusters = data.get("clusters", ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "self_improvement"])
     orchestrator.tenant_id = tenant
     await orchestrator.initialize()
     return {
@@ -83,12 +192,6 @@ async def initialize_agents(data: dict):
         "clusters": clusters,
         "agents_total": len(orchestrator.agents),
     }
-
-
-@app.post("/api/agents/execute")
-async def execute_task(data: dict):
-    result = await orchestrator.execute_task(data, user_id=data.get("user_id", "anonymous"))
-    return result
 
 
 @app.get("/api/agents/{agent_id}/status")

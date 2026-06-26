@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 
@@ -84,13 +84,26 @@ export default function AgentDetail() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [recommendation, setRecommendation] = useState(null);
+
+  const agentKey = agentId?.replace(/-/g, '_');
+
+  useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_URL || '';
+    fetch(`${apiBase}/api/cross-sell/recommend/default?completed_agent=${agentKey}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.recommendation) setRecommendation(data.recommendation);
+      })
+      .catch(() => {});
+  }, [agentKey]);
 
   if (!config) {
-    const agent = t(`agents.${agentId?.replace(/-/g, '_')}`, { returnObjects: true });
+    const agent = t(`agents.${agentKey}`, { returnObjects: true });
     if (!agent || !agent.name) return <div className="error-page">{t('agent_detail.not_found')}</div>;
 
     const fallbackConfig = {
-      key: agentId.replace(/-/g, '_'),
+      key: agentKey,
       fields: [{ key: 'input', type: 'textarea', placeholderKey: t('common.loading') }],
       action: async (d) => {
         const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/agents/${agentId}/run`, {
@@ -101,7 +114,7 @@ export default function AgentDetail() {
         return res.json();
       },
     };
-    return renderDetail(fallbackConfig, form, setForm, result, setResult, loading, setLoading, error, setError, handleSubmit, t);
+    return renderDetail(fallbackConfig, form, setForm, result, setResult, loading, setLoading, error, setError, handleSubmit, t, recommendation);
   }
 
   const handleSubmit = async (e) => {
@@ -119,15 +132,43 @@ export default function AgentDetail() {
     }
   };
 
-  return renderDetail(config, form, setForm, result, setResult, loading, setLoading, error, setError, handleSubmit, t);
+  return renderDetail(config, form, setForm, result, setResult, loading, setLoading, error, setError, handleSubmit, t, recommendation);
 }
 
-function renderDetail(config, form, setForm, result, setResult, loading, setLoading, error, setError, handleSubmit, t) {
+function renderDetail(config, form, setForm, result, setResult, loading, setLoading, error, setError, handleSubmit, t, recommendation) {
   const agent = t(`agents.${config.key}`, { returnObjects: true });
   return (
     <div className="agent-detail">
       <h1>{agent.icon} {agent.name}</h1>
       <p className="agent-description">{agent.description}</p>
+
+      {recommendation && (
+        <div className="cross-sell-banner" style={{
+          background: 'linear-gradient(135deg, #1e40af, #3b82f6)',
+          color: '#fff',
+          borderRadius: 12,
+          padding: '12px 16px',
+          marginBottom: 20,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}>
+          <span style={{ fontSize: '1.3rem' }}>➡️</span>
+          <div style={{ flex: 1 }}>
+            <strong style={{ fontSize: '0.9rem' }}>Próximo passo recomendado:</strong>
+            <p style={{ fontSize: '0.82rem', opacity: 0.9, marginTop: 2 }}>
+              {recommendation.message}
+            </p>
+          </div>
+          <Link
+            to={`/agent/${recommendation.recommended_agent.replace(/_/g, '-')}`}
+            className="btn-primary"
+            style={{ background: '#fff', color: '#1e40af', border: 'none', padding: '6px 14px', borderRadius: 8, fontWeight: 600, fontSize: '0.82rem', textDecoration: 'none', whiteSpace: 'nowrap' }}
+          >
+            Conhecer {recommendation.recommended_agent_name}
+          </Link>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="agent-form">
         {config.fields.map((f) => (

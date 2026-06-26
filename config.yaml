@@ -1,19 +1,27 @@
 app:
-  name: "H-MAS EcoSystem AEC + Regulatory"
-  version: "2.1.0"
+  name: "H-MAS EcoSystem AEC + Regulatory + ERP"
+  version: "3.0.0"
   debug: false
   log_level: INFO
   environment: ${APP_ENV:-development}
 
 llm_routing:
   default: deepseek
+  sensitive_llm: gemini
+  reasoning_llm: claude-api
   sensitive_agents:
     - nr1_psicossocial
     - lgpd_operacional
     - canal_denuncias
     - igualdade_salarial
     - compliance_anticorrupcao
-  sensitive_llm: gemini
+    - dynamics_hr
+    - oracle_hcm_regulatory
+    - onboarding_funcionarios
+  reasoning_agents:
+    - master_orchestrator
+    - quality_critic
+    - ecosystem_evolution
 
 clusters:
   aec_core:
@@ -70,6 +78,60 @@ clusters:
       onboarding_funcionarios: { enabled: true, budget_per_task: 0.08 }
       atendimento_cliente_ptbr: { enabled: true, budget_per_task: 0.06 }
       conciliacao_financeira: { enabled: true, budget_per_task: 0.10 }
+  dynamics:
+    enabled: true
+    max_parallel: 5
+    agents:
+      dynamics_sales: { enabled: true, budget_per_task: 0.10 }
+      dynamics_finance: { enabled: true, budget_per_task: 0.10 }
+      dynamics_supply_chain: { enabled: true, budget_per_task: 0.10 }
+      dynamics_hr: { enabled: true, budget_per_task: 0.08 }
+      dynamics_customer_service: { enabled: true, budget_per_task: 0.08 }
+      powerbi_compliance: { enabled: true, budget_per_task: 0.06 }
+  agentforce:
+    enabled: true
+    max_parallel: 5
+    agents:
+      agentforce_sdr: { enabled: true, budget_per_task: 0.10 }
+      agentforce_field_service: { enabled: true, budget_per_task: 0.10 }
+      agentforce_contracts: { enabled: true, budget_per_task: 0.08 }
+      agentforce_revenue: { enabled: true, budget_per_task: 0.10 }
+      agentforce_sustainability: { enabled: true, budget_per_task: 0.08 }
+  oracle:
+    enabled: true
+    max_parallel: 5
+    agents:
+      oracle_erp_compliance: { enabled: true, budget_per_task: 0.10 }
+      oracle_hcm_regulatory: { enabled: true, budget_per_task: 0.08 }
+      oracle_supply_chain_esg: { enabled: true, budget_per_task: 0.10 }
+      oracle_cx_sales: { enabled: true, budget_per_task: 0.08 }
+  sap:
+    enabled: true
+    max_parallel: 5
+    agents:
+      sap_compliance_bridge: { enabled: true, budget_per_task: 0.12 }
+      sap_predictive_maintenance: { enabled: true, budget_per_task: 0.10 }
+      sap_cbam_export: { enabled: true, budget_per_task: 0.12 }
+  coordination:
+    enabled: true
+    max_parallel: 1
+    agents:
+      master_orchestrator: { enabled: true, budget_per_task: 0.15 }
+      cross_platform_bridge: { enabled: true, budget_per_task: 0.10 }
+  intelligence:
+    enabled: true
+    max_parallel: 3
+    agents:
+      regulatory_watch: { enabled: true, budget_per_task: 0.08 }
+      client_intelligence: { enabled: true, budget_per_task: 0.08 }
+      quality_critic: { enabled: true, budget_per_task: 0.06 }
+  self_improvement:
+    enabled: true
+    max_parallel: 1
+    agents:
+      meta_learning: { enabled: true, budget_per_task: 0.08 }
+      ecosystem_evolution: { enabled: true, budget_per_task: 0.10 }
+      federated_knowledge: { enabled: false, budget_per_task: 0.10 }
 
 deepseek:
   api_base: https://api.deepseek.com/v1
@@ -295,27 +357,27 @@ stripe:
     tributario_full:
       name: "Tributário CBS/IBS - Full"
       amount_cents: 149000
-      price_id: "price_1Tm0gZQn4rfjkSvEAX0DjgNe"
+      price_id: "price_1TmLJzQn4rfjkSvEWrh5bHV6"
 
     cross_sell_harmony:
       name: "Cross-Sell Harmony — Onboarding"
       agents: ["onboarding_funcionarios"]
       amount_cents: 49000
-      price_id: "price_crossell_onboarding"
+      price_id: "price_1TmLJtQn4rfjkSvETvw4iHjI"
       positioning: "Entrada jornada RH — onboarding automatizado"
 
     atendimento_plus:
       name: "Atendimento Plus — Suporte PT-BR"
       agents: ["atendimento_cliente_ptbr"]
       amount_cents: 39000
-      price_id: "price_atendimento_ptbr"
+      price_id: "price_1TmLJuQn4rfjkSvE8HPg3B0t"
       positioning: "Upsell suporte — tickets L1 automaticos via WhatsApp"
 
     conciliacao_pro:
       name: "Conciliacao Pro — Fechamento Mensal"
       agents: ["conciliacao_financeira"]
       amount_cents: 79000
-      price_id: "price_conciliacao_financeira"
+      price_id: "price_1TmLJxQn4rfjkSvEeItnhs5i"
       positioning: "Upsell financeiro — conciliacao automatica de NFs e extratos"
 
   # Planos legados — manter ativos para assinaturas existentes, não exibir para novos clientes

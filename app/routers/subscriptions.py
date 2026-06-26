@@ -1,8 +1,18 @@
-from fastapi import APIRouter, HTTPException, Query, Request
+import logging
+
+from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
 
 from src.monetization.plans import PLANS, get_plan
+from src.config import get_settings, Settings
+from src.monetization.stripe_client import StripeClient
+from src.monetization.abacatepay_client import AbacatepayClient
+from src.monetization.subscription_activator import (
+    activate_subscription,
+    deactivate_subscription,
+)
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -27,13 +37,8 @@ class CreateCheckoutRequest(BaseModel):
 
 
 @router.post("/checkout")
-async def create_checkout(req: CreateCheckoutRequest):
-    from src.config import Settings
-    from src.monetization.stripe_client import StripeClient
-    import traceback
-
+async def create_checkout(req: CreateCheckoutRequest, settings: Settings = Depends(get_settings)):
     try:
-        settings = Settings()
         plan_config = settings.plans_config.get(req.plan_id)
         if not plan_config:
             raise HTTPException(status_code=400, detail=f"Plano {req.plan_id} nao encontrado")
@@ -43,7 +48,51 @@ async def create_checkout(req: CreateCheckoutRequest):
         )
         if not url:
             raise HTTPException(status_code=400, detail="Falha ao criar sessao de checkout")
-        return {"checkout_url": url}
+        return {"checkout_url": url, "method": "stripe"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
+
+
+class CreatePixCheckoutRequest(BaseModel):
+    plan_id: str
+    customer_email: str | None = None
+    customer_name: str | None = None
+    success_url: str | None = None
+
+
+@router.post("/checkout/pix")
+async def create_pix_checkout(req: CreatePixCheckoutRequest, settings: Settings = Depends(get_settings)):
+    try:
+        plan_config = settings.plans_config.get(req.plan_id)
+        if not plan_config:
+            raise HTTPException(status_code=400, detail=f"Plano {req.plan_id} nao encontrado")
+
+        async with AbacatepayClient(settings) as client:
+            result = await client.create_pix_checkout(
+                plan_id=req.plan_id,
+                customer_email=req.customer_email,
+                customer_name=req.customer_name,
+                success_url=req.success_url,
+            )
+        if not result:
+            raise HTTPException(status_code=400, detail="Falha ao criar checkout PIX")
+        return result | {"method": "pix"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
+
+
+@router.get("/checkout/pix/{checkout_id}")
+async def get_pix_checkout_status(checkout_id: str, settings: Settings = Depends(get_settings)):
+    try:
+        async with AbacatepayClient(settings) as client:
+            status = await client.get_checkout_status(checkout_id)
+        if not status:
+            raise HTTPException(status_code=404, detail="Checkout nao encontrado")
+        return status
     except HTTPException:
         raise
     except Exception as e:
@@ -51,19 +100,22 @@ async def create_checkout(req: CreateCheckoutRequest):
 
 
 @router.post("/webhook")
-async def stripe_webhook(request: Request):
+async def stripe_webhook(request: Request, settings: Settings = Depends(get_settings)):
     import stripe
-    from src.config import Settings
 
-    settings = Settings()
     stripe.api_key = settings.stripe_secret_key
 
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature", "")
 
+    env = settings.app_env
+    webhook_secret = getattr(settings, f"stripe_webhook_secret_{env}", None)
+    if not webhook_secret:
+        webhook_secret = settings.stripe_webhook_secret
+
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.stripe_webhook_secret
+            payload, sig_header, webhook_secret
         )
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid payload")
@@ -76,12 +128,52 @@ async def stripe_webhook(request: Request):
     if event_type == "checkout.session.completed":
         customer_email = data.get("customer_details", {}).get("email", "")
         subscription_id = data.get("subscription", "")
-        print(f"Novo checkout concluido: {customer_email} - Sub: {subscription_id}")
+        customer_id = data.get("customer", "") or data.get("client_reference_id", "")
+        plan_metadata = data.get("metadata", {})
+        plan_id = plan_metadata.get("plan_id", "")
+        activate_subscription(
+            source="stripe",
+            external_id=subscription_id,
+            customer_id=customer_id or subscription_id,
+            plan_id=plan_id,
+            customer_email=customer_email,
+        )
+        logger.info("Stripe checkout completed: email=%s sub=%s plan=%s", customer_email, subscription_id, plan_id)
 
     elif event_type == "customer.subscription.updated":
-        print(f"Assinatura atualizada: {data.id} - Status: {data.status}")
+        logger.info("Stripe subscription updated: sub=%s status=%s", data.id, data.status)
 
     elif event_type == "customer.subscription.deleted":
-        print(f"Assinatura cancelada: {data.id}")
+        deactivate_subscription("stripe", data.id)
+        logger.info("Stripe subscription deleted: sub=%s", data.id)
+
+    return {"received": True, "type": event_type, "env": env}
+
+
+@router.post("/webhook/abacatepay")
+async def abacatepay_webhook(request: Request, settings: Settings = Depends(get_settings)):
+    async with AbacatepayClient(settings) as client:
+        payload = await request.body()
+        signature = request.headers.get("x-abacatepay-signature", "")
+        event = client.verify_webhook(payload, signature)
+
+    if not event:
+        raise HTTPException(status_code=400, detail="Invalid signature")
+
+    event_type = event["type"]
+    data = event["data"]
+
+    if event_type == "checkout.paid":
+        checkout_id = data.get("id", "")
+        plan_id = data.get("metadata", {}).get("plan_id", "")
+        customer_email = data.get("customer_email", "")
+        activate_subscription(
+            source="abacatepay",
+            external_id=checkout_id,
+            customer_id=checkout_id,
+            plan_id=plan_id,
+            customer_email=customer_email,
+        )
+        logger.info("PIX checkout paid: checkout=%s plan=%s email=%s", checkout_id, plan_id, customer_email)
 
     return {"received": True, "type": event_type}

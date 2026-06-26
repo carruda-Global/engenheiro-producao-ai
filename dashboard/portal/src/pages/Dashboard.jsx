@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AgentCard from '../components/AgentCard';
+import UpsellNotification from '../components/UpsellNotification';
 
 const agentKeys = [
   'spec_analyst', 'procurement', 'inventory', 'logistics', 'field_execution',
@@ -43,12 +44,15 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const [health, setHealth] = useState(null);
   const [apiOk, setApiOk] = useState(false);
+  const [recentAgent, setRecentAgent] = useState(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL || ''}/health`)
       .then((r) => r.json())
       .then((d) => { setHealth(d); setApiOk(true); })
       .catch(() => setApiOk(false));
+    const last = localStorage.getItem('last_agent_used');
+    if (last) setRecentAgent(last);
   }, []);
 
   return (
@@ -67,6 +71,8 @@ export default function Dashboard() {
           <span>📦 {t('dashboard.version')}: {health.version}</span>
         </div>
       )}
+
+      {recentAgent && <UpsellNotification completedAgent={recentAgent} />}
 
       <div className="agent-grid">
         {agentKeys.map((key) => {
