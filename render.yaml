@@ -54,6 +54,12 @@ services:
         sync: false
       - key: KAFKA_BOOTSTRAP_SERVERS
         sync: false
+      - key: AZURE_TENANT_ID
+        sync: false
+      - key: AZURE_CLIENT_ID
+        sync: false
+      - key: AZURE_CLIENT_SECRET
+        sync: false
     healthCheckPath: /
     numInstances: 1
 
