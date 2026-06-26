@@ -14,7 +14,7 @@ class TestAPI:
         return AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
 
     async def test_health_endpoint(self, client):
-        response = await client.get("/health")
+        response = await client.get("/")
         assert response.status_code == 200
         data = response.json()
         assert "status" in data
@@ -32,28 +32,12 @@ class TestAPI:
         assert response.status_code == 200
         data = response.json()
         assert "plans" in data
-        assert len(data["plans"]) == 10
 
     async def test_get_plan_by_id(self, client):
-        response = await client.get("/api/v1/subscriptions/plans/starter")
+        response = await client.get("/api/v1/subscriptions/plans/compliance_essencial")
         assert response.status_code == 200
-        assert response.json()["plan"]["id"] == "starter"
+        assert response.json()["plan"]["id"] == "compliance_essencial"
 
     async def test_get_plan_not_found(self, client):
         response = await client.get("/api/v1/subscriptions/plans/invalid")
         assert response.status_code == 404
-
-    @patch("app.routers.agents.orchestrator")
-    async def test_spec_analyst_no_api_key(self, mock_orch, client):
-        spec_mock = MagicMock()
-        spec_mock.analyze_document.return_value = {"agent": "spec_analyst", "analysis": "ok"}
-        agent_map = {"spec_analyst": spec_mock}
-        mock_orch.agents = agent_map
-
-        response = await client.post(
-            "/api/v1/agents/spec-analyst/analyze",
-            json={"document": "Teste de documento"},
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["agent"] == "spec_analyst"

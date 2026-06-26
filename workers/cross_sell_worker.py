@@ -3,88 +3,37 @@ import json
 import logging
 import os
 import sys
-
-from aiokafka import AIOKafkaConsumer
+from typing import Any
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.database.postgres_client import init_pool, close_pool, get_conn
-from src.core.agent_loader import load_agent
-from src.config import get_settings
+from workers.base_worker import BaseWorker
+from src.cross_selling import get_cross_sell_recommendation, get_journey_progress
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("cross_sell_worker")
-
-TOPIC = "cross_sell.tasks"
-GROUP_ID = "cross_sell-worker-group"
+logger = logging.getLogger(__name__)
 
 
-async def process_task(task: dict) -> None:
-    task_id = task["task_id"]
-    agent_id = task["agent_id"]
-
-    async with get_conn() as conn:
-        await conn.execute(
-            "UPDATE agent_executions SET status='running', started_at=now() WHERE id=$1",
-            task_id,
+class CrossSellWorker(BaseWorker):
+    def __init__(self):
+        super().__init__(
+            stream="cross_sell:tasks",
+            group="cross_sell-workers",
+            consumer=f"cross_sell-worker-{os.getpid()}",
         )
 
-    try:
-        agent = load_agent(agent_id)
-        settings = get_settings()
-        result = await agent.execute(task["payload"], settings)
-
-        async with get_conn() as conn:
-            await conn.execute(
-                """
-                UPDATE agent_executions
-                SET status='completed', completed_at=now(),
-                    result_summary=$2, llm_tokens_used=$3
-                WHERE id=$1
-                """,
-                task_id,
-                str(result)[:1000],
-                result.get("tokens_used", 0) if isinstance(result, dict) else 0,
-            )
-        logger.info("Task concluida: task=%s agent=%s", task_id, agent_id)
-
-    except Exception:
-        logger.exception("Erro ao processar task=%s agent=%s", task_id, agent_id)
-        async with get_conn() as conn:
-            await conn.execute(
-                """
-                UPDATE agent_executions
-                SET status='failed', completed_at=now(), error_message=$2
-                WHERE id=$1
-                """,
-                task_id,
-                "Erro interno no worker — ver logs",
-            )
-
-
-async def run_worker() -> None:
-    await init_pool()
-    kafka_url = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
-    consumer = AIOKafkaConsumer(
-        TOPIC,
-        bootstrap_servers=kafka_url,
-        group_id=GROUP_ID,
-        value_deserializer=lambda v: json.loads(v.decode()),
-        auto_offset_reset="earliest",
-        enable_auto_commit=False,
-    )
-    await consumer.start()
-    logger.info("Cross-Sell Worker iniciado — consumindo topico: %s", TOPIC)
-
-    try:
-        async for msg in consumer:
-            task = msg.value
-            await process_task(task)
-            await consumer.commit()
-    finally:
-        await consumer.stop()
-        await close_pool()
+    async def process(self, task: dict) -> dict[str, Any]:
+        current_agent = task.get("current_agent", "")
+        tenant_context = task.get("tenant_context", {})
+        recommendation = get_cross_sell_recommendation(current_agent, tenant_context)
+        journey = get_journey_progress(tenant_context)
+        return {
+            "recommendation": recommendation,
+            "journey_progress": journey,
+            "tenant_id": task.get("tenant_id", "default"),
+        }
 
 
 if __name__ == "__main__":
-    asyncio.run(run_worker())
+    logging.basicConfig(level=logging.INFO)
+    worker = CrossSellWorker()
+    asyncio.run(worker.run())

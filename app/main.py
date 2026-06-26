@@ -5,8 +5,9 @@ from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from src.config import Settings
+from src.config import Settings, get_settings
 from src.orchestrator import Orchestrator as HMASOrchestrator
+from src.monetization.plans import PLANS, get_plan
 from src.monitoring.agent_dashboard import AgentDashboard
 from src.security.circuit_breaker import CircuitBreaker
 try:
@@ -245,3 +246,21 @@ async def mcp_server_manifest(server_id: str):
     if not server:
         raise HTTPException(status_code=404, detail=f"MCP server '{server_id}' not found")
     return {"id": server_id, "name": f"Ecosystem {server_id.title()} MCP", "description": f"MCP server for {server_id} agents", "tools": [{"name": t} for t in server["tools"]]}
+
+
+@app.get("/api/v1/agents")
+async def v1_list_agents():
+    return {"agents": list(orchestrator.agents.keys()), "total": len(orchestrator.agents)}
+
+
+@app.get("/api/v1/subscriptions/plans")
+async def v1_list_plans():
+    return {"plans": [{"id": p["id"], "name": p["name"], "price": p["price"], "agents": p["agents"]} for p in PLANS]}
+
+
+@app.get("/api/v1/subscriptions/plans/{plan_id}")
+async def v1_get_plan(plan_id: str):
+    plan = get_plan(plan_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    return {"plan": plan}
