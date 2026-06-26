@@ -85,3 +85,19 @@ BEGIN
     CREATE INDEX idx_audit_log_created ON audit_log(created_at DESC);
   END IF;
 END $$;
+
+CREATE TABLE IF NOT EXISTS microsoft_subscriptions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    subscription_id TEXT UNIQUE,
+    token TEXT,
+    plan TEXT,
+    status TEXT DEFAULT 'pending',
+    company TEXT,
+    email TEXT,
+    source TEXT DEFAULT 'microsoft_marketplace',
+    activated_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ms_sub_id ON microsoft_subscriptions(subscription_id);
+CREATE INDEX IF NOT EXISTS idx_ms_status ON microsoft_subscriptions(status);

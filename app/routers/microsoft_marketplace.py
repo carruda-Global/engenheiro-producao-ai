@@ -2,10 +2,12 @@ import json
 import logging
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 from src.config import get_settings, Settings
+from src.database.supabase_client import SupabaseClient
 from src.monetization.microsoft_client import MicrosoftMarketplaceClient
 from src.monetization.plans import PLANS, get_plan
 from src.monetization.subscription_activator import (
@@ -18,7 +20,7 @@ from src.monetization.subscription_activator import (
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(prefix="/api/microsoft", tags=["microsoft"])
 
 
 class MicrosoftActivationResponse(BaseModel):
@@ -40,6 +42,50 @@ class MicrosoftFulfillmentRequest(BaseModel):
 
 def _get_settings() -> Settings:
     return get_settings()
+
+
+async def process_microsoft_subscription(action: str, subscription_id: str, data: dict):
+    db = SupabaseClient(get_settings())
+    if action == "Subscribed":
+        db.client.table("microsoft_subscriptions").insert({
+            "subscription_id": subscription_id,
+            "plan": data.get("planId"),
+            "status": "active",
+            "company": data.get("purchaser", {}).get("emailId", ""),
+            "source": "microsoft_marketplace",
+        }).execute()
+        logger.info(f"Novo cliente Microsoft ativado: {subscription_id}")
+    elif action in ["Unsubscribed", "Suspended"]:
+        db.client.table("microsoft_subscriptions").update(
+            {"status": action.lower()}
+        ).eq("subscription_id", subscription_id).execute()
+    elif action == "Reinstated":
+        db.client.table("microsoft_subscriptions").update(
+            {"status": "active"}
+        ).eq("subscription_id", subscription_id).execute()
+
+
+@router.get("/landing")
+async def landing_page(token: str = Query(default="")):
+    db = SupabaseClient(get_settings())
+    db.client.table("microsoft_subscriptions").insert({
+        "token": token,
+        "status": "pending_activation",
+        "source": "microsoft_marketplace",
+    }).execute()
+    return RedirectResponse(
+        url=f"https://global-engenharia.com/ecosystem/activate?token={token}"
+    )
+
+
+@router.post("/webhook")
+async def fulfillment_webhook(request: Request, background_tasks: BackgroundTasks):
+    data = await request.json()
+    action = data.get("action", "")
+    subscription_id = data.get("subscriptionId", "")
+    logger.info(f"Microsoft webhook: {action} | {subscription_id}")
+    background_tasks.add_task(process_microsoft_subscription, action, subscription_id, data)
+    return {"status": "ok"}
 
 
 @router.post("/fulfill")
