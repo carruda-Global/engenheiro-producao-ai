@@ -48,7 +48,7 @@ except Exception as e:
 
 app = FastAPI(
     title="H-MAS EcoSystem AEC + Regulatory",
-    description="56 Agentes de IA Hierárquicos para Engenharia de Produção",
+    description="59 Agentes de IA Hierárquicos para Engenharia de Produção",
     version="3.0.0",
 )
 
@@ -73,9 +73,9 @@ logger = logging.getLogger(__name__)
 async def startup():
     await init_pool()
     await init_producer()
-    logger.info("Inicializando H-MAS com 30 agentes...")
+    logger.info("Inicializando H-MAS com 59 agentes...")
     await orchestrator.initialize()
-    logger.info("Sistema pronto. 56/56 agentes ativos.")
+    logger.info("Sistema pronto. 59/59 agentes ativos.")
 
 
 @app.on_event("shutdown")
@@ -174,7 +174,7 @@ async def root():
         "service": "H-MAS EcoSystem AEC + Regulatory",
         "version": "3.0.0",
         "status": "operational",
-        "agents_total": 59,
+        "agents_total": len(orchestrator.agents),
         "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "tech", "self_improvement"],
     }
 

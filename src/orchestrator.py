@@ -28,6 +28,7 @@ from src.agents import (
     MasterOrchestratorAgent, CrossPlatformBridgeAgent,
     RegulatoryWatchAgent, ClientIntelligenceAgent, QualityCriticAgent,
     MetaLearningAgent, EcosystemEvolutionAgent, FederatedKnowledgeAgent,
+    SoftwareEngineeringAgent, SalesAgent, WorkforceOrchestratorAgent,
 )
 
 
@@ -108,6 +109,9 @@ class Orchestrator:
             "meta_learning": MetaLearningAgent,
             "ecosystem_evolution": EcosystemEvolutionAgent,
             "federated_knowledge": FederatedKnowledgeAgent,
+            "software_engineering": SoftwareEngineeringAgent,
+            "sales_agent": SalesAgent,
+            "workforce_orchestrator": WorkforceOrchestratorAgent,
         }
 
         for agent_id, agent_class in _agent_map.items():
@@ -406,6 +410,16 @@ class Orchestrator:
             return agent.research_market()
         elif agent_id == "federated_knowledge":
             return agent.aggregate_insights(context.get("industry", ""))
+        elif agent_id == "software_engineering":
+            req = context.get("document", "") or context.get("requisitos", "")
+            return agent.analisar_requisitos(req) if req else None
+        elif agent_id == "sales_agent":
+            segmento = context.get("segmento", "") or context.get("document", "")
+            regiao = context.get("regiao", "Brasil")
+            return agent.prospectar(segmento, regiao) if segmento else None
+        elif agent_id == "workforce_orchestrator":
+            tarefa = context.get("document", "") or context.get("tarefa", "")
+            return agent.planejar_workflow(tarefa) if tarefa else None
         return None
 
     def _needs_procurement(self, analysis: str) -> bool:
