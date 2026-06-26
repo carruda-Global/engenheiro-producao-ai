@@ -42,6 +42,10 @@ class Orchestrator:
         self.agents: dict[str, Any] = {}
         self._init_agents()
 
+    async def initialize(self) -> None:
+        # _init_agents() ja roda no __init__ — este metodo existe para compatibilidade com o startup async do FastAPI
+        self.logger.info("Orchestrator pronto: %d agentes ativos", len(self.agents))
+
     def _init_agents(self):
         agent_config = self.settings.agents_config
         llm_routing = self.settings.llm_routing_config
