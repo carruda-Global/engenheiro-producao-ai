@@ -147,6 +147,16 @@ class Orchestrator:
                     current_context[f"last_{agent_id}"] = result
                     self.logger.info("%s executed", agent_id)
 
+        if results and "quality_critic" in self.agents:
+            try:
+                critic = self.agents["quality_critic"]
+                last_result = results[-1]
+                review = critic.review_output(workflow_chain[-1] if results else "unknown", last_result)
+                results.append(review)
+                self.logger.info("quality_critic reviewed: %s", review.get("status"))
+            except Exception as e:
+                self.logger.warning("quality_critic review failed: %s", e)
+
         return results
 
     def run_agent(self, agent_id: str, input_data: dict) -> dict:
