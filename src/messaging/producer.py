@@ -21,7 +21,11 @@ CLUSTER_TO_TOPIC = {
 
 async def init_producer() -> None:
     global _producer
-    kafka_url = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+    kafka_url = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "")
+    if not kafka_url:
+        logger.warning("KAFKA_BOOTSTRAP_SERVERS nao configurada — Kafka desabilitado")
+        _producer = None
+        return
     _producer = AIOKafkaProducer(
         bootstrap_servers=kafka_url,
         value_serializer=lambda v: json.dumps(v).encode(),
