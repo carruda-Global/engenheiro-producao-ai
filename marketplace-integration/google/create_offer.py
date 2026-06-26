@@ -53,7 +53,7 @@ PLANS = [
     },
     {
         "id": "compliance_pack",
-        "name": "Compliance Pack - PGRS/PGRSS",
+        "name": "Compliance Pack",
         "price_brl": 2391,
         "price_usd": 399,
     },

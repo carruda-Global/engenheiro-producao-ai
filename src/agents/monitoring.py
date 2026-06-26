@@ -14,10 +14,10 @@ class MonitoringAgent:
         self.llm = llm
         self.system_prompt = (
             "Voce e um especialista em monitoramento ambiental e conformidade "
-            "continua para PGRS/PGRSS. Sua funcao e acompanhar prazos de renovacao, "
-            "gerar alertas de vencimento, sugerir atualizacoes no documento com "
-            "base em mudancas normativas e manter o historico de conformidade "
-            "da empresa. Seja proativo e preciso."
+            "continua para conformidade legal. Sua funcao e acompanhar prazos "
+            "de renovacao, gerar alertas de vencimento, sugerir atualizacoes "
+            "com base em mudancas normativas e manter o historico de "
+            "conformidade da empresa. Seja proativo e preciso."
         )
         self._reminders: dict[str, dict] = {}
 
@@ -51,7 +51,7 @@ class MonitoringAgent:
             f"Data de emissao: {issue_date}\n"
             f"Validade: {months_valid} meses\n"
             f"Data de renovacao: {renewal_date.date()}\n\n"
-            "Gere um plano de monitoramento para renovacao do PGRS/PGRSS incluindo:\n"
+            "Gere um plano de monitoramento para renovacao incluindo:\n"
             "1. Cronograma de acoes para renovacao\n"
             "2. Documentos necessarios para atualizacao\n"
             "3. Pontos de atencao (mudancas normativas, Legislação)\n"
@@ -83,10 +83,10 @@ class MonitoringAgent:
                     break
         return due
 
-    def suggest_updates(self, current_pgrs: str, new_regulations: str = "") -> str:
+    def suggest_updates(self, current_doc: str, new_regulations: str = "") -> str:
         prompt = (
-            "Analise o PGRS atual e sugira atualizacoes necessarias:\n\n"
-            f"PGRS ATUAL:\n{current_pgrs}\n\n"
+            "Analise o documento atual e sugira atualizacoes necessarias:\n\n"
+            f"DOCUMENTO ATUAL:\n{current_doc}\n\n"
         )
         if new_regulations:
             prompt += f"NOVAS NORMAS/REGULAMENTOS:\n{new_regulations}\n\n"

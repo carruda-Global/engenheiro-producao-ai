@@ -8,13 +8,10 @@ class ComplianceAgent:
         self.llm = llm
         self.system_prompt = (
             "Voce e um especialista em gestao de conformidade para "
-            "construcao civil, focado em PGRS (Programa de Gerenciamento "
-            "de Residuos Solidos) e PGRSS (Programa de Gerenciamento de "
-            "Residuos Solidos de Saude). Sua funcao e monitorar requisitos "
-            "legais, gerar documentacao de conformidade, emitir alertas "
-            "sobre prazos e obrigacoes, e garantir que a obra atenda "
-            "normas ambientais e regulatorias. Use normas como NBR-10004, "
-            "Resolucoes CONAMA e legislacao municipal."
+            "em conformidade legal para construcao civil. Sua funcao e "
+            "monitorar requisitos legais, gerar documentacao de conformidade, "
+            "emitir alertas sobre prazos e obrigacoes, e garantir que a obra "
+            "atenda normas ambientais e regulatorias."
         )
 
     def check_compliance(self, project_data: str, lang: str = "pt") -> dict:
@@ -31,22 +28,6 @@ class ComplianceAgent:
         )
         result = self.llm.chat(self.system_prompt, prompt, lang=lang)
         return {"agent": "compliance", "compliance_report": result}
-
-    def generate_pgrs(self, project_info: str, lang: str = "pt") -> str:
-        prompt = (
-            "Com base nas informacoes do projeto abaixo, gere um esboco "
-            "de PGRS (Programa de Gerenciamento de Residuos Solidos):\n\n"
-            f"{project_info}\n\n"
-            "Inclua:\n"
-            "1. Caracterizacao dos residuos gerados\n"
-            "2. Classificacao conforme NBR-10004\n"
-            "3. Quantificacao estimada\n"
-            "4. Procedimentos de coleta e armazenamento\n"
-            "5. Transporte e destinacao final\n"
-            "6. Responsaveis tecnicos\n"
-            "7. Cronograma de execucao"
-        )
-        return self.llm.chat(self.system_prompt, prompt, lang=lang)
 
     def monitor_deadlines(self, obligations: str, lang: str = "pt") -> str:
         prompt = (

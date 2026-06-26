@@ -43,9 +43,6 @@ dlp_rules:
     action: "mask"
 
 hitl_actions:
-  pgrs_finalize:
-    require_approval: true
-    approver: "Cristiano Arruda"
   relatorio_envio:
     require_approval: true
     approver: "Cristiano Arruda"

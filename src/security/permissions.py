@@ -93,7 +93,7 @@ class JITPermissionManager:
             "work_synopsis": ["resumos:criar"],
             "photo_intelligence": ["fotos:analisar"],
             "rfi_creation": ["rfis:criar"],
-            "compliance": ["conformidade:analisar", "pgrs:gerar"],
+            "compliance": ["conformidade:analisar"],
             "diagnostic": ["residuos:classificar"],
             "monitoring": ["prazos:monitorar", "alertas:gerar"],
         }

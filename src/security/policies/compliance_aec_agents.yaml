@@ -40,5 +40,4 @@ agents:
       - { pattern: "RG|\\d{2}\\.\\d{3}\\.\\d{3}-\\d{1}", action: "mask" }
       - { pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", action: "mask" }
     hitl_actions:
-      pgrs_finalize: { require_approval: true, approver: "Cristiano Arruda" }
       relatorio_envio: { require_approval: true, approver: "Cristiano Arruda" }

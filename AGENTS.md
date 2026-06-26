@@ -103,7 +103,7 @@ engenheiro-producao-ai/
 │       ├── subscriptions.py
 │       ├── cross_selling.py
 │       ├── health.py
-│       ├── pgrs.py
+│       ├── pgrs.py  (removido)
 │       ├── security.py
 │       ├── acp_checkout.py
 │       ├── aws_marketplace.py
@@ -143,7 +143,7 @@ engenheiro-producao-ai/
 |---|----|--------|-----------|-------|--------|--------|----------|
 | 10 | `photo_intelligence` | Photo Intelligence | Análise visual de obras, detecção de riscos EPI | R$ 797/mês | active | google | default |
 | 11 | `rfi_creation` | RFI Creation | Criação automática de RFIs, busca em especificações | R$ 697/mês | active | google | default |
-| 12 | `compliance` | Compliance Agent | Gestão de conformidade PGRS/PGRSS, alertas legais | R$ 897/mês | active | google | default |
+| 12 | `compliance` | Compliance Agent | Gestão de conformidade legal, alertas e monitoramento | R$ 897/mês | active | google | default |
 
 ## 📋 Grupo 4: Agentes Regulatórios (Agentes #13 a #21) — Canais: Google + Salesforce + Microsoft
 
@@ -164,7 +164,7 @@ engenheiro-producao-ai/
 | # | ID | Agente | Descrição | Preço | Status | Canais | LLM Tier |
 |---|----|--------|-----------|-------|--------|--------|----------|
 | 22 | `regulatory_analyst` | Regulatory Analyst | Análise de contratos e documentos legais via SharePoint/OneDrive, riscos LGPD/NR-1/ESG | R$ 997/mês | co-sell | microsoft | default |
-| 23 | `compliance_pm` | Compliance PM | Gestão de projetos de compliance (PGRS, Carbono, Igualdade), tarefas no Planner | R$ 797/mês | co-sell | microsoft | default |
+| 23 | `compliance_pm` | Compliance PM | Gestão de projetos de compliance (Carbono, Igualdade), tarefas no Planner | R$ 797/mês | co-sell | microsoft | default |
 | 24 | `channel_agent` | Channel Agent Regulatório | Monitoramento de canais Teams, detecção de riscos trabalhistas/tributários | R$ 597/mês | co-sell | microsoft | default |
 | 25 | `knowledge_agent` | Knowledge Agent | Indexação de documentos SharePoint com RAG, busca inteligente | R$ 697/mês | co-sell | microsoft | default |
 | 26 | `facilitator_agent` | Facilitator Agent | Facilitação de reuniões de compliance, atas, minutas, tarefas no Planner | R$ 497/mês | co-sell | microsoft | default |
@@ -190,7 +190,7 @@ engenheiro-producao-ai/
 - `starter` (Spec Analyst isolado)
 - `professional` (3 agentes AEC)
 - `enterprise` (5 agentes AEC)
-- `compliance_pack` (PGRS/PGRSS — canal Google exclusivo)
+- `compliance_pack` (Conformidade — canal Google exclusivo)
 - `regulatory_full` (absorvido pelo Regulatory Pro + ESG separados)
 
 ---
@@ -259,7 +259,7 @@ Tributário CBS/IBS → Anticorrupção → ESG → Carbono → Escopo 3 → LGP
 **LTV potencial:** R$ 4.320/mês | **Multiplicador:** 11x
 
 ### Jornada C — Entrada AEC → Regulatório → Microsoft (Co-sell)
-Compliance PGRS → NR-1 → Denúncias → Regulatory → Onboarding → Atendimento → Conciliação
+Compliance (#12) → NR-1 → Denúncias → Regulatory → Onboarding → Atendimento → Conciliação
 **LTV potencial:** R$ 4.941/mês | **Multiplicador:** 5,5x
 
 ## 🧪 Testes

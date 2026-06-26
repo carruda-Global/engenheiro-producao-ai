@@ -124,12 +124,6 @@ class TestComplianceAgent:
         assert isinstance(result, dict)
         assert "compliance_report" in result
 
-    def test_generate_pgrs_returns_string(self, settings, llm_mock):
-        from src.agents.compliance import ComplianceAgent
-        agent = ComplianceAgent(settings, llm_mock)
-        result = agent.generate_pgrs("Obra de 2000m2 em zona urbana")
-        assert isinstance(result, str)
-
     def test_monitor_deadlines_returns_string(self, settings, llm_mock):
         from src.agents.compliance import ComplianceAgent
         agent = ComplianceAgent(settings, llm_mock)
@@ -166,14 +160,14 @@ class TestCompliancePMAgent:
     def test_gerenciar_projeto_returns_dict(self, settings, llm_mock):
         from src.agents.compliance_pm import CompliancePMAgent
         agent = CompliancePMAgent(settings, llm_mock)
-        result = agent.gerenciar_projeto("PGRS - Obra XYZ")
+        result = agent.gerenciar_projeto("Compliance - Obra XYZ")
         assert isinstance(result, dict)
         assert "plano_projeto" in result
 
     def test_criar_tarefa_planner_returns_dict(self, settings, llm_mock):
         from src.agents.compliance_pm import CompliancePMAgent
         agent = CompliancePMAgent(settings, llm_mock)
-        result = agent.criar_tarefa_planner("Revisar documentos PGRS")
+        result = agent.criar_tarefa_planner("Revisar documentos de compliance")
         assert isinstance(result, dict)
         assert "tarefa_planner" in result
 

@@ -55,7 +55,7 @@
     "work_synopsis": { "name": "Work Synopsis", "description": "Resumo estruturado de tarefas, defeitos e status de obra.", "icon": "📝" },
     "photo_intelligence": { "name": "Photo Intelligence", "description": "Análise visual de obras, detecção de riscos e comparação com cronograma.", "icon": "📸" },
     "rfi_creation": { "name": "RFI Creation", "description": "Criação automática de RFIs a partir de dúvidas do campo.", "icon": "📄" },
-    "compliance": { "name": "Compliance Agent", "description": "Gestão de conformidade PGRS/PGRSS e monitoramento regulatório.", "icon": "⚖️" },
+    "compliance": { "name": "Compliance Agent", "description": "Gestão de conformidade legal e monitoramento regulatório.", "icon": "⚖️" },
     "nr1_psicossocial": { "name": "NR-1 Psicossocial", "description": "Identifica, avalia e documenta riscos psicossociais (FRPRT) conforme NR-1.", "icon": "🧠" },
     "tributario_cbs_ibs": { "name": "Tributário CBS/IBS", "description": "Classificação NCM, geração DeRE e simulação de impacto fiscal.", "icon": "💰" },
     "lgpd_operacional": { "name": "LGPD Operacional", "description": "Mapeamento de dados, RoPA e conformidade ANPD.", "icon": "🔒" },

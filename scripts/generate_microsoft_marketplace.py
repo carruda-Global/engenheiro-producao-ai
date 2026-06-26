@@ -84,7 +84,7 @@ PLANS = [
     },
     {
         "id": "compliance_pack",
-        "name": "Compliance Pack - PGRS/PGRSS",
+        "name": "Compliance Pack",
         "description": "Photo Intelligence + RFI Creation + Compliance Agent",
         "prices_usd": {
             "P1M": 399.00,

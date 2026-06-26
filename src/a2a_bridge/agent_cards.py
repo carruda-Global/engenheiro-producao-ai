@@ -212,13 +212,13 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
         id="compliance",
         name="Agente de Conformidade",
         description=(
-            "Monitora conformidade legal, gera PGRS/PGRSS, emite alertas "
+            "Monitora conformidade legal, gera documentacao, emite alertas "
             "sobre prazos regulatorios e obrigacoes ambientais."
         ),
-        tags=["conformidade", "PGRS", "PGRSS", "regulatorio", "ambiental"],
+        tags=["conformidade", "regulatorio", "ambiental"],
         examples=[
             "Verifique a conformidade deste projeto com a legislacao ambiental",
-            "Gere um esboco de PGRS para esta obra",
+            "Gere um relatorio de conformidade para esta obra",
         ],
     )
     _add_skill(
@@ -378,14 +378,14 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
         id="compliance_pm",
         name="Compliance PM",
         description=(
-            "Gerencia projetos de compliance como PGRS, Carbono e Igualdade "
+            "Gerencia projetos de compliance como Carbono e Igualdade "
             "Salarial. Cria tarefas automaticas no Microsoft Planner e envia "
             "alertas e prazos via Microsoft Teams."
         ),
         tags=["compliance", "projetos", "Planner", "Teams", "prazos"],
         examples=[
             "Gerencie o projeto de inventario de carbono",
-            "Crie tarefa no Planner para o PGRS",
+            "Crie tarefa no Planner para compliance",
         ],
     )
     _add_skill(

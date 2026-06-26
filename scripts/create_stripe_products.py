@@ -42,9 +42,9 @@ PRODUCTS = [
                 "engineering_assistant", "work_synopsis", "photo_intelligence",
                 "rfi_creation", "compliance"],
      "description": "Ecossistema completo de 12 agentes de IA para AEC"},
-    {"id": "compliance_pack", "name": "Compliance Pack - PGRS/PGRSS", "price": 239100,
+    {"id": "compliance_pack", "name": "Compliance Pack", "price": 239100,
      "agents": ["photo_intelligence", "rfi_creation", "compliance"],
-     "description": "Conformidade e gestao de residuos PGRS/PGRSS"},
+     "description": "Pacote de conformidade legal com IA"},
 ]
 
 CONFIG_PATH = Path(__file__).parent.parent / "config.yaml"

@@ -8,7 +8,7 @@ class CompliancePMAgent:
         self.llm = llm
         self.system_prompt = (
             "Voce e um gerente de projetos de compliance especializado em "
-            "gestao de projetos regulatorios como PGRS, PGRSS, Inventario de "
+            "gestao de projetos regulatorios como Inventario de "
             "Carbono e Igualdade Salarial. Cria tarefas automaticas no Microsoft "
             "Planner, gerencia prazos e envia alertas via Microsoft Teams. "
             "Acompanhe o cronograma de projetos de conformidade regulatoria "

@@ -89,7 +89,7 @@ AGENT_INVENTORY: list[AgentAccess] = [
     ),
     AgentAccess(
         agent_id="compliance", name="Compliance",
-        data_categories=["dados_empresa", "normas_ambientais", "pgrs_pgrss", "legislacao"],
+        data_categories=["dados_empresa", "normas_ambientais", "legislacao"],
         input_type="texto", output_type="relatorio_conformidade",
         external_calls=["DeepSeek API"], risk_level="critico",
         requires_human_review=True,

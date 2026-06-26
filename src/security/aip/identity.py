@@ -47,7 +47,7 @@ class AgentIdentity:
         if not agent_record or agent_record["status"] != "active":
             return False
         depth = self.get_delegation_depth(caller_id)
-        restricted_tools = {"supabase_delete", "stripe_create_invoice", "pgrs_finalize"}
+        restricted_tools = {"supabase_delete", "stripe_create_invoice"}
         if target_tool in restricted_tools and depth > 1:
             return False
         return True

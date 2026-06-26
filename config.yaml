@@ -391,7 +391,7 @@ stripe:
       amount_cents: 239100
       price_id: "price_1TlxVSQn4rfjkSvEwWLP6n8N"
     compliance_pack:
-      name: "Compliance Pack - PGRS/PGRSS"
+      name: "Compliance Pack - Conformidade"
       amount_cents: 239100
       price_id: "price_1TlxVUQn4rfjkSvEAFoHn8zw"
     regulatory_full:
