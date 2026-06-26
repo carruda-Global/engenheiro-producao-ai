@@ -28,6 +28,7 @@ from app.routers.cross_selling import router as cross_selling_router
 from app.routers.google_marketplace import router as google_router
 from app.routers.aws_marketplace import router as aws_router
 from app.routers.leads import router as leads_router
+from app.routers.stripe_app import router as stripe_app_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -168,6 +169,7 @@ app.include_router(google_router, prefix="/google", tags=["google"])
 app.include_router(aws_router, prefix="/aws", tags=["aws"])
 app.include_router(oracle_router, prefix="/oracle", tags=["oracle"])
 app.include_router(leads_router)
+app.include_router(stripe_app_router)
 
 
 @app.get("/")

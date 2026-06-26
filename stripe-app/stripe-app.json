@@ -1,0 +1,33 @@
+{
+  "id": "com.globalengenharia.ecosystem-compliance",
+  "version": "1.0.0",
+  "name": "EcoSystem Compliance",
+  "icon": "./public/icon.png",
+  "distribution_type": "public",
+  "permissions": [
+    {
+      "permission": "customer_read",
+      "purpose": "Identificar empresa para gerar score de compliance"
+    },
+    {
+      "permission": "invoice_read",
+      "purpose": "Verificar volume de transacoes para recomendar agentes"
+    }
+  ],
+  "ui_extension": {
+    "views": [
+      {
+        "viewport": "stripe.dashboard.home.overview",
+        "component": "AppView"
+      }
+    ],
+    "actions": [],
+    "content_security_policy": {
+      "connect-src": [
+        "https://engenheiro-producao-ai.onrender.com"
+      ],
+      "image-src": [],
+      "purpose": "Conectar ao EcoSystem API para gerar score de compliance"
+    }
+  }
+}
