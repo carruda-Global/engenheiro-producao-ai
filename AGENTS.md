@@ -1,4 +1,4 @@
-# 🏗️ EcoSystem AEC + Regulatory — 59 Agentes de IA
+# 🏗️ EcoSystem AEC + Regulatory — 59 Agentes + 15 Micro-Agentes de IA
 
 **Projeto:** Engenheiro de Produção AI
 **Proprietário:** Cristiano Arruda | Global Match Engenharia de Produção | CREA-SP 5071200171
@@ -170,6 +170,38 @@ engenheiro-producao-ai/
 | 25 | `knowledge_agent` | Knowledge Agent | Indexação de documentos SharePoint com RAG, busca inteligente | R$ 697/mês | co-sell | microsoft | default |
 | 26 | `facilitator_agent` | Facilitator Agent | Facilitação de reuniões de compliance, atas, minutas, tarefas no Planner | R$ 497/mês | co-sell | microsoft | default |
 | 27 | `dev_experience` | Dev Experience Agent | Automação de PRs e code reviews, conformidade LGPD em código | R$ 897/mês | co-sell | microsoft | default |
+
+## 🧩 Micro-Agentes Microsoft (M1–M15)
+
+Micro-agentes são versões focadas dos agentes principais — fazem UMA coisa só, custam menos, convertem rápido. 35% dos clientes de micro-agentes migram para o agente completo em 90 dias.
+
+| # | ID | Pai | Função | Preço BR | Preço USD | LLM |
+|---|----|-----|--------|----------|----------|-----|
+| M1 | `nr1_diagnostico_rapido` | #13 NR-1 | Diagnóstico inicial de riscos psicossociais | R$ 99/mês | USD 29/mês | Gemini |
+| M2 | `lgpd_scanner` | #15 LGPD | Varre sistemas e lista dados pessoais | R$ 149/mês | USD 39/mês | Gemini |
+| M3 | `folha_equidade` | #20 Igualdade | Calcula gap salarial por gênero | R$ 99/mês | USD 29/mês | Gemini |
+| M4 | `contrato_review` | #22 Regulatory | Revisa 1 contrato por vez | R$ 199/mês | USD 49/mês | Gemini |
+| M5 | `teams_risk_monitor` | #24 Channel | Monitora 1 canal Teams | R$ 149/mês | USD 39/mês | DeepSeek |
+| M6 | `meeting_minutes` | #26 Facilitator | Gera ata e tarefas no Planner | R$ 99/mês | USD 29/mês | DeepSeek |
+| M7 | `pr_lgpd_checker` | #27 DevEx | Verifica PII em Pull Requests | R$ 149/mês | USD 39/mês | Claude API |
+| M8 | `admissao_checklist` | #28 Onboarding | Checklist de admissão | R$ 99/mês | USD 29/mês | Gemini |
+| M9 | `sales_pipeline_checker` | #31 Dynamics Sales | Analisa deals em risco | R$ 149/mês | USD 39/mês | DeepSeek |
+| M10 | `expense_anomaly` | #32 Dynamics Finance | Detecta anomalias em despesas | R$ 149/mês | USD 39/mês | DeepSeek |
+| M11 | `compliance_score` | #36 Power BI | Score de compliance 0-100 | R$ 99/mês | USD 29/mês | DeepSeek |
+| M12 | `lead_qualifier` | #58 Sales Agent | Qualifica leads com score | R$ 99/mês | USD 29/mês | DeepSeek |
+| M13 | `code_reviewer` | #57 Software Eng | Code review de PRs | R$ 149/mês | USD 39/mês | Claude API |
+| M14 | `headcount_alert` | #59 Workforce | Alerta de sobrecarga | R$ 149/mês | USD 39/mês | Claude API |
+| M15 | `regulatory_alert` | #51 Regulatory Watch | Alerta de mudança de norma | R$ 99/mês | USD 29/mês | Gemini |
+
+### Micro-planos (porta de entrada)
+
+| Plano | Micro-agentes | Preço BR | Preço USD |
+|-------|--------------|----------|----------|
+| Micro Starter | M1 + M2 | R$ 199/mês | USD 49/mês |
+| Micro RH | M3 + M8 + M14 | R$ 249/mês | USD 59/mês |
+| Micro Dev | M7 + M13 | R$ 249/mês | USD 59/mês |
+| Micro Sales | M9 + M12 | R$ 199/mês | USD 49/mês |
+| Micro Full | Todos 15 | R$ 990/mês | USD 249/mês |
 
 ### #57 — software_engineering (Extensão Dev Experience)
 
