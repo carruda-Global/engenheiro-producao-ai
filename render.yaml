@@ -122,6 +122,25 @@ services:
     healthCheckPath: /health
     numInstances: 1
 
+  - type: web
+    name: hmas-mcp-microsoft
+    env: docker
+    repo: https://github.com/carruda-Global/engenheiro-producao-ai.git
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerCommand: uvicorn src.mcp.microsoft_server:microsoft_app --host 0.0.0.0 --port 8013
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CLAUDE_API_KEY
+        sync: false
+    healthCheckPath: /tools
+    numInstances: 1
+
 databases:
   - name: hmas-database
     plan: starter

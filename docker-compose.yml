@@ -205,6 +205,22 @@ services:
       start_period: 40s
       retries: 3
 
+  mcp-microsoft:
+    build: .
+    container_name: hmas-mcp-microsoft
+    ports:
+      - "8013:8013"
+    env_file:
+      - .env
+    command: uvicorn src.mcp.microsoft_server:microsoft_app --host 0.0.0.0 --port 8013
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8013/tools"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+
 volumes:
   timescaledb_data:
   redis_data:

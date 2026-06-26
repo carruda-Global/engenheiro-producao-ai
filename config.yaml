@@ -125,6 +125,25 @@ clusters:
       regulatory_watch: { enabled: true, budget_per_task: 0.08 }
       client_intelligence: { enabled: true, budget_per_task: 0.08 }
       quality_critic: { enabled: true, budget_per_task: 0.06 }
+  micro:
+    enabled: true
+    max_parallel: 15
+    agents:
+      nr1_diagnostico_rapido: { enabled: true, budget_per_task: 0.03 }
+      lgpd_scanner: { enabled: true, budget_per_task: 0.03 }
+      folha_equidade: { enabled: true, budget_per_task: 0.03 }
+      contrato_review: { enabled: true, budget_per_task: 0.04 }
+      teams_risk_monitor: { enabled: true, budget_per_task: 0.03 }
+      meeting_minutes: { enabled: true, budget_per_task: 0.03 }
+      pr_lgpd_checker: { enabled: true, budget_per_task: 0.04 }
+      admissao_checklist: { enabled: true, budget_per_task: 0.03 }
+      sales_pipeline_checker: { enabled: true, budget_per_task: 0.04 }
+      expense_anomaly: { enabled: true, budget_per_task: 0.04 }
+      compliance_score: { enabled: true, budget_per_task: 0.03 }
+      lead_qualifier: { enabled: true, budget_per_task: 0.04 }
+      code_reviewer: { enabled: true, budget_per_task: 0.04 }
+      headcount_alert: { enabled: true, budget_per_task: 0.04 }
+      regulatory_alert: { enabled: true, budget_per_task: 0.03 }
   tech:
     enabled: true
     max_parallel: 5
