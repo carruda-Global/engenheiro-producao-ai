@@ -29,6 +29,10 @@ class SupabaseClient:
         )
         return response.data[0] if response.data else {}
 
+    async def save_lead(self, lead_data: dict) -> dict:
+        response = self.client.table("leads").insert(lead_data).execute()
+        return response.data[0] if response.data else {}
+
     def health_check(self) -> bool:
         try:
             self.client.table("tenants").select("id").limit(1).execute()

@@ -27,6 +27,7 @@ from app.routers.microsoft_marketplace import router as microsoft_router
 from app.routers.cross_selling import router as cross_selling_router
 from app.routers.google_marketplace import router as google_router
 from app.routers.aws_marketplace import router as aws_router
+from app.routers.leads import router as leads_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -166,6 +167,7 @@ app.include_router(cross_selling_router, prefix="/api/cross-sell", tags=["cross-
 app.include_router(google_router, prefix="/google", tags=["google"])
 app.include_router(aws_router, prefix="/aws", tags=["aws"])
 app.include_router(oracle_router, prefix="/oracle", tags=["oracle"])
+app.include_router(leads_router)
 
 
 @app.get("/")
