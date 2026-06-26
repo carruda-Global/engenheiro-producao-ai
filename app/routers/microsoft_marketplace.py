@@ -45,34 +45,40 @@ def _get_settings() -> Settings:
 
 
 async def process_microsoft_subscription(action: str, subscription_id: str, data: dict):
-    db = SupabaseClient(get_settings())
-    if action == "Subscribed":
-        db.client.table("microsoft_subscriptions").insert({
-            "subscription_id": subscription_id,
-            "plan": data.get("planId"),
-            "status": "active",
-            "company": data.get("purchaser", {}).get("emailId", ""),
-            "source": "microsoft_marketplace",
-        }).execute()
-        logger.info(f"Novo cliente Microsoft ativado: {subscription_id}")
-    elif action in ["Unsubscribed", "Suspended"]:
-        db.client.table("microsoft_subscriptions").update(
-            {"status": action.lower()}
-        ).eq("subscription_id", subscription_id).execute()
-    elif action == "Reinstated":
-        db.client.table("microsoft_subscriptions").update(
-            {"status": "active"}
-        ).eq("subscription_id", subscription_id).execute()
+    try:
+        db = SupabaseClient(get_settings())
+        if action == "Subscribed":
+            db.client.table("microsoft_subscriptions").insert({
+                "subscription_id": subscription_id,
+                "plan": data.get("planId"),
+                "status": "active",
+                "company": data.get("purchaser", {}).get("emailId", ""),
+                "source": "microsoft_marketplace",
+            }).execute()
+            logger.info(f"Novo cliente Microsoft ativado: {subscription_id}")
+        elif action in ["Unsubscribed", "Suspended"]:
+            db.client.table("microsoft_subscriptions").update(
+                {"status": action.lower()}
+            ).eq("subscription_id", subscription_id).execute()
+        elif action == "Reinstated":
+            db.client.table("microsoft_subscriptions").update(
+                {"status": "active"}
+            ).eq("subscription_id", subscription_id).execute()
+    except Exception as e:
+        logger.error(f"Erro ao processar subscription {subscription_id}: {e}")
 
 
 @router.get("/landing")
 async def landing_page(token: str = Query(default="")):
-    db = SupabaseClient(get_settings())
-    db.client.table("microsoft_subscriptions").insert({
-        "token": token,
-        "status": "pending_activation",
-        "source": "microsoft_marketplace",
-    }).execute()
+    try:
+        db = SupabaseClient(get_settings())
+        db.client.table("microsoft_subscriptions").insert({
+            "token": token,
+            "status": "pending_activation",
+            "source": "microsoft_marketplace",
+        }).execute()
+    except Exception as e:
+        logger.warning(f"Erro ao salvar landing no Supabase: {e}")
     return RedirectResponse(
         url=f"https://global-engenharia.com/ecosystem/activate?token={token}"
     )
