@@ -1,9 +1,9 @@
-# 🏗️ EcoSystem AEC + Regulatory — 30 Agentes de IA
+# 🏗️ EcoSystem AEC + Regulatory — 59 Agentes de IA
 
 **Projeto:** Engenheiro de Produção AI
 **Proprietário:** Cristiano Arruda | Global Match Engenharia de Produção | CREA-SP 5071200171
 **Versão:** 3.0.0
-**LLM Core:** DeepSeek-V4-Flash (API OpenAI compatible) + Gemini (agentes sensíveis LGPD)
+**LLM Core:** DeepSeek-V4-Flash (API OpenAI compatible) + Gemini (agentes sensíveis LGPD) + Claude API (raciocínio complexo)
 **Framework:** Python + FastAPI + A2A Protocol
 
 ---
@@ -23,6 +23,7 @@
 |------|-----|---------|
 | `default` | DeepSeek-V4-Flash | Agentes AEC, ESG/Carbono, Microsoft |
 | `sensitive` | Gemini | Agentes com dados pessoais sensíveis (NR-1, LGPD, Denúncias, Igualdade Salarial, Anticorrupção) |
+| `reasoning` | Claude API | Orquestrador, Quality Critic, Evolução |
 
 ---
 
@@ -162,6 +163,41 @@ engenheiro-producao-ai/
 ## 🪟 Grupo 5: Agentes Microsoft (Agentes #22 a #27) — Co-sell via MSPs
 
 | # | ID | Agente | Descrição | Preço | Status | Canais | LLM Tier |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 22 | `regulatory_analyst` | Regulatory Analyst | Análise de contratos e documentos legais via SharePoint/OneDrive, riscos LGPD/NR-1/ESG | R$ 997/mês | co-sell | microsoft | default |
+| 23 | `compliance_pm` | Compliance PM | Gestão de projetos de compliance (Carbono, Igualdade), tarefas no Planner | R$ 797/mês | co-sell | microsoft | default |
+| 24 | `channel_agent` | Channel Agent Regulatório | Monitoramento de canais Teams, detecção de riscos trabalhistas/tributários | R$ 597/mês | co-sell | microsoft | default |
+| 25 | `knowledge_agent` | Knowledge Agent | Indexação de documentos SharePoint com RAG, busca inteligente | R$ 697/mês | co-sell | microsoft | default |
+| 26 | `facilitator_agent` | Facilitator Agent | Facilitação de reuniões de compliance, atas, minutas, tarefas no Planner | R$ 497/mês | co-sell | microsoft | default |
+| 27 | `dev_experience` | Dev Experience Agent | Automação de PRs e code reviews, conformidade LGPD em código | R$ 897/mês | co-sell | microsoft | default |
+
+### #57 — software_engineering (Extensão Dev Experience)
+
+**Camada:** 1 — Especializado | **Cluster:** microsoft | **LLM:** Claude API
+**Canal:** Microsoft Marketplace (GitHub + VS Code) + Salesforce AgentExchange
+**Preço BR:** R$ 790/mês | **Global:** USD 199/mês
+**Bridge:** → Dev Experience (#27) → LGPD/GDPR dev → Quality Critic (#53)
+**Diferencial:** Dev Experience (#27) foca em PRs e conformidade LGPD em código. Software Engineering é mais amplo — arquitetura, code review completo, boas práticas, documentação automática. São complementares, não concorrentes.
+
+### #58 — sales_agent (Extensão Agentforce SDR)
+
+**Camada:** 1 — Especializado | **Cluster:** agentforce | **LLM:** DeepSeek
+**Canal:** Salesforce AgentExchange primário + Microsoft
+**Preço BR:** R$ 690/mês | **Global:** USD 179/mês
+**Bridge:** → Agentforce SDR (#37) → Revenue Intelligence (#40) → Client Intelligence (#52)
+**Diferencial:** O SDR (#37) prospecta e qualifica. O Sales Agent vai além — sugere planos do EcoSystem, calcula desconto por volume, detecta oportunidade de upsell e dispara cross-sell chain automaticamente. É o vendedor autônomo do próprio EcoSystem.
+
+### #59 — workforce_orchestrator (Coordenação RH)
+
+**Camada:** 2 — Coordenação (ao lado do Master Orchestrator #49) | **Cluster:** coordination | **LLM:** Claude API
+**Canal:** Microsoft + Salesforce + Oracle
+**Preço BR:** R$ 1.190/mês | **Global:** USD 299/mês
+**Agentes coordenados:** Onboarding (#28) → NR-1 (#13) → Igualdade Salarial (#20) → Canal Denúncias (#19) → Dynamics HR (#34) → Oracle HCM (#43) → Client Intelligence (#52)
+**Diferencial:** Master Orchestrator (#49) coordena todos os 59 agentes para qualquer objetivo. Workforce Orchestrator é especializado — só RH e pessoas, mas com profundidade muito maior.
+
+## 💳 Planos de Assinatura — Planos visíveis nos listings
+
+| # | ID | Agente | Descrição | Preço | Status | Canais | LLM Tier |
 |---|----|--------|-----------|-------|--------|--------|----------|
 | 22 | `regulatory_analyst` | Regulatory Analyst | Análise de contratos e documentos legais via SharePoint/OneDrive, riscos LGPD/NR-1/ESG | R$ 997/mês | co-sell | microsoft | default |
 | 23 | `compliance_pm` | Compliance PM | Gestão de projetos de compliance (Carbono, Igualdade), tarefas no Planner | R$ 797/mês | co-sell | microsoft | default |
@@ -184,7 +220,10 @@ engenheiro-producao-ai/
 | Cross-Sell Harmony | `cross_sell_harmony` | #N1 Onboarding | R$ 490/mês | Entrada jornada A |
 | Atendimento Plus | `atendimento_plus` | #N2 Atendimento PT-BR | R$ 390/mês | Upsell suporte |
 | Conciliação Pro | `conciliacao_pro` | #N3 Conciliação Financeira | R$ 790/mês | Upsell financeiro |
-| Full Suite | `full_suite` | Todos os 30 agentes | R$ 9.497/mês | Âncora de percepção de valor |
+| Tech Starter | `tech_starter` | #57 Software Engineering | R$ 1.997/mês | Engenharia de software automatizada |
+| Tech Professional | `tech_professional` | #57 + #58 Sales Agent | R$ 3.497/mês | Engenharia + prospecção autônoma |
+| Tech Enterprise | `tech_enterprise` | #57 + #58 + #59 Workforce | R$ 5.997/mês | Workforce digital completo |
+| Full Suite | `full_suite` | Todos os 59 agentes | R$ 19.997/mês | Âncora de percepção de valor |
 
 ### Planos desativados da vitrine (mantidos no Stripe para assinaturas ativas)
 - `starter` (Spec Analyst isolado)
@@ -204,6 +243,7 @@ CON: #10 Photo → #11 RFI → #12 Compliance
 REG: #13 NR-1 → #15 LGPD → #19 Denúncias → #20 Igualdade → #21 Anticorrupção
      #14 Tributário → #16 ESG → #17 Carbono → #18 Escopo 3
 MST: #22 Regulatory → #23 PM → #24 Channel → #25 Knowledge → #26 Facilitator → #27 DevEx
+SW:  #57 Software Eng → #58 Sales Agent → #59 Workforce Orchestrator
 ```
 
 ---
