@@ -56,6 +56,9 @@ from .quality_critic import QualityCriticAgent
 from .meta_learning import MetaLearningAgent
 from .ecosystem_evolution import EcosystemEvolutionAgent
 from .federated_knowledge import FederatedKnowledgeAgent
+from .tech.software_engineering import SoftwareEngineeringAgent
+from .tech.sales_agent import SalesAgent
+from .tech.workforce_orchestrator import WorkforceOrchestratorAgent
 
 __all__ = [
     "SpecAnalystAgent",
@@ -116,4 +119,7 @@ __all__ = [
     "MetaLearningAgent",
     "EcosystemEvolutionAgent",
     "FederatedKnowledgeAgent",
+    "SoftwareEngineeringAgent",
+    "SalesAgent",
+    "WorkforceOrchestratorAgent",
 ]

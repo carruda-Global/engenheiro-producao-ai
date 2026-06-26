@@ -228,7 +228,7 @@ async def list_plans():
             {
                 "id": p["id"],
                 "name": p["name"],
-                "price_usd": f"${p['price'] / 600:,.2f}",
+                "price_usd": f"${p['price'] / 550:,.2f}",
                 "agents": p["agents"],
                 "features": p["features"],
             }

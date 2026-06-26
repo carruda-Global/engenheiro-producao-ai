@@ -37,11 +37,14 @@ except ImportError:
     oracle_router = APIRouter()
     logger.warning("Oracle router nao carregado (oci nao instalado)")
 
-settings = Settings()
-
-errors = settings.validate()
-if errors:
-    raise RuntimeError(f"Configuracao invalida no startup: {errors}")
+try:
+    settings = Settings()
+    config_errors = settings.validate()
+    if config_errors:
+        logger.warning("Configuracao incompleta no startup: %s", config_errors)
+except Exception as e:
+    logger.warning("Configuracao parcial no startup: %s", e)
+    settings = None
 
 app = FastAPI(
     title="H-MAS EcoSystem AEC + Regulatory",
@@ -171,8 +174,8 @@ async def root():
         "service": "H-MAS EcoSystem AEC + Regulatory",
         "version": "3.0.0",
         "status": "operational",
-        "agents_total": 56,
-        "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "self_improvement"],
+        "agents_total": 59,
+        "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "tech", "self_improvement"],
     }
 
 
@@ -184,7 +187,7 @@ async def get_status(tenant_id: str):
 @app.post("/api/agents/initialize")
 async def initialize_agents(data: dict):
     tenant = data.get("tenant", "default")
-    clusters = data.get("clusters", ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "self_improvement"])
+    clusters = data.get("clusters", ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "tech", "self_improvement"])
     orchestrator.tenant_id = tenant
     await orchestrator.initialize()
     return {

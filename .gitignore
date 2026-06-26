@@ -24,3 +24,5 @@ microsoft ids.txt
 .env.render
 
 src/security/aip/credentials/*.json
+
+scripts/deploy_render_env.ps1

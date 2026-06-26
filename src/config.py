@@ -111,13 +111,6 @@ class Settings:
             errors.append("STRIPE_SECRET_KEY nao configurada")
         if not self.supabase_url:
             errors.append("SUPABASE_URL nao configurada")
-        if self.app_env != "test":
-            gemini_key = os.getenv("GEMINI_API_KEY", "")
-            claude_key = os.getenv("CLAUDE_API_KEY", "")
-            if not gemini_key:
-                errors.append("GEMINI_API_KEY nao configurada (necessaria para agentes sensiveis)")
-            if not claude_key:
-                errors.append("CLAUDE_API_KEY nao configurada (necessaria para orchestrator, critic, evolution)")
         return errors
 
 

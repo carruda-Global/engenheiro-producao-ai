@@ -2,7 +2,7 @@
 **Global Match Engenharia de Produção | CREA-SP 5071200171 | Cristiano Arruda**
 **Versão:** 3.0.0 | **Data:** 2026-06-24
 **LLM para implementação:** DeepSeek-V4-Flash (operacional) + Gemini southamerica-east1 (sensível) + Claude API (raciocínio complexo)
-**Portfólio:** 56 agentes em 4 camadas | **ARR projetado ano 5:** R$ 312M
+**Portfólio:** 59 agentes em 4 camadas | **ARR projetado ano 5:** R$ 312M
 
 ---
 
@@ -36,10 +36,10 @@
 │  CAMADA 2 — COORDENAÇÃO (Imediato)                             │
 │  #49 Master Orchestrator · #50 Cross-Platform Bridge           │
 ├─────────────────────────────────────────────────────────────────┤
-│  CAMADA 1 — AGENTES ESPECIALIZADOS (48 agentes)                │
+│  CAMADA 1 — AGENTES ESPECIALIZADOS (51 agentes)                │
 │  AEC #1–#12 | Regulatório #13–#21 | Microsoft #22–#27         │
-│  Novos #N1–#N3 | Dynamics #31–#36 | Agentforce #37–#41        │
-│  Oracle #42–#45 | SAP #46–#48                                  │
+│  Tech #28–#30 | Novos #N1–#N3 | Dynamics #31–#36              │
+│  Agentforce #37–#41 | Oracle #42–#45 | SAP #46–#48             │
 ├─────────────────────────────────────────────────────────────────┤
 │  CAMADA 0 — MCP SERVERS + A2A PROTOCOL                        │
 │  ecosystem-regulatory-mcp · ecosystem-esg-mcp · ecosystem-erp-mcp│

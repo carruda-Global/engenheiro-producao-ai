@@ -125,6 +125,13 @@ clusters:
       regulatory_watch: { enabled: true, budget_per_task: 0.08 }
       client_intelligence: { enabled: true, budget_per_task: 0.08 }
       quality_critic: { enabled: true, budget_per_task: 0.06 }
+  tech:
+    enabled: true
+    max_parallel: 5
+    agents:
+      software_engineering: { enabled: true, budget_per_task: 0.12 }
+      sales_agent: { enabled: true, budget_per_task: 0.10 }
+      workforce_orchestrator: { enabled: true, budget_per_task: 0.15 }
   self_improvement:
     enabled: true
     max_parallel: 1
@@ -296,6 +303,18 @@ orchestrator:
   retry_attempts: 3
   retry_delay_seconds: 1.0
 
+integrations:
+  github:
+    token: ${GITHUB_TOKEN}
+    repo: ${GITHUB_REPO}
+  salesforce:
+    instance_url: ${SALESFORCE_URL}
+    client_id: ${SALESFORCE_CLIENT_ID}
+    client_secret: ${SALESFORCE_CLIENT_SECRET}
+  slack:
+    token: ${SLACK_TOKEN}
+    channel: ${SLACK_CHANNEL}
+
 marketplace:
   microsoft:
     enabled: true
@@ -379,6 +398,27 @@ stripe:
       amount_cents: 79000
       price_id: "price_1TmLJxQn4rfjkSvEeItnhs5i"
       positioning: "Upsell financeiro — conciliacao automatica de NFs e extratos"
+
+    tech_starter:
+      name: "Tech Starter — Engenharia de Software"
+      agents: ["software_engineering"]
+      amount_cents: 199700
+      price_id: "CRIAR_NO_STRIPE"
+      positioning: "Desenvolvimento de agentes de IA e automatizacao"
+
+    tech_professional:
+      name: "Tech Professional — Engenharia + Vendas"
+      agents: ["software_engineering", "sales_agent"]
+      amount_cents: 349700
+      price_id: "CRIAR_NO_STRIPE"
+      positioning: "Engenharia de software com prospeccao autonoma"
+
+    tech_enterprise:
+      name: "Tech Enterprise — Workforce Completo"
+      agents: ["software_engineering", "sales_agent", "workforce_orchestrator"]
+      amount_cents: 599700
+      price_id: "CRIAR_NO_STRIPE"
+      positioning: "Workforce digital completo com orquestracao"
 
   # Planos legados — manter ativos para assinaturas existentes, não exibir para novos clientes
   legacy_plans:
