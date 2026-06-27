@@ -29,6 +29,8 @@ from app.routers.google_marketplace import router as google_router
 from app.routers.aws_marketplace import router as aws_router
 from app.routers.leads import router as leads_router
 from app.routers.stripe_app import router as stripe_app_router
+from app.routers.privacy import router as privacy_router
+from src.api.middleware.privacy import PrivacyConsentMiddleware
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -62,6 +64,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(PrivacyConsentMiddleware)
 
 orchestrator = HMASOrchestrator(settings)
 dashboard = AgentDashboard()
@@ -170,6 +174,7 @@ app.include_router(aws_router, prefix="/aws", tags=["aws"])
 app.include_router(oracle_router, prefix="/oracle", tags=["oracle"])
 app.include_router(leads_router)
 app.include_router(stripe_app_router)
+app.include_router(privacy_router)
 
 
 @app.get("/")
