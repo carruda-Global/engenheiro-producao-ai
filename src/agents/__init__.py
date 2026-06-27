@@ -23,7 +23,7 @@ from .igualdade_salarial import IgualdadeSalarialAgent
 from .compliance_anticorrupcao import ComplianceAnticorrupcaoAgent
 from .regulatory_analyst import RegulatoryAnalystAgent
 from .compliance_pm import CompliancePMAgent
-from .channel_agent import ChannelAgentAgent
+from .channel_agent import ChannelAgent
 from .knowledge_agent import KnowledgeAgent
 from .facilitator_agent import FacilitatorAgentAgent
 from .dev_experience import DevExperienceAgent
@@ -86,7 +86,7 @@ __all__ = [
     "ComplianceAnticorrupcaoAgent",
     "RegulatoryAnalystAgent",
     "CompliancePMAgent",
-    "ChannelAgentAgent",
+    "ChannelAgent",
     "KnowledgeAgent",
     "FacilitatorAgentAgent",
     "DevExperienceAgent",
