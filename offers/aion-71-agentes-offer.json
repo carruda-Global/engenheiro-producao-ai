@@ -1,7 +1,7 @@
 {
   "id": "ecosystem-aion-71-agentes",
-  "name": "AION - 71 Agentes de IA",
-  "version": "6.0",
+  "name": "AION - 74 Agentes de IA",
+  "version": "6.1",
   "marketplaces": {
     "microsoft": {
       "plans": [
@@ -82,6 +82,98 @@
           "name": "Cross-Sell Pack",
           "prices_brl": 29700,
           "prices_usd": 7900
+        },
+        {
+          "id": "governance_starter",
+          "name": "Governance Starter",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_pro",
+          "name": "Governance Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_enterprise",
+          "name": "Governance Enterprise",
+          "price_brl": 999700,
+          "price_usd": 249900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "bridge_starter",
+          "name": "Bridge Starter",
+          "price_brl": 196000,
+          "price_usd": 49000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_pro",
+          "name": "Bridge Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_enterprise",
+          "name": "Bridge Enterprise",
+          "price_brl": 797000,
+          "price_usd": 199000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "reviewer_starter",
+          "name": "Reviewer Starter",
+          "price_brl": 39600,
+          "price_usd": 9900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_pro",
+          "name": "Reviewer Pro",
+          "price_brl": 119700,
+          "price_usd": 29900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_enterprise",
+          "name": "Reviewer Enterprise",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "enterprise_full",
+          "name": "Enterprise Full Suite",
+          "price_brl": 1597000,
+          "price_usd": 399900,
+          "agents": [
+            "#60",
+            "#61",
+            "#62"
+          ]
         }
       ],
       "fulfillment_url": "https://engenheiro-producao-ai.onrender.com/microsoft/fulfill",
@@ -153,6 +245,98 @@
           "id": "cross_sell_pack",
           "name": "Cross-Sell Pack",
           "price_usd": 7900
+        },
+        {
+          "id": "governance_starter",
+          "name": "Governance Starter",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_pro",
+          "name": "Governance Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_enterprise",
+          "name": "Governance Enterprise",
+          "price_brl": 999700,
+          "price_usd": 249900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "bridge_starter",
+          "name": "Bridge Starter",
+          "price_brl": 196000,
+          "price_usd": 49000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_pro",
+          "name": "Bridge Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_enterprise",
+          "name": "Bridge Enterprise",
+          "price_brl": 797000,
+          "price_usd": 199000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "reviewer_starter",
+          "name": "Reviewer Starter",
+          "price_brl": 39600,
+          "price_usd": 9900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_pro",
+          "name": "Reviewer Pro",
+          "price_brl": 119700,
+          "price_usd": 29900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_enterprise",
+          "name": "Reviewer Enterprise",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "enterprise_full",
+          "name": "Enterprise Full Suite",
+          "price_brl": 1597000,
+          "price_usd": 399900,
+          "agents": [
+            "#60",
+            "#61",
+            "#62"
+          ]
         }
       ]
     },
@@ -222,6 +406,98 @@
           "id": "cross_sell_pack",
           "name": "Cross-Sell Pack",
           "price_usd": 7900
+        },
+        {
+          "id": "governance_starter",
+          "name": "Governance Starter",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_pro",
+          "name": "Governance Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_enterprise",
+          "name": "Governance Enterprise",
+          "price_brl": 999700,
+          "price_usd": 249900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "bridge_starter",
+          "name": "Bridge Starter",
+          "price_brl": 196000,
+          "price_usd": 49000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_pro",
+          "name": "Bridge Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_enterprise",
+          "name": "Bridge Enterprise",
+          "price_brl": 797000,
+          "price_usd": 199000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "reviewer_starter",
+          "name": "Reviewer Starter",
+          "price_brl": 39600,
+          "price_usd": 9900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_pro",
+          "name": "Reviewer Pro",
+          "price_brl": 119700,
+          "price_usd": 29900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_enterprise",
+          "name": "Reviewer Enterprise",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "enterprise_full",
+          "name": "Enterprise Full Suite",
+          "price_brl": 1597000,
+          "price_usd": 399900,
+          "agents": [
+            "#60",
+            "#61",
+            "#62"
+          ]
         }
       ]
     },
@@ -291,6 +567,98 @@
           "id": "cross_sell_pack",
           "name": "Cross-Sell Pack",
           "price_usd": 7900
+        },
+        {
+          "id": "governance_starter",
+          "name": "Governance Starter",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_pro",
+          "name": "Governance Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_enterprise",
+          "name": "Governance Enterprise",
+          "price_brl": 999700,
+          "price_usd": 249900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "bridge_starter",
+          "name": "Bridge Starter",
+          "price_brl": 196000,
+          "price_usd": 49000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_pro",
+          "name": "Bridge Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_enterprise",
+          "name": "Bridge Enterprise",
+          "price_brl": 797000,
+          "price_usd": 199000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "reviewer_starter",
+          "name": "Reviewer Starter",
+          "price_brl": 39600,
+          "price_usd": 9900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_pro",
+          "name": "Reviewer Pro",
+          "price_brl": 119700,
+          "price_usd": 29900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_enterprise",
+          "name": "Reviewer Enterprise",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "enterprise_full",
+          "name": "Enterprise Full Suite",
+          "price_brl": 1597000,
+          "price_usd": 399900,
+          "agents": [
+            "#60",
+            "#61",
+            "#62"
+          ]
         }
       ]
     },
@@ -360,6 +728,98 @@
           "id": "cross_sell_pack",
           "name": "Cross-Sell Pack",
           "price_usd": 7900
+        },
+        {
+          "id": "governance_starter",
+          "name": "Governance Starter",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_pro",
+          "name": "Governance Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_enterprise",
+          "name": "Governance Enterprise",
+          "price_brl": 999700,
+          "price_usd": 249900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "bridge_starter",
+          "name": "Bridge Starter",
+          "price_brl": 196000,
+          "price_usd": 49000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_pro",
+          "name": "Bridge Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_enterprise",
+          "name": "Bridge Enterprise",
+          "price_brl": 797000,
+          "price_usd": 199000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "reviewer_starter",
+          "name": "Reviewer Starter",
+          "price_brl": 39600,
+          "price_usd": 9900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_pro",
+          "name": "Reviewer Pro",
+          "price_brl": 119700,
+          "price_usd": 29900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_enterprise",
+          "name": "Reviewer Enterprise",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "enterprise_full",
+          "name": "Enterprise Full Suite",
+          "price_brl": 1597000,
+          "price_usd": 399900,
+          "agents": [
+            "#60",
+            "#61",
+            "#62"
+          ]
         }
       ]
     },
@@ -429,6 +889,98 @@
           "id": "cross_sell_pack",
           "name": "Cross-Sell Pack",
           "price_usd": 7900
+        },
+        {
+          "id": "governance_starter",
+          "name": "Governance Starter",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_pro",
+          "name": "Governance Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "governance_enterprise",
+          "name": "Governance Enterprise",
+          "price_brl": 999700,
+          "price_usd": 249900,
+          "agents": [
+            "#60"
+          ]
+        },
+        {
+          "id": "bridge_starter",
+          "name": "Bridge Starter",
+          "price_brl": 196000,
+          "price_usd": 49000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_pro",
+          "name": "Bridge Pro",
+          "price_brl": 597000,
+          "price_usd": 149000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "bridge_enterprise",
+          "name": "Bridge Enterprise",
+          "price_brl": 797000,
+          "price_usd": 199000,
+          "agents": [
+            "#61"
+          ]
+        },
+        {
+          "id": "reviewer_starter",
+          "name": "Reviewer Starter",
+          "price_brl": 39600,
+          "price_usd": 9900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_pro",
+          "name": "Reviewer Pro",
+          "price_brl": 119700,
+          "price_usd": 29900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "reviewer_enterprise",
+          "name": "Reviewer Enterprise",
+          "price_brl": 199700,
+          "price_usd": 49900,
+          "agents": [
+            "#62"
+          ]
+        },
+        {
+          "id": "enterprise_full",
+          "name": "Enterprise Full Suite",
+          "price_brl": 1597000,
+          "price_usd": 399900,
+          "agents": [
+            "#60",
+            "#61",
+            "#62"
+          ]
         }
       ]
     }
