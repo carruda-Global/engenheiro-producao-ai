@@ -104,13 +104,19 @@ class Settings:
         if not self.deepseek_api_key:
             errors.append("DEEPSEEK_API_KEY nao configurada")
         sk = self.stripe_secret_key
-        if sk and ("sk_live_51Tkp" in sk or "sk_test_" not in sk):
-            if not sk.startswith("sk_live_") and not sk.startswith("sk_test_"):
-                errors.append("STRIPE_SECRET_KEY parece invalida — deve comecar com sk_live_ ou sk_test_")
-        if not self.stripe_secret_key:
+        if not sk:
             errors.append("STRIPE_SECRET_KEY nao configurada")
+        elif not sk.startswith("sk_live_") and not sk.startswith("sk_test_"):
+            errors.append("STRIPE_SECRET_KEY invalida — deve comecar com sk_live_ ou sk_test_")
         if not self.supabase_url:
             errors.append("SUPABASE_URL nao configurada")
+        if self.microsoft_enabled:
+            if not self.microsoft_tenant_id or self.microsoft_tenant_id.startswith("${"):
+                errors.append("AZURE_TENANT_ID nao configurada — Microsoft Marketplace desabilitado")
+            if not self.microsoft_client_id or self.microsoft_client_id.startswith("${"):
+                errors.append("AZURE_CLIENT_ID nao configurada — Microsoft Marketplace desabilitado")
+            if not self.microsoft_client_secret or self.microsoft_client_secret.startswith("${"):
+                errors.append("AZURE_CLIENT_SECRET nao configurada — Microsoft Marketplace desabilitado")
         return errors
 
 

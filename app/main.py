@@ -1,3 +1,4 @@
+import os
 import uuid
 import logging
 
@@ -48,8 +49,12 @@ try:
     if config_errors:
         logger.warning("Configuracao incompleta no startup: %s", config_errors)
 except Exception as e:
-    logger.warning("Configuracao parcial no startup: %s", e)
-    settings = None
+    logger.warning("Configuracao parcial no startup, usando defaults: %s", e)
+    settings = Settings.__new__(Settings)
+    settings.app_env = os.getenv("APP_ENV", "development")
+    settings.base_url = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
+    settings.agents_config = {}
+    settings.llm_routing_config = {}
 
 app = FastAPI(
     title="H-MAS EcoSystem AEC + Regulatory",
@@ -57,11 +62,12 @@ app = FastAPI(
     version="3.0.0",
 )
 
-cors_origins = ["*"] if settings.app_env != "production" else [settings.base_url]
+_is_production = settings.app_env == "production"
+cors_origins = [settings.base_url] if _is_production else ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
-    allow_credentials=False if cors_origins == ["*"] else True,
+    allow_credentials=_is_production,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -71,9 +77,6 @@ app.add_middleware(PrivacyConsentMiddleware)
 orchestrator = HMASOrchestrator(settings)
 dashboard = AgentDashboard()
 circuit_breaker = CircuitBreaker(threshold=5, reset_seconds=60)
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 @app.on_event("startup")
