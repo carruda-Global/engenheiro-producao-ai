@@ -35,6 +35,7 @@ from app.routers.stripe_webhook import router as stripe_webhook_router
 from app.routers.governance import router as governance_router
 from app.routers.bridge import router as bridge_router
 from app.routers.code_review import router as code_review_router
+from app.routers.physical_ai import router as physical_ai_router
 from src.api.middleware.privacy import PrivacyConsentMiddleware
 
 logging.basicConfig(level=logging.INFO)
@@ -64,8 +65,8 @@ cors_origins = [settings.base_url] if _is_production else ["*"]
 
 app = FastAPI(
     title="H-MAS EcoSystem AEC + Regulatory",
-    description="62 Agentes de IA Hierarquicos para Engenharia de Producao + Enterprise Connectors",
-    version="6.0.0",
+    description="63 Agentes de IA - Ecosystem completo + Enterprise Connectors + Physical AI",
+    version="6.2.0",
 )
 
 app.add_middleware(
@@ -187,6 +188,7 @@ app.include_router(stripe_webhook_router)
 app.include_router(governance_router)
 app.include_router(bridge_router)
 app.include_router(code_review_router)
+app.include_router(physical_ai_router)
 
 
 @app.get("/")
@@ -196,7 +198,7 @@ async def root():
         "version": "3.0.0",
         "status": "operational",
         "agents_total": len(orchestrator.agents),
-        "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "tech", "self_improvement", "enterprise_connectors"],
+        "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "tech", "self_improvement", "enterprise_connectors", "physical_ai"],
     }
 
 
