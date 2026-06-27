@@ -23,297 +23,146 @@
   "plans": [
     {
       "id": "compliance_essencial",
-      "name": "Compliance Essencial — NR-1 + LGPD",
-      "description": "NR-1 Riscos Psicossociais + LGPD Operacional. Arquitetura RAG hibrida com controle de custo por token e fallback automatico para dados sensiveis (Gemini). Agentes: NR-1 Psicossocial (#13), LGPD Operacional (#15).",
+      "name": "Compliance Essencial - NR-1 + LGPD",
+      "description": "Plano Compliance Essencial - NR-1 + LGPD - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 119.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Compliance Essencial — NR-1 + LGPD",
-          "type": "SaaS",
-          "description": "NR-1 Riscos Psicossociais + LGPD Operacional",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 59000,
+        "price_usd": 14900
+      }
     },
     {
       "id": "regulatory_pro",
-      "name": "Regulatory Pro — Obrigacoes Completas",
-      "description": "6 agentes regulatorios brasileiros com RAG hibrido e memoria entre sessoes. Agentes: NR-1 (#13), Tributario CBS/IBS (#14), LGPD (#15), Canal de Denuncias (#19), Igualdade Salarial (#20), Compliance Anticorrupcao (#21).",
+      "name": "Regulatory Pro - 5 Agentes",
+      "description": "Plano Regulatory Pro - 5 Agentes - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 299.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Regulatory Pro — Obrigacoes Completas",
-          "type": "SaaS",
-          "description": "6 agentes regulatorios brasileiros",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 149000,
+        "price_usd": 37900
+      }
     },
     {
-      "id": "esg_carbon",
+      "id": "esg_carbono",
       "name": "ESG + Carbono",
-      "description": "ESG IFRS S1/S2 (#16) + Inventario de Carbono (#17) + Escopo 3 Fornecedores (#18). RAG hibrido com grafo de normas regulatorias.",
+      "description": "Plano ESG + Carbono - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 499.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "ESG + Carbono",
-          "type": "SaaS",
-          "description": "ESG IFRS S1/S2 + Inventario de Carbono + Escopo 3",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "aec_full",
-      "name": "AEC Full — Engenharia e Construcao",
-      "description": "12 agentes AEC com orquestracao hierarquica HMAS, RAG hibrido e algoritmo genetico (GEA). Agentes #1 a #12.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 799.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "AEC Full — Engenharia e Construcao",
-          "type": "SaaS",
-          "description": "12 agentes AEC com HMAS e RAG",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "tech_starter",
-      "name": "Tech Starter — Engenharia de Software",
-      "description": "Agente #28 Software Engineering: analise de requisitos, geracao de codigo, revisao de qualidade, deteccao de oportunidades de vendas. Para equipes de tecnologia.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 399.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Tech Starter — Engenharia de Software",
-          "type": "SaaS",
-          "description": "Agente #28 Software Engineering IA",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "tech_professional",
-      "name": "Tech Professional — Engenharia + Vendas",
-      "description": "Agentes #28 Software Engineering + #29 Sales Agent: desenvolvimento de codigo com prospeccao autonoma de leads, pesquisa de mercado e outreach personalizado.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 699.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Tech Professional — Engenharia + Vendas",
-          "type": "SaaS",
-          "description": "Agentes #28 Engenharia + #29 Vendas",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
-    },
-    {
-      "id": "tech_enterprise",
-      "name": "Tech Enterprise — Workforce Completo",
-      "description": "Agentes #28 Software Engineering + #29 Sales Agent + #30 Workforce Orchestrator: workforce digital completo com planejamento, execucao, monitoramento e otimizacao de workflows multiagente.",
-      "pricing": {
-        "type": "recurring",
-        "interval": "month",
-        "price_usd": 1199.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Tech Enterprise — Workforce Completo",
-          "type": "SaaS",
-          "description": "3 agentes tech com orquestracao de workforce",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 249000,
+        "price_usd": 62900
+      }
     },
     {
       "id": "microsoft_pack",
-      "name": "Microsoft Compliance Pack",
-      "description": "6 agentes M365 (SharePoint, Teams, Planner, GitHub) com RAG hibrido e controle de custo por token. Agentes #22 a #27.",
+      "name": "Microsoft Pack - 6 Agentes",
+      "description": "Plano Microsoft Pack - 6 Agentes - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 899.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Microsoft Compliance Pack",
-          "type": "SaaS",
-          "description": "6 agentes M365 com RAG e controle de custo",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 448200,
+        "price_usd": 112900
+      }
     },
     {
       "id": "dynamics_pack",
-      "name": "Microsoft Dynamics Pack — 6 Agentes",
-      "description": "6 agentes Dynamics 365: Sales (#31), Finance (#32), Supply Chain (#33), HR (#34), Customer Service (#35), Power BI Compliance (#36).",
+      "name": "Dynamics 365 Pack",
+      "description": "Plano Dynamics 365 Pack - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 799.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Dynamics Pack — 6 Agentes",
-          "type": "SaaS",
-          "description": "6 agentes Dynamics 365",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 399000,
+        "price_usd": 99900
+      }
     },
     {
       "id": "agentforce_pack",
-      "name": "Salesforce Agentforce Pack — 5 Agentes",
-      "description": "5 agentes Salesforce: SDR (#37), Field Service (#38), Contracts (#39), Revenue (#40), Sustainability (#41).",
+      "name": "Agentforce Pack",
+      "description": "Plano Agentforce Pack - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 699.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Agentforce Pack — 5 Agentes",
-          "type": "SaaS",
-          "description": "5 agentes Salesforce Agentforce",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 369000,
+        "price_usd": 92900
+      }
     },
     {
       "id": "oracle_pack",
-      "name": "Oracle Fusion Pack — 4 Agentes",
-      "description": "4 agentes Oracle: ERP Compliance (#42), HCM Regulatory (#43), Supply Chain ESG (#44), CX Sales (#45).",
+      "name": "Oracle Fusion Pack",
+      "description": "Plano Oracle Fusion Pack - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 799.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Oracle Fusion Pack — 4 Agentes",
-          "type": "SaaS",
-          "description": "4 agentes Oracle Fusion",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 399000,
+        "price_usd": 99900
+      }
     },
     {
       "id": "sap_pack",
-      "name": "SAP Integration Pack — 3 Agentes",
-      "description": "3 agentes SAP: Joule Compliance Bridge (#46), Predictive Maintenance (#47), CBAM Export (#48).",
+      "name": "SAP Integration Pack",
+      "description": "Plano SAP Integration Pack - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 899.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "SAP Integration Pack — 3 Agentes",
-          "type": "SaaS",
-          "description": "3 agentes SAP BTP",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 429000,
+        "price_usd": 107900
+      }
     },
     {
       "id": "erp_full_bridge",
-      "name": "ERP Full Bridge — 18 Agentes",
-      "description": "18 agentes ERP (Dynamics + Agentforce + Oracle + SAP) + Cross-Platform Bridge incluso. Agentes #31 a #48.",
+      "name": "ERP Full Bridge",
+      "description": "Plano ERP Full Bridge - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 2599.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "ERP Full Bridge — 18 Agentes",
-          "type": "SaaS",
-          "description": "18 agentes ERP multi-plataforma",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 1299000,
+        "price_usd": 329900
+      }
     },
     {
-      "id": "full_suite_59",
-      "name": "Full Suite — 59 Agentes",
-      "description": "Ecossistema completo de 59 agentes de IA em 14 clusters: AEC (12), Regulatorios (9), Microsoft (6), Tech (3), Dynamics (6), Agentforce (5), Oracle (4), SAP (3), Coordenacao (2), Inteligencia (3), Auto-aprimoramento (3), Cross-sell (3). RAG hibrido, fallback automatico, 3 MCP servers, orquestrador mestre, quality critic. Comece por R$ 590/mes e expanda.",
+      "id": "tech_starter",
+      "name": "Tech Starter",
+      "description": "Plano Tech Starter - assinatura mensal",
       "pricing": {
         "type": "recurring",
         "interval": "month",
-        "price_usd": 3999.0,
-        "currency": "USD"
-      },
-      "hidden": false,
-      "components": [
-        {
-          "name": "Full Suite — 59 Agentes",
-          "type": "SaaS",
-          "description": "59 agentes de IA com RAG hibrido, MCP e orquestracao",
-          "provisioning_url": "https://engenheiro-producao-ai.onrender.com/microsoft/subscribe",
-          "provisioning_type": "redirect"
-        }
-      ]
+        "price_brl": 199700,
+        "price_usd": 49900
+      }
+    },
+    {
+      "id": "tech_enterprise",
+      "name": "Tech Enterprise",
+      "description": "Plano Tech Enterprise - assinatura mensal",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_brl": 599700,
+        "price_usd": 149900
+      }
+    },
+    {
+      "id": "full_suite",
+      "name": "Full Suite - 71 Agentes",
+      "description": "Plano Full Suite - 71 Agentes - assinatura mensal",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_brl": 1999700,
+        "price_usd": 499900
+      }
+    },
+    {
+      "id": "cross_sell_pack",
+      "name": "Cross-Sell Pack",
+      "description": "Plano Cross-Sell Pack - assinatura mensal",
+      "pricing": {
+        "type": "recurring",
+        "interval": "month",
+        "price_brl": 29700,
+        "price_usd": 7900
+      }
     }
   ]
 }

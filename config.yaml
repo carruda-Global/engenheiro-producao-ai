@@ -1,303 +1,21 @@
-app:
-  name: "H-MAS EcoSystem AEC + Regulatory + ERP"
-  version: "3.0.0"
-  debug: false
-  log_level: INFO
-  environment: ${APP_ENV:-development}
-
-llm_routing:
-  default: deepseek
-  sensitive_llm: gemini
-  reasoning_llm: claude-api
-  sensitive_agents:
-    - nr1_psicossocial
-    - lgpd_operacional
-    - canal_denuncias
-    - igualdade_salarial
-    - compliance_anticorrupcao
-    - dynamics_hr
-    - oracle_hcm_regulatory
-    - onboarding_funcionarios
-  reasoning_agents:
-    - master_orchestrator
-    - quality_critic
-    - ecosystem_evolution
-
-clusters:
-  aec_core:
-    enabled: true
-    max_parallel: 10
-    agents:
-      spec_analyst: { enabled: true, budget_per_task: 0.10 }
-      procurement: { enabled: true, budget_per_task: 0.10 }
-      inventory: { enabled: true, budget_per_task: 0.08 }
-      logistics: { enabled: true, budget_per_task: 0.08 }
-      field_execution: { enabled: true, budget_per_task: 0.10 }
-  aec_specialized:
-    enabled: true
-    max_parallel: 10
-    agents:
-      bim_coordinator: { enabled: true, budget_per_task: 0.08 }
-      requirements_analyst: { enabled: true, budget_per_task: 0.08 }
-      engineering_assistant: { enabled: true, budget_per_task: 0.06 }
-      work_synopsis: { enabled: true, budget_per_task: 0.06 }
-  aec_compliance:
-    enabled: true
-    max_parallel: 10
-    agents:
-      photo_intelligence: { enabled: true, budget_per_task: 0.10 }
-      rfi_creation: { enabled: true, budget_per_task: 0.08 }
-      compliance: { enabled: true, budget_per_task: 0.08 }
-  regulatory:
-    enabled: true
-    max_parallel: 10
-    agents:
-      nr1_psicossocial: { enabled: true, budget_per_task: 0.10 }
-      tributario_cbs_ibs: { enabled: true, budget_per_task: 0.10 }
-      lgpd_operacional: { enabled: true, budget_per_task: 0.08 }
-      esg_ifrs: { enabled: true, budget_per_task: 0.08 }
-      inventario_carbono: { enabled: true, budget_per_task: 0.08 }
-      escopo3_fornecedores: { enabled: true, budget_per_task: 0.10 }
-      canal_denuncias: { enabled: true, budget_per_task: 0.06 }
-      igualdade_salarial: { enabled: true, budget_per_task: 0.08 }
-      compliance_anticorrupcao: { enabled: true, budget_per_task: 0.10 }
-  microsoft:
-    enabled: true
-    max_parallel: 10
-    agents:
-      regulatory_analyst: { enabled: true, budget_per_task: 0.10 }
-      compliance_pm: { enabled: true, budget_per_task: 0.08 }
-      channel_agent: { enabled: true, budget_per_task: 0.08 }
-      knowledge_agent: { enabled: true, budget_per_task: 0.06 }
-      facilitator_agent: { enabled: true, budget_per_task: 0.06 }
-      dev_experience: { enabled: true, budget_per_task: 0.10 }
-  cross_sell:
-    enabled: true
-    max_parallel: 10
-    agents:
-      onboarding_funcionarios: { enabled: true, budget_per_task: 0.08 }
-      atendimento_cliente_ptbr: { enabled: true, budget_per_task: 0.06 }
-      conciliacao_financeira: { enabled: true, budget_per_task: 0.10 }
-  dynamics:
-    enabled: true
-    max_parallel: 5
-    agents:
-      dynamics_sales: { enabled: true, budget_per_task: 0.10 }
-      dynamics_finance: { enabled: true, budget_per_task: 0.10 }
-      dynamics_supply_chain: { enabled: true, budget_per_task: 0.10 }
-      dynamics_hr: { enabled: true, budget_per_task: 0.08 }
-      dynamics_customer_service: { enabled: true, budget_per_task: 0.08 }
-      powerbi_compliance: { enabled: true, budget_per_task: 0.06 }
-  agentforce:
-    enabled: true
-    max_parallel: 5
-    agents:
-      agentforce_sdr: { enabled: true, budget_per_task: 0.10 }
-      agentforce_field_service: { enabled: true, budget_per_task: 0.10 }
-      agentforce_contracts: { enabled: true, budget_per_task: 0.08 }
-      agentforce_revenue: { enabled: true, budget_per_task: 0.10 }
-      agentforce_sustainability: { enabled: true, budget_per_task: 0.08 }
-  oracle:
-    enabled: true
-    max_parallel: 5
-    agents:
-      oracle_erp_compliance: { enabled: true, budget_per_task: 0.10 }
-      oracle_hcm_regulatory: { enabled: true, budget_per_task: 0.08 }
-      oracle_supply_chain_esg: { enabled: true, budget_per_task: 0.10 }
-      oracle_cx_sales: { enabled: true, budget_per_task: 0.08 }
-  sap:
-    enabled: true
-    max_parallel: 5
-    agents:
-      sap_compliance_bridge: { enabled: true, budget_per_task: 0.12 }
-      sap_predictive_maintenance: { enabled: true, budget_per_task: 0.10 }
-      sap_cbam_export: { enabled: true, budget_per_task: 0.12 }
-  coordination:
-    enabled: true
-    max_parallel: 1
-    agents:
-      master_orchestrator: { enabled: true, budget_per_task: 0.15 }
-      cross_platform_bridge: { enabled: true, budget_per_task: 0.10 }
-  intelligence:
-    enabled: true
-    max_parallel: 3
-    agents:
-      regulatory_watch: { enabled: true, budget_per_task: 0.08 }
-      client_intelligence: { enabled: true, budget_per_task: 0.08 }
-      quality_critic: { enabled: true, budget_per_task: 0.06 }
-  micro:
-    enabled: true
-    max_parallel: 15
-    agents:
-      nr1_diagnostico_rapido: { enabled: true, budget_per_task: 0.03 }
-      lgpd_scanner: { enabled: true, budget_per_task: 0.03 }
-      folha_equidade: { enabled: true, budget_per_task: 0.03 }
-      contrato_review: { enabled: true, budget_per_task: 0.04 }
-      teams_risk_monitor: { enabled: true, budget_per_task: 0.03 }
-      meeting_minutes: { enabled: true, budget_per_task: 0.03 }
-      pr_lgpd_checker: { enabled: true, budget_per_task: 0.04 }
-      admissao_checklist: { enabled: true, budget_per_task: 0.03 }
-      sales_pipeline_checker: { enabled: true, budget_per_task: 0.04 }
-      expense_anomaly: { enabled: true, budget_per_task: 0.04 }
-      compliance_score: { enabled: true, budget_per_task: 0.03 }
-      lead_qualifier: { enabled: true, budget_per_task: 0.04 }
-      code_reviewer: { enabled: true, budget_per_task: 0.04 }
-      headcount_alert: { enabled: true, budget_per_task: 0.04 }
-      regulatory_alert: { enabled: true, budget_per_task: 0.03 }
-  tech:
-    enabled: true
-    max_parallel: 5
-    agents:
-      software_engineering: { enabled: true, budget_per_task: 0.12 }
-      sales_agent: { enabled: true, budget_per_task: 0.10 }
-      workforce_orchestrator: { enabled: true, budget_per_task: 0.15 }
-  self_improvement:
-    enabled: true
-    max_parallel: 1
-    agents:
-      meta_learning: { enabled: true, budget_per_task: 0.08 }
-      ecosystem_evolution: { enabled: true, budget_per_task: 0.10 }
-      federated_knowledge: { enabled: false, budget_per_task: 0.10 }
-
-deepseek:
-  api_base: https://api.deepseek.com/v1
-  model: deepseek-chat
-  max_tokens: 16384
-  temperature: 0.3
-  timeout: 120
-
-memory:
-  hybrid:
-    enabled: true
-    max_episodes_per_agent: 1000
-    max_total_episodes: 50000
-    reflection_interval: 10
-  episodic:
-    enabled: true
-    max_size: 5000
-  semantic:
-    enabled: true
-    knowledge_path: data/semantic_knowledge.json
-  working:
-    enabled: true
-    ttl_seconds: 3600
-
-rag:
-  hybrid:
-    enabled: true
-    top_k: 5
-    fusion_strategy: reciprocal_rank
-    cache_size: 500
-  text_retriever:
-    enabled: true
-    method: bm25
-  graph_retriever:
-    enabled: true
-    max_depth: 3
-
-evolution:
-  gea:
-    enabled: true
-    population_size: 27
-    mutation_rate: 0.1
-    crossover_rate: 0.7
-    selection_pressure: 0.3
-    generation_interval_minutes: 60
-  reflection:
-    enabled: true
-    pattern_analysis_interval: 5
-  performance_selection:
-    enabled: true
-    novelty_weight: 0.3
-    performance_weight: 0.7
-
-rl:
-  local:
-    enabled: true
-    algorithm: ppo
-    learning_rate: 0.001
-    discount_factor: 0.95
-    clip_epsilon: 0.2
-  global:
-    enabled: true
-    algorithm: ppo
-    learning_rate: 0.0005
-    discount_factor: 0.9
-  federated:
-    enabled: false
-    sync_interval_minutes: 60
-  reward:
-    dimensions:
-      - success_rate
-      - response_time
-      - cost_efficiency
-      - novelty
-    weights:
-      success_rate: 0.4
-      response_time: 0.2
-      cost_efficiency: 0.3
-      novelty: 0.1
-
-monitoring:
-  metrics:
-    enabled: true
-    prometheus_port: 9091
-    collection_interval_seconds: 15
-  alerts:
-    response_time_threshold: 5.0
-    error_rate_threshold: 0.05
-    budget_usage_threshold: 0.80
-    slack_webhook: ${SLACK_WEBHOOK:-}
-    email_alerts: ${ALERT_EMAIL:-}
-  dashboard:
-    enabled: true
-    refresh_interval_seconds: 5
-    max_history_points: 1000
-  logging:
-    elasticsearch_enabled: false
-    logstash_host: logstash
-    logstash_port: 5000
-
-security:
-  multi_tenant:
-    enabled: true
-    isolation_level: schema
-  rbac:
-    enabled: true
-    roles:
-      - admin
-      - manager
-      - operator
-      - viewer
-  pii_masking:
-    enabled: true
-    patterns:
-      - cpf
-      - email
-      - phone
-      - credit_card
-  dlp:
-    enabled: true
-    max_data_exposure: 1000
-  audit:
-    enabled: true
-    hash_chain_enabled: true
-    storage_path: data/audit/
-
-rate_limiting:
+agent_versioning:
   enabled: true
-  requests_per_second: 100
-  burst_size: 200
-  per_agent_limit: 10
-
+  max_snapshots: 50
+  rollback_enabled: true
+  snapshots_path: data/snapshots/
+app:
+  debug: false
+  environment: ${APP_ENV:-development}
+  log_level: INFO
+  name: H-MAS EcoSystem AEC + Regulatory + ERP
+  version: 3.0.0
 budget:
-  per_task_default: 0.10
-  per_agent_monthly: 100.0
-  per_tenant_monthly: 1000.0
   alerts_enabled: true
   auto_fallback: true
   fallback_model: deepseek-chat
-
+  per_agent_monthly: 100.0
+  per_task_default: 0.1
+  per_tenant_monthly: 1000.0
 cache:
   embeddings:
     enabled: true
@@ -307,153 +25,615 @@ cache:
     enabled: true
     max_entries: 10000
     ttl_hours: 48
-
-agent_versioning:
-  enabled: true
-  snapshots_path: data/snapshots/
-  max_snapshots: 50
-  rollback_enabled: true
-
-orchestrator:
-  max_parallel_agents: 10
-  task_timeout_seconds: 30
-  circuit_breaker_threshold: 5
-  circuit_breaker_reset_seconds: 60
-  retry_attempts: 3
-  retry_delay_seconds: 1.0
-
+clusters:
+  aec_compliance:
+    agents:
+      compliance:
+        budget_per_task: 0.08
+        enabled: true
+      photo_intelligence:
+        budget_per_task: 0.1
+        enabled: true
+      rfi_creation:
+        budget_per_task: 0.08
+        enabled: true
+    enabled: true
+    max_parallel: 10
+  aec_core:
+    agents:
+      field_execution:
+        budget_per_task: 0.1
+        enabled: true
+      inventory:
+        budget_per_task: 0.08
+        enabled: true
+      logistics:
+        budget_per_task: 0.08
+        enabled: true
+      procurement:
+        budget_per_task: 0.1
+        enabled: true
+      spec_analyst:
+        budget_per_task: 0.1
+        enabled: true
+    enabled: true
+    max_parallel: 10
+  aec_specialized:
+    agents:
+      bim_coordinator:
+        budget_per_task: 0.08
+        enabled: true
+      engineering_assistant:
+        budget_per_task: 0.06
+        enabled: true
+      requirements_analyst:
+        budget_per_task: 0.08
+        enabled: true
+      work_synopsis:
+        budget_per_task: 0.06
+        enabled: true
+    enabled: true
+    max_parallel: 10
+  agentforce:
+    agents:
+      agentforce_contracts:
+        budget_per_task: 0.08
+        enabled: true
+      agentforce_field_service:
+        budget_per_task: 0.1
+        enabled: true
+      agentforce_revenue:
+        budget_per_task: 0.1
+        enabled: true
+      agentforce_sdr:
+        budget_per_task: 0.1
+        enabled: true
+      agentforce_sustainability:
+        budget_per_task: 0.08
+        enabled: true
+    enabled: true
+    max_parallel: 5
+  coordination:
+    agents:
+      cross_platform_bridge:
+        budget_per_task: 0.1
+        enabled: true
+      master_orchestrator:
+        budget_per_task: 0.15
+        enabled: true
+    enabled: true
+    max_parallel: 1
+  cross_sell:
+    agents:
+      atendimento_cliente_ptbr:
+        budget_per_task: 0.06
+        enabled: true
+      conciliacao_financeira:
+        budget_per_task: 0.1
+        enabled: true
+      onboarding_funcionarios:
+        budget_per_task: 0.08
+        enabled: true
+    enabled: true
+    max_parallel: 10
+  dynamics:
+    agents:
+      dynamics_customer_service:
+        budget_per_task: 0.08
+        enabled: true
+      dynamics_finance:
+        budget_per_task: 0.1
+        enabled: true
+      dynamics_hr:
+        budget_per_task: 0.08
+        enabled: true
+      dynamics_sales:
+        budget_per_task: 0.1
+        enabled: true
+      dynamics_supply_chain:
+        budget_per_task: 0.1
+        enabled: true
+      powerbi_compliance:
+        budget_per_task: 0.06
+        enabled: true
+    enabled: true
+    max_parallel: 5
+  intelligence:
+    agents:
+      client_intelligence:
+        budget_per_task: 0.08
+        enabled: true
+      quality_critic:
+        budget_per_task: 0.06
+        enabled: true
+      regulatory_watch:
+        budget_per_task: 0.08
+        enabled: true
+    enabled: true
+    max_parallel: 3
+  micro:
+    agents:
+      admissao_checklist:
+        budget_per_task: 0.03
+        enabled: true
+      code_reviewer:
+        budget_per_task: 0.04
+        enabled: true
+      compliance_score:
+        budget_per_task: 0.03
+        enabled: true
+      contrato_review:
+        budget_per_task: 0.04
+        enabled: true
+      expense_anomaly:
+        budget_per_task: 0.04
+        enabled: true
+      folha_equidade:
+        budget_per_task: 0.03
+        enabled: true
+      headcount_alert:
+        budget_per_task: 0.04
+        enabled: true
+      lead_qualifier:
+        budget_per_task: 0.04
+        enabled: true
+      lgpd_scanner:
+        budget_per_task: 0.03
+        enabled: true
+      meeting_minutes:
+        budget_per_task: 0.03
+        enabled: true
+      nr1_diagnostico_rapido:
+        budget_per_task: 0.03
+        enabled: true
+      pr_lgpd_checker:
+        budget_per_task: 0.04
+        enabled: true
+      regulatory_alert:
+        budget_per_task: 0.03
+        enabled: true
+      sales_pipeline_checker:
+        budget_per_task: 0.04
+        enabled: true
+      teams_risk_monitor:
+        budget_per_task: 0.03
+        enabled: true
+    enabled: true
+    max_parallel: 15
+  microsoft:
+    agents:
+      channel_agent:
+        budget_per_task: 0.08
+        enabled: true
+      compliance_pm:
+        budget_per_task: 0.08
+        enabled: true
+      dev_experience:
+        budget_per_task: 0.1
+        enabled: true
+      facilitator_agent:
+        budget_per_task: 0.06
+        enabled: true
+      knowledge_agent:
+        budget_per_task: 0.06
+        enabled: true
+      regulatory_analyst:
+        budget_per_task: 0.1
+        enabled: true
+    enabled: true
+    max_parallel: 10
+  oracle:
+    agents:
+      oracle_cx_sales:
+        budget_per_task: 0.08
+        enabled: true
+      oracle_erp_compliance:
+        budget_per_task: 0.1
+        enabled: true
+      oracle_hcm_regulatory:
+        budget_per_task: 0.08
+        enabled: true
+      oracle_supply_chain_esg:
+        budget_per_task: 0.1
+        enabled: true
+    enabled: true
+    max_parallel: 5
+  regulatory:
+    agents:
+      canal_denuncias:
+        budget_per_task: 0.06
+        enabled: true
+      compliance_anticorrupcao:
+        budget_per_task: 0.1
+        enabled: true
+      escopo3_fornecedores:
+        budget_per_task: 0.1
+        enabled: true
+      esg_ifrs:
+        budget_per_task: 0.08
+        enabled: true
+      igualdade_salarial:
+        budget_per_task: 0.08
+        enabled: true
+      inventario_carbono:
+        budget_per_task: 0.08
+        enabled: true
+      lgpd_operacional:
+        budget_per_task: 0.08
+        enabled: true
+      nr1_psicossocial:
+        budget_per_task: 0.1
+        enabled: true
+      tributario_cbs_ibs:
+        budget_per_task: 0.1
+        enabled: true
+    enabled: true
+    max_parallel: 10
+  sap:
+    agents:
+      sap_cbam_export:
+        budget_per_task: 0.12
+        enabled: true
+      sap_compliance_bridge:
+        budget_per_task: 0.12
+        enabled: true
+      sap_predictive_maintenance:
+        budget_per_task: 0.1
+        enabled: true
+    enabled: true
+    max_parallel: 5
+  self_improvement:
+    agents:
+      ecosystem_evolution:
+        budget_per_task: 0.1
+        enabled: true
+      federated_knowledge:
+        budget_per_task: 0.1
+        enabled: false
+      meta_learning:
+        budget_per_task: 0.08
+        enabled: true
+    enabled: true
+    max_parallel: 1
+  tech:
+    agents:
+      sales_agent:
+        budget_per_task: 0.1
+        enabled: true
+      software_engineering:
+        budget_per_task: 0.12
+        enabled: true
+      workforce_orchestrator:
+        budget_per_task: 0.15
+        enabled: true
+    enabled: true
+    max_parallel: 5
+deepseek:
+  api_base: https://api.deepseek.com/v1
+  max_tokens: 16384
+  model: deepseek-chat
+  temperature: 0.3
+  timeout: 120
+evolution:
+  gea:
+    crossover_rate: 0.7
+    enabled: true
+    generation_interval_minutes: 60
+    mutation_rate: 0.1
+    population_size: 27
+    selection_pressure: 0.3
+  performance_selection:
+    enabled: true
+    novelty_weight: 0.3
+    performance_weight: 0.7
+  reflection:
+    enabled: true
+    pattern_analysis_interval: 5
 integrations:
   github:
-    token: ${GITHUB_TOKEN}
     repo: ${GITHUB_REPO}
+    token: ${GITHUB_TOKEN}
   salesforce:
-    instance_url: ${SALESFORCE_URL}
     client_id: ${SALESFORCE_CLIENT_ID}
     client_secret: ${SALESFORCE_CLIENT_SECRET}
+    instance_url: ${SALESFORCE_URL}
   slack:
-    token: ${SLACK_TOKEN}
     channel: ${SLACK_CHANNEL}
-
+    token: ${SLACK_TOKEN}
+llm_routing:
+  default: deepseek
+  reasoning_agents:
+  - master_orchestrator
+  - quality_critic
+  - ecosystem_evolution
+  reasoning_llm: claude-api
+  sensitive_agents:
+  - nr1_psicossocial
+  - lgpd_operacional
+  - canal_denuncias
+  - igualdade_salarial
+  - compliance_anticorrupcao
+  - dynamics_hr
+  - oracle_hcm_regulatory
+  - onboarding_funcionarios
+  sensitive_llm: gemini
 marketplace:
   microsoft:
-    enabled: true
-    tenant_id: ${AZURE_TENANT_ID}
     client_id: ${AZURE_CLIENT_ID}
     client_secret: ${AZURE_CLIENT_SECRET}
-    fulfillment_api_version: "2018-08-31"
-
+    enabled: true
+    fulfillment_api_version: '2018-08-31'
+    tenant_id: ${AZURE_TENANT_ID}
+memory:
+  episodic:
+    enabled: true
+    max_size: 5000
+  hybrid:
+    enabled: true
+    max_episodes_per_agent: 1000
+    max_total_episodes: 50000
+    reflection_interval: 10
+  semantic:
+    enabled: true
+    knowledge_path: data/semantic_knowledge.json
+  working:
+    enabled: true
+    ttl_seconds: 3600
+monitoring:
+  alerts:
+    budget_usage_threshold: 0.8
+    email_alerts: ${ALERT_EMAIL:-}
+    error_rate_threshold: 0.05
+    response_time_threshold: 5.0
+    slack_webhook: ${SLACK_WEBHOOK:-}
+  dashboard:
+    enabled: true
+    max_history_points: 1000
+    refresh_interval_seconds: 5
+  logging:
+    elasticsearch_enabled: false
+    logstash_host: logstash
+    logstash_port: 5000
+  metrics:
+    collection_interval_seconds: 15
+    enabled: true
+    prometheus_port: 9091
+orchestrator:
+  circuit_breaker_reset_seconds: 60
+  circuit_breaker_threshold: 5
+  max_parallel_agents: 10
+  retry_attempts: 3
+  retry_delay_seconds: 1.0
+  task_timeout_seconds: 30
+rag:
+  graph_retriever:
+    enabled: true
+    max_depth: 3
+  hybrid:
+    cache_size: 500
+    enabled: true
+    fusion_strategy: reciprocal_rank
+    top_k: 5
+  text_retriever:
+    enabled: true
+    method: bm25
+rate_limiting:
+  burst_size: 200
+  enabled: true
+  per_agent_limit: 10
+  requests_per_second: 100
+rl:
+  federated:
+    enabled: false
+    sync_interval_minutes: 60
+  global:
+    algorithm: ppo
+    discount_factor: 0.9
+    enabled: true
+    learning_rate: 0.0005
+  local:
+    algorithm: ppo
+    clip_epsilon: 0.2
+    discount_factor: 0.95
+    enabled: true
+    learning_rate: 0.001
+  reward:
+    dimensions:
+    - success_rate
+    - response_time
+    - cost_efficiency
+    - novelty
+    weights:
+      cost_efficiency: 0.3
+      novelty: 0.1
+      response_time: 0.2
+      success_rate: 0.4
+security:
+  audit:
+    enabled: true
+    hash_chain_enabled: true
+    storage_path: data/audit/
+  dlp:
+    enabled: true
+    max_data_exposure: 1000
+  multi_tenant:
+    enabled: true
+    isolation_level: schema
+  pii_masking:
+    enabled: true
+    patterns:
+    - cpf
+    - email
+    - phone
+    - credit_card
+  rbac:
+    enabled: true
+    roles:
+    - admin
+    - manager
+    - operator
+    - viewer
 stripe:
-  # Planos consolidados v2.1.0 — 6 tiers (reduzido de 10 para eliminar paradoxo da escolha)
-  # price_ids originais preservados para não quebrar assinaturas ativas
-  plans:
-    compliance_essencial:
-      name: "Compliance Essencial — NR-1 + LGPD"
-      agents: ["#13 nr1_psicossocial", "#15 lgpd_operacional"]
-      amount_cents: 59000
-      price_id: "price_1TlxVVQn4rfjkSvEpiBqaCSf"
-      positioning: "Porta de entrada — compliance mínimo legal"
-
-    regulatory_pro:
-      name: "Regulatory Pro — Obrigações Completas"
-      agents: ["#13", "#14", "#15", "#19", "#20", "#21"]
-      amount_cents: 149000
-      price_id: "price_1TlxVVQn4rfjkSvEam443ZCP"
-      positioning: "PME com obrigações trabalhistas e LGPD completas"
-
-    esg_carbon:
-      name: "ESG + Carbono"
-      agents: ["#16", "#17", "#18"]
-      amount_cents: 249000
-      price_id: "price_1TlxVXQn4rfjkSvEl6uCfYgk"
-      positioning: "Empresas com exigências ESG e SBCE"
-
-    aec_full:
-      name: "AEC Full — Engenharia e Construção"
-      agents: ["#1 ao #12"]
-      amount_cents: 468500
-      price_id: "price_1TlxVSQn4rfjkSvEXodTHfNA"
-      positioning: "Construtoras, incorporadoras e escritórios de engenharia"
-
-    microsoft_pack:
-      name: "Microsoft Pack — 6 Agentes M365"
-      agents: ["#22 ao #27"]
-      amount_cents: 448200
-      price_id: "price_1TlxVXQn4rfjkSvExSnW6XmL"
-      positioning: "Empresas Microsoft 365 / Azure"
-
-    full_suite:
-      name: "Full Suite — 30 Agentes"
-      agents: ["todos os 30 agentes"]
-      amount_cents: 949700
-      price_id: "price_1TlxVTQn4rfjkSvEn41gegAl"
-      positioning: "Âncora / Enterprise — referência de preço máximo"
-
-    tributario_entrada:
-      name: "Tributário CBS/IBS - Starter"
-      amount_cents: 39000
-      price_id: "price_1Tm0gYQn4rfjkSvE1YFsQqq1"
-    tributario_full:
-      name: "Tributário CBS/IBS - Full"
-      amount_cents: 149000
-      price_id: "price_1TmLJzQn4rfjkSvEWrh5bHV6"
-
-    cross_sell_harmony:
-      name: "Cross-Sell Harmony — Onboarding"
-      agents: ["onboarding_funcionarios"]
-      amount_cents: 49000
-      price_id: "price_1TmLJtQn4rfjkSvETvw4iHjI"
-      positioning: "Entrada jornada RH — onboarding automatizado"
-
-    atendimento_plus:
-      name: "Atendimento Plus — Suporte PT-BR"
-      agents: ["atendimento_cliente_ptbr"]
-      amount_cents: 39000
-      price_id: "price_1TmLJuQn4rfjkSvE8HPg3B0t"
-      positioning: "Upsell suporte — tickets L1 automaticos via WhatsApp"
-
-    conciliacao_pro:
-      name: "Conciliacao Pro — Fechamento Mensal"
-      agents: ["conciliacao_financeira"]
-      amount_cents: 79000
-      price_id: "price_1TmLJxQn4rfjkSvEeItnhs5i"
-      positioning: "Upsell financeiro — conciliacao automatica de NFs e extratos"
-
-    tech_starter:
-      name: "Tech Starter — Engenharia de Software"
-      agents: ["software_engineering"]
-      amount_cents: 199700
-      price_id: "CRIAR_NO_STRIPE"
-      positioning: "Desenvolvimento de agentes de IA e automatizacao"
-
-    tech_professional:
-      name: "Tech Professional — Engenharia + Vendas"
-      agents: ["software_engineering", "sales_agent"]
-      amount_cents: 349700
-      price_id: "CRIAR_NO_STRIPE"
-      positioning: "Engenharia de software com prospeccao autonoma"
-
-    tech_enterprise:
-      name: "Tech Enterprise — Workforce Completo"
-      agents: ["software_engineering", "sales_agent", "workforce_orchestrator"]
-      amount_cents: 599700
-      price_id: "CRIAR_NO_STRIPE"
-      positioning: "Workforce digital completo com orquestracao"
-
-  # Planos legados — manter ativos para assinaturas existentes, não exibir para novos clientes
   legacy_plans:
-    starter:
-      name: "Starter - Spec Analyst"
-      amount_cents: 99700
-      price_id: "price_1TlxVRQn4rfjkSvEpsCuJBy6"
-    professional:
-      name: "Professional - 3 Agentes"
-      amount_cents: 239100
-      price_id: "price_1TlxVSQn4rfjkSvEwWLP6n8N"
     compliance_pack:
-      name: "Compliance Pack - Conformidade"
       amount_cents: 239100
-      price_id: "price_1TlxVUQn4rfjkSvEAFoHn8zw"
+      name: Compliance Pack - Conformidade
+      price_id: price_1TlxVUQn4rfjkSvEAFoHn8zw
+    professional:
+      amount_cents: 239100
+      name: Professional - 3 Agentes
+      price_id: price_1TlxVSQn4rfjkSvEwWLP6n8N
     regulatory_full:
-      name: "Regulatory Full - 9 Agentes"
       amount_cents: 349000
-      price_id: "price_1TlxVWQn4rfjkSvECMbmtApk"
+      name: Regulatory Full - 9 Agentes
+      price_id: price_1TlxVWQn4rfjkSvECMbmtApk
+    starter:
+      amount_cents: 99700
+      name: Starter - Spec Analyst
+      price_id: price_1TlxVRQn4rfjkSvEpsCuJBy6
+  plans:
+    aec_full:
+      agents:
+      - '#1 ao #12'
+      amount_cents: 468500
+      name: "AEC Full \xE2\u20AC\u201D Engenharia e Constru\xC3\xA7\xC3\xA3o"
+      positioning: "Construtoras, incorporadoras e escrit\xC3\xB3rios de engenharia"
+      price_id: price_1TlxVSQn4rfjkSvEXodTHfNA
+    atendimento_plus:
+      agents:
+      - atendimento_cliente_ptbr
+      amount_cents: 39000
+      name: "Atendimento Plus \xE2\u20AC\u201D Suporte PT-BR"
+      positioning: "Upsell suporte \xE2\u20AC\u201D tickets L1 automaticos via WhatsApp"
+      price_id: price_1TmLJuQn4rfjkSvE8HPg3B0t
+    compliance_essencial:
+      agents:
+      - '#13 nr1_psicossocial'
+      - '#15 lgpd_operacional'
+      amount_cents: 59000
+      name: "Compliance Essencial \xE2\u20AC\u201D NR-1 + LGPD"
+      positioning: "Porta de entrada \xE2\u20AC\u201D compliance m\xC3\xADnimo legal"
+      price_id: price_1TlxVVQn4rfjkSvEpiBqaCSf
+    conciliacao_pro:
+      agents:
+      - conciliacao_financeira
+      amount_cents: 79000
+      name: "Conciliacao Pro \xE2\u20AC\u201D Fechamento Mensal"
+      positioning: "Upsell financeiro \xE2\u20AC\u201D conciliacao automatica de NFs\
+        \ e extratos"
+      price_id: price_1TmLJxQn4rfjkSvEeItnhs5i
+    cross_sell_harmony:
+      agents:
+      - onboarding_funcionarios
+      amount_cents: 49000
+      name: "Cross-Sell Harmony \xE2\u20AC\u201D Onboarding"
+      positioning: "Entrada jornada RH \xE2\u20AC\u201D onboarding automatizado"
+      price_id: price_1TmLJtQn4rfjkSvETvw4iHjI
+    esg_carbon:
+      agents:
+      - '#16'
+      - '#17'
+      - '#18'
+      amount_cents: 249000
+      name: ESG + Carbono
+      positioning: "Empresas com exig\xC3\xAAncias ESG e SBCE"
+      price_id: price_1TlxVXQn4rfjkSvEl6uCfYgk
+    full_suite:
+      agents:
+      - todos os 30 agentes
+      amount_cents: 949700
+      name: "Full Suite \xE2\u20AC\u201D 30 Agentes"
+      positioning: "\xC3\u201Ancora / Enterprise \xE2\u20AC\u201D refer\xC3\xAAncia\
+        \ de pre\xC3\xA7o m\xC3\xA1ximo"
+      price_id: price_1TlxVTQn4rfjkSvEn41gegAl
+    microsoft_pack:
+      agents:
+      - '#22 ao #27'
+      amount_cents: 448200
+      name: "Microsoft Pack \xE2\u20AC\u201D 6 Agentes M365"
+      positioning: Empresas Microsoft 365 / Azure
+      price_id: price_1TlxVXQn4rfjkSvExSnW6XmL
+    regulatory_pro:
+      agents:
+      - '#13'
+      - '#14'
+      - '#15'
+      - '#19'
+      - '#20'
+      - '#21'
+      amount_cents: 149000
+      name: "Regulatory Pro \xE2\u20AC\u201D Obriga\xC3\xA7\xC3\xB5es Completas"
+      positioning: "PME com obriga\xC3\xA7\xC3\xB5es trabalhistas e LGPD completas"
+      price_id: price_1TlxVVQn4rfjkSvEam443ZCP
+    tech_enterprise:
+      agents:
+      - software_engineering
+      - sales_agent
+      - workforce_orchestrator
+      amount_cents: 599700
+      name: "Tech Enterprise \xE2\u20AC\u201D Workforce Completo"
+      positioning: Workforce digital completo com orquestracao
+      price_id: CRIAR_NO_STRIPE
+    tech_professional:
+      agents:
+      - software_engineering
+      - sales_agent
+      amount_cents: 349700
+      name: "Tech Professional \xE2\u20AC\u201D Engenharia + Vendas"
+      positioning: Engenharia de software com prospeccao autonoma
+      price_id: CRIAR_NO_STRIPE
+    tech_starter:
+      agents:
+      - software_engineering
+      amount_cents: 199700
+      name: "Tech Starter \xE2\u20AC\u201D Engenharia de Software"
+      positioning: Desenvolvimento de agentes de IA e automatizacao
+      price_id: CRIAR_NO_STRIPE
+    tributario_entrada:
+      amount_cents: 39000
+      name: "Tribut\xC3\xA1rio CBS/IBS - Starter"
+      price_id: price_1Tm0gYQn4rfjkSvE1YFsQqq1
+    tributario_full:
+      amount_cents: 149000
+      name: "Tribut\xC3\xA1rio CBS/IBS - Full"
+      price_id: price_1TmLJzQn4rfjkSvEWrh5bHV6
+  prices:
+    agentforce_pack:
+      brl: price_1TmzG4F2MRnbjNlTffcQAC4q
+      usd: price_1TmzG4F2MRnbjNlT8gls0o2z
+    compliance_essencial:
+      brl: price_1TmzFxF2MRnbjNlTXaILEkN2
+      usd: price_1TmzFxF2MRnbjNlTok2Gu0tm
+    cross_sell_pack:
+      brl: price_1TmzGEF2MRnbjNlTu0KSIDo6
+      usd: price_1TmzGEF2MRnbjNlTkkFSLbOc
+    dynamics_pack:
+      brl: price_1TmzG2F2MRnbjNlTU347PLiq
+      usd: price_1TmzG3F2MRnbjNlTBDjfmUKh
+    erp_full_bridge:
+      brl: price_1TmzG8F2MRnbjNlTW5nHz87Y
+      usd: price_1TmzG8F2MRnbjNlTcvAS9XZV
+    esg_carbono:
+      brl: price_1TmzG0F2MRnbjNlTtbsmsakc
+      usd: price_1TmzG0F2MRnbjNlTa1JEsYQe
+    full_suite:
+      brl: price_1TmzGCF2MRnbjNlTCacgFFQW
+      usd: price_1TmzGCF2MRnbjNlTMOtu5hT5
+    microsoft_pack:
+      brl: price_1TmzG1F2MRnbjNlTUPlm5U76
+      usd: price_1TmzG1F2MRnbjNlTxDvKWhgd
+    oracle_pack:
+      brl: price_1TmzG5F2MRnbjNlT2dcfaSvq
+      usd: price_1TmzG6F2MRnbjNlTFNxianu2
+    regulatory_pro:
+      brl: price_1TmzFyF2MRnbjNlTltK2v0CR
+      usd: price_1TmzFzF2MRnbjNlTfMmpk2RB
+    sap_pack:
+      brl: price_1TmzG7F2MRnbjNlToQxheJxA
+      usd: price_1TmzG7F2MRnbjNlTbONcV91d
+    tech_enterprise:
+      brl: price_1TmzGBF2MRnbjNlTN9HMCbZB
+      usd: price_1TmzGBF2MRnbjNlTo2vW1Wqj
+    tech_starter:
+      brl: price_1TmzG9F2MRnbjNlTMVbRwDbs
+      usd: price_1TmzGAF2MRnbjNlTsmmgyhrL
