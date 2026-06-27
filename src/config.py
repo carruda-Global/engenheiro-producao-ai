@@ -106,16 +106,19 @@ class Settings:
         sk = self.stripe_secret_key
         if not sk:
             errors.append("STRIPE_SECRET_KEY nao configurada")
-        elif not sk.startswith("sk_live_") and not sk.startswith("sk_test_"):
-            errors.append("STRIPE_SECRET_KEY invalida — deve comecar com sk_live_ ou sk_test_")
+        elif not sk.startswith("sk_test_") and not sk.startswith("sk_live_"):
+            errors.append("STRIPE_SECRET_KEY invalida — deve comecar com sk_test_ ou sk_live_")
         if not self.supabase_url:
             errors.append("SUPABASE_URL nao configurada")
         if self.microsoft_enabled:
-            if not self.microsoft_tenant_id or self.microsoft_tenant_id.startswith("${"):
+            tid = self.microsoft_tenant_id
+            cid = self.microsoft_client_id
+            cs = self.microsoft_client_secret
+            if not tid or tid.startswith("${"):
                 errors.append("AZURE_TENANT_ID nao configurada — Microsoft Marketplace desabilitado")
-            if not self.microsoft_client_id or self.microsoft_client_id.startswith("${"):
+            if not cid or cid.startswith("${"):
                 errors.append("AZURE_CLIENT_ID nao configurada — Microsoft Marketplace desabilitado")
-            if not self.microsoft_client_secret or self.microsoft_client_secret.startswith("${"):
+            if not cs or cs.startswith("${"):
                 errors.append("AZURE_CLIENT_SECRET nao configurada — Microsoft Marketplace desabilitado")
         return errors
 

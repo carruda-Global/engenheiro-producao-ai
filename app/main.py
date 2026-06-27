@@ -56,14 +56,15 @@ except Exception as e:
     settings.agents_config = {}
     settings.llm_routing_config = {}
 
+_is_production = settings.app_env == "production"
+cors_origins = [settings.base_url] if _is_production else ["*"]
+
 app = FastAPI(
     title="H-MAS EcoSystem AEC + Regulatory",
     description="59 Agentes de IA Hierárquicos para Engenharia de Produção",
     version="3.0.0",
 )
 
-_is_production = settings.app_env == "production"
-cors_origins = [settings.base_url] if _is_production else ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
