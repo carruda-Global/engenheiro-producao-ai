@@ -7,13 +7,16 @@ logger = logging.getLogger(__name__)
 class StripeClient:
 
     def __init__(self):
-        self.api_key = os.getenv("STRIPE_API_KEY", "")
+        self.api_key = os.getenv("STRIPE_SECRET_KEY", "")
         self.webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+        self.connect_webhook_secret = os.getenv("STRIPE_CONNECT_WEBHOOK_SECRET", "")
         self.client = None
         if self.api_key:
             try:
                 import stripe
                 stripe.api_key = self.api_key
+                stripe.webhook_secret = self.webhook_secret
+                stripe.connect_webhook_secret = self.connect_webhook_secret
                 self.client = stripe
             except ImportError:
                 logger.warning("stripe not installed")

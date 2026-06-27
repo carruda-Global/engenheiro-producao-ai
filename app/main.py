@@ -30,6 +30,7 @@ from app.routers.aws_marketplace import router as aws_router
 from app.routers.leads import router as leads_router
 from app.routers.stripe_app import router as stripe_app_router
 from app.routers.privacy import router as privacy_router
+from app.routers.stripe_webhook import router as stripe_webhook_router
 from src.api.middleware.privacy import PrivacyConsentMiddleware
 
 logging.basicConfig(level=logging.INFO)
@@ -175,6 +176,7 @@ app.include_router(oracle_router, prefix="/oracle", tags=["oracle"])
 app.include_router(leads_router)
 app.include_router(stripe_app_router)
 app.include_router(privacy_router)
+app.include_router(stripe_webhook_router)
 
 
 @app.get("/")
