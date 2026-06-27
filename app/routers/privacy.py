@@ -154,6 +154,100 @@ async def get_privacy_policy():
     return HTMLResponse(content=html)
 
 
+@router.get("/acceptable-use", response_class=HTMLResponse)
+async def get_acceptable_use_policy():
+    html = """<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Politica de Uso Aceitavel - AION</title>
+<style>body{font-family:-apple-system,sans-serif;max-width:800px;margin:0 auto;padding:20px;line-height:1.6;color:#1e293b}h1{color:#0f172a;border-bottom:2px solid #2563eb;padding-bottom:10px}h2{color:#2563eb;margin-top:30px}h3{color:#475569;margin-top:20px}ul{background:#f8fafc;padding:20px;border-radius:8px}li{margin:8px 0}strong{color:#0f172a}.footer{margin-top:40px;padding:20px;background:#f1f5f9;border-radius:8px;font-size:14px;color:#64748b}</style></head>
+<body>
+<h1>Politica de Uso Aceitavel - AION</h1>
+<p><strong>Ultima atualizacao:</strong> 27 de junho de 2026<br><strong>Versao:</strong> 1.0</p>
+<h2>1. Introducao</h2>
+<p>Esta Politica de Uso Aceitavel estabelece as regras para o uso adequado da plataforma AION. Ao acessar ou usar a plataforma, voce concorda em cumprir esta Politica em conjunto com os Termos de Uso e a Politica de Privacidade.</p>
+<h2>2. Atividades Proibidas</h2>
+<h3>2.1 Atividades Ilegais</h3>
+<p>Voce nao pode usar a plataforma para:</p>
+<ul>
+<li>Violar qualquer lei, estatuto, portaria ou regulamentacao federal, estadual ou internacional</li>
+<li>Envolver-se em transacoes relacionadas a bens roubados, incluindo bens digitais e virtuais</li>
+<li>Promover odio, violencia, intolerancia racial ou outras formas de discriminacao</li>
+<li>Explorar financeiramente atividades criminosas</li>
+</ul>
+<h3>2.2 Conteudo Proibido</h3>
+<p>Voce nao pode usar a plataforma para gerar, transmitir ou armazenar:</p>
+<ul>
+<li>Conteudo que infrinja direitos autorais, marcas registradas ou outros direitos de propriedade intelectual</li>
+<li>Conteudo difamatorio, calunioso ou que viole direitos de privacidade</li>
+<li>Conteudo que promova atividades ilegais ou forneca instrucoes para a pratica de crimes</li>
+<li>Conteudo que exponha informacoes pessoais de terceiros em violacao da lei aplicavel</li>
+</ul>
+<h3>2.3 Engenharia Social e Fraude</h3>
+<p>Voce nao pode usar a plataforma para:</p>
+<ul>
+<li>Coletar informacoes pessoais de terceiros sem seu consentimento explicito</li>
+<li>Criar conteudo falso ou enganoso com intencao de prejudicar, enganar ou fraudar terceiros</li>
+<li>Representar falsamente sua identidade ou afiliacao</li>
+</ul>
+<h2>3. Restricoes Tecnicas e de Seguranca</h2>
+<h3>3.1 Acesso e Modificacao</h3>
+<p>Voce nao pode:</p>
+<ul>
+<li>Fazer engenharia reversa, descompilar, desmontar ou tentar derivar o codigo-fonte da plataforma</li>
+<li>Modificar, criar trabalhos derivados ou melhorias nao autorizadas da plataforma</li>
+<li>Alugar, arrendar, vender, sublicenciar, distribuir ou disponibilizar a plataforma a terceiros nao autorizados</li>
+</ul>
+<h3>3.2 Seguranca e Integridade</h3>
+<p>Voce nao pode:</p>
+<ul>
+<li>Burlar ou violar qualquer dispositivo de seguranca ou protecao usado pela plataforma</li>
+<li>Acessar ou usar a plataforma por meios nao autorizados</li>
+<li>Danificar, destruir, interromper, desabilitar, prejudicar ou interferir com a plataforma ou seus servicos</li>
+<li>Remover, alterar ou ocultar quaisquer avisos de direitos autorais, marcas registradas ou propriedade intelectual</li>
+</ul>
+<h3>3.3 Uso de Agentes</h3>
+<p>Voce nao pode:</p>
+<ul>
+<li>Utilizar agentes para executar acoes para as quais nao tem permissao explicita</li>
+<li>Tentar manipular agentes via injecao de prompt para executar acoes nao autorizadas</li>
+<li>Utilizar agentes para automatizar ataques, varreduras ou atividades maliciosas</li>
+<li>Processar dados sensiveis (LGPD) sem a devida autorizacao e bases legais</li>
+</ul>
+<h2>4. Monitoramento e Fiscalizacao</h2>
+<h3>4.1 Monitoramento</h3>
+<p>A AION pode monitorar o uso da plataforma para garantir conformidade com esta Politica. Isso pode incluir:</p>
+<ul>
+<li>Analise de logs de atividades dos agentes</li>
+<li>Detecao de padroes de uso anomalos</li>
+<li>Auditoria de acessos a dados sensiveis</li>
+</ul>
+<h3>4.2 Consequencias da Violacao</h3>
+<p>A violacao desta Politica pode resultar em:</p>
+<ul>
+<li>Aviso e solicitacao de correcao</li>
+<li>Suspensao temporaria ou permanente do acesso a plataforma</li>
+<li>Rescisao dos Termos de Uso</li>
+<li>Encaminhamento para autoridades competentes, se aplicavel</li>
+</ul>
+<h2>5. Relato de Violacoes</h2>
+<p>Se voce tomar conhecimento de qualquer violacao desta Politica, entre em contato imediatamente:</p>
+<ul>
+<li><strong>E-mail:</strong> cristiano.arruda@global-engenharia.com</li>
+<li><strong>Telefone:</strong> (11) 99479-8464</li>
+</ul>
+<h2>6. Modificacoes</h2>
+<p>A AION pode modificar esta Politica a qualquer momento. As alteracoes serao comunicadas atraves da plataforma ou por e-mail. O uso continuado da plataforma apos tais alteracoes constitui sua aceitacao da Politica revisada.</p>
+<div class="footer">
+<p><strong>AION - Agents Intelligence Orchestration Network</strong></p>
+<p>Global Match Engenharia de Producao</p>
+<p>CREA-SP 5071200171</p>
+<p>E-mail: cristiano.arruda@global-engenharia.com</p>
+<p>Telefone: (11) 99479-8464</p>
+</div>
+</body></html>"""
+    return HTMLResponse(content=html)
+
+
 @router.get("/terms", response_class=HTMLResponse)
 async def get_terms_of_service():
     html = """<!DOCTYPE html>

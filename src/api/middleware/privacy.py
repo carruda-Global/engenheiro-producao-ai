@@ -6,6 +6,7 @@ from starlette.responses import JSONResponse
 PUBLIC_ROUTES = [
     "/api/privacy/policy",
     "/api/privacy/terms",
+    "/api/privacy/acceptable-use",
     "/health",
     "/api/auth/login",
     "/api/auth/register",
