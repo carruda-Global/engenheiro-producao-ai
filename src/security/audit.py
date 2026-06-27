@@ -1,74 +1,47 @@
-import hashlib
 import json
-import logging
+import hashlib
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
 
-
-class MerkleChainAudit:
+class AuditChain:
 
     def __init__(self):
         self.chain: List[Dict[str, Any]] = []
-        self._add_genesis_block()
+        self.merkle_root: Optional[str] = None
 
-    def _add_genesis_block(self):
-        genesis = {
-            "index": 0,
-            "timestamp": str(datetime.now()),
-            "data": "AION Audit Genesis Block",
-            "previous_hash": "0" * 64,
-            "hash": self._calculate_hash(0, str(datetime.now()), "AION Audit Genesis Block", "0" * 64)
-        }
-        self.chain.append(genesis)
+    def append(self, entry: Dict[str, Any]) -> str:
+        entry_hash = hashlib.sha256(json.dumps(entry, sort_keys=True).encode()).hexdigest()
+        previous_hash = self.chain[-1]["hash"] if self.chain else "0" * 16
+        block = {"index": len(self.chain), "timestamp": datetime.now().isoformat(), "entry": entry, "hash": entry_hash, "previous_hash": previous_hash}
+        self.chain.append(block)
+        self._update_merkle_root()
+        return entry_hash
 
-    def add_entry(self, agent_id: str, action: str, data: Dict[str, Any]) -> str:
-        previous_block = self.chain[-1]
-        entry = {
-            "index": len(self.chain),
-            "timestamp": str(datetime.now()),
-            "data": {
-                "agent_id": agent_id,
-                "action": action,
-                "details": data
-            },
-            "previous_hash": previous_block["hash"],
-            "hash": None
-        }
-        entry["hash"] = self._calculate_hash(
-            entry["index"], entry["timestamp"],
-            json.dumps(entry["data"], sort_keys=True),
-            entry["previous_hash"]
-        )
-        self.chain.append(entry)
-        logger.info(f"Audit entry added for agent {agent_id}: {action}")
-        return entry["hash"]
+    def _update_merkle_root(self):
+        if not self.chain:
+            self.merkle_root = None
+            return
+        hashes = [block["hash"] for block in self.chain]
+        while len(hashes) > 1:
+            if len(hashes) % 2 != 0:
+                hashes.append(hashes[-1])
+            hashes = [hashlib.sha256((h1 + h2).encode()).hexdigest() for h1, h2 in zip(hashes[::2], hashes[1::2])]
+        self.merkle_root = hashes[0]
 
-    def verify_chain(self) -> bool:
+    def verify(self) -> bool:
+        if not self.chain:
+            return True
         for i in range(1, len(self.chain)):
-            current = self.chain[i]
-            previous = self.chain[i - 1]
-
-            if current["previous_hash"] != previous["hash"]:
-                logger.error(f"Chain broken at block {i}")
+            expected = hashlib.sha256(json.dumps(self.chain[i]["entry"], sort_keys=True).encode()).hexdigest()
+            if self.chain[i]["hash"] != expected or self.chain[i]["previous_hash"] != self.chain[i-1]["hash"]:
                 return False
+        old_root = self.merkle_root
+        self._update_merkle_root()
+        return old_root == self.merkle_root
 
-            expected_hash = self._calculate_hash(
-                current["index"], current["timestamp"],
-                json.dumps(current["data"], sort_keys=True),
-                current["previous_hash"]
-            )
-            if current["hash"] != expected_hash:
-                logger.error(f"Hash mismatch at block {i}")
-                return False
-        return True
-
-    def _calculate_hash(self, index: int, timestamp: str, data: str, previous_hash: str) -> str:
-        content = f"{index}{timestamp}{data}{previous_hash}"
-        return hashlib.sha256(content.encode()).hexdigest()
-
-    def get_audit_trail(self, agent_id: Optional[str] = None) -> List[Dict]:
-        if agent_id is None:
-            return self.chain[1:]
-        return [b for b in self.chain[1:] if b["data"].get("agent_id") == agent_id]
+    def get_proof(self, index: int) -> Optional[Dict[str, Any]]:
+        if index >= len(self.chain):
+            return None
+        block = self.chain[index]
+        return {"entry": block["entry"], "hash": block["hash"], "previous_hash": block["previous_hash"], "merkle_root": self.merkle_root, "index": index, "total_entries": len(self.chain)}

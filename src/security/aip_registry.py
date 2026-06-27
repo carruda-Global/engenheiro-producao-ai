@@ -1,49 +1,57 @@
-import uuid
 import json
-import logging
-from pathlib import Path
-from typing import Dict, Optional
-
-logger = logging.getLogger(__name__)
+import hashlib
+from typing import Dict, Any, Optional
+from datetime import datetime
+from cryptography.hazmat.primitives.asymmetric import ed25519
 
 
 class AIPRegistry:
 
-    def __init__(self, registry_url: str = "https://aip.aion.global"):
-        self.registry_url = registry_url
-        self.agents: Dict[str, Dict] = {}
-        self.credentials_dir = Path("credentials")
-        self.credentials_dir.mkdir(exist_ok=True)
+    def __init__(self):
+        self.agents: Dict[str, Dict[str, Any]] = {}
+        self.revoked: set = set()
 
-    def register_agent(self, agent_id: str, agent_name: str, principal: str) -> dict:
-        did = f"did:aion:{uuid.uuid4().hex[:16]}"
-        public_key = f"pk_{uuid.uuid4().hex[:32]}"
-
-        credential = {
-            "did": did,
+    def register_agent(self, agent_id: str, agent_name: str, principal: str, public_key: bytes) -> Dict[str, Any]:
+        did = f"did:aip:{agent_id}"
+        key_hash = hashlib.sha256(public_key).hexdigest()[:16]
+        record = {
             "agent_id": agent_id,
             "agent_name": agent_name,
-            "public_key": public_key,
             "principal": principal,
+            "did": did,
+            "public_key_hash": key_hash,
+            "public_key": public_key.hex(),
             "status": "active",
-            "created_at": str(uuid.uuid4())
+            "created_at": datetime.now().isoformat(),
+            "last_active": datetime.now().isoformat()
         }
+        self.agents[agent_id] = record
+        return record
 
-        cred_path = self.credentials_dir / f"{agent_id}.json"
-        with open(cred_path, "w") as f:
-            json.dump(credential, f, indent=2)
-
-        self.agents[agent_id] = credential
-        logger.info(f"Agent {agent_id} registered with DID {did}")
-        return credential
-
-    def verify_agent(self, agent_id: str, signature: bytes = None) -> bool:
-        if agent_id not in self.agents:
-            logger.warning(f"Agent {agent_id} not found in registry")
+    def verify_agent(self, agent_id: str, signature: bytes, message: bytes) -> bool:
+        if agent_id in self.revoked:
             return False
-        return self.agents[agent_id]["status"] == "active"
+        agent = self.agents.get(agent_id)
+        if not agent:
+            return False
+        try:
+            public_key = ed25519.Ed25519PublicKey.from_public_bytes(bytes.fromhex(agent["public_key"]))
+            public_key.verify(signature, message)
+            self.agents[agent_id]["last_active"] = datetime.now().isoformat()
+            return True
+        except Exception:
+            return False
 
-    def revoke_agent(self, agent_id: str):
+    def revoke_agent(self, agent_id: str) -> bool:
         if agent_id in self.agents:
+            self.revoked.add(agent_id)
             self.agents[agent_id]["status"] = "revoked"
-            logger.info(f"Agent {agent_id} revoked")
+            self.agents[agent_id]["revoked_at"] = datetime.now().isoformat()
+            return True
+        return False
+
+    def get_agent_info(self, agent_id: str) -> Optional[Dict[str, Any]]:
+        return self.agents.get(agent_id)
+
+    def get_active_agents(self) -> list:
+        return [agent for agent_id, agent in self.agents.items() if agent_id not in self.revoked and agent["status"] == "active"]
