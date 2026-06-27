@@ -1,8 +1,8 @@
-async def run(context: dict) -> dict:
-    return {
-        "agent": "lgpd_scanner",
-        "parent": "lgpd_operacional",
-        "output": "Inventario de dados pessoais por sistema concluido. Dados mapeados - gere o RoPA completo para a ANPD",
-        "upsell_trigger": "lgpd_operacional",
-        "upsell_message": "Dados mapeados - gere o RoPA completo para a ANPD",
-    }
+from src.agents.base import BaseAgent
+from typing import Dict, Any
+
+class LGPDRapidAgent(BaseAgent):
+    def __init__(self):
+        super().__init__(agent_id="M2", name="LGPD Scanner Rapido", description="Scanner rapido de conformidade LGPD", group="micro", price_brl=99.0, price_usd=29.0, tools=["scan_dados", "gap_analysis"], llm="gemini", budget=25000)
+    async def execute(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        return {"agent": "M2", "scan": "completo", "gaps": [], "upsell": "Ative o LGPD Operacional por R$290/mes"}

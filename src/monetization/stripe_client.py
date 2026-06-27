@@ -1,116 +1,60 @@
-import stripe
-from src.config import Settings
+import os
+import logging
+from typing import Dict, Any, Optional
 
+logger = logging.getLogger(__name__)
 
 class StripeClient:
-    def __init__(self, settings: Settings):
-        self.settings = settings
-        self._configure_api()
 
-    def _configure_api(self):
-        key = self.settings.stripe_secret_key
-        if not key or key.startswith("sk_live_51Tkp"):
-            import warnings
-            warnings.warn(
-                "Stripe live key seems exposed or invalid. Set STRIPE_SECRET_KEY via env var only."
-            )
-        stripe.api_key = key
-
-    def _get_webhook_secret(self) -> str:
-        env = self.settings.app_env
-        secret = getattr(self.settings, f"stripe_webhook_secret_{env}", None)
-        if not secret:
-            secret = self.settings.stripe_webhook_secret
-        return secret
-
-    def create_checkout_session(
-        self,
-        plan_id: str,
-        success_url: str,
-        cancel_url: str,
-        customer_email: str | None = None,
-    ) -> str | None:
-        plan_config = self.settings.plans_config.get(plan_id)
-        if not plan_config:
-            return None
-
-        price_id = plan_config.get("price_id")
-        if price_id:
-            line_items = [{"price": price_id, "quantity": 1}]
+    def __init__(self):
+        self.api_key = os.getenv("STRIPE_API_KEY", "")
+        self.webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+        self.client = None
+        if self.api_key:
+            try:
+                import stripe
+                stripe.api_key = self.api_key
+                self.client = stripe
+            except ImportError:
+                logger.warning("stripe not installed")
         else:
-            line_items = [{
-                "price_data": {
-                    "currency": "brl",
-                    "product_data": {"name": plan_config["name"]},
-                    "unit_amount": plan_config["amount_cents"],
-                    "recurring": {"interval": "month"},
-                },
-                "quantity": 1,
-            }]
+            logger.warning("Stripe API key not configured")
 
-        metadata = {"plan_id": plan_id}
-
-        session = stripe.checkout.Session.create(
-            mode="subscription",
-            line_items=line_items,
-            success_url=success_url,
-            cancel_url=cancel_url,
-            customer_email=customer_email,
-            subscription_data={"trial_period_days": 15, "metadata": metadata},
-            metadata=metadata,
-        )
-        return session.url
-
-    def create_upgrade_session(
-        self,
-        subscription_id: str,
-        new_plan_id: str,
-        success_url: str,
-        cancel_url: str,
-    ) -> str | None:
-        plan_config = self.settings.plans_config.get(new_plan_id)
-        if not plan_config:
+    def create_checkout_session(self, price_id: str, tenant_id: str, success_url: str, cancel_url: str) -> Optional[Dict]:
+        if not self.client:
             return None
-
-        price_id = plan_config.get("price_id")
-        if not price_id:
-            return None
-
         try:
-            sub = stripe.Subscription.retrieve(subscription_id)
-            current_item = sub["items"]["data"][0]["id"]
-
-            session = stripe.checkout.Session.create(
-                mode="setup",
+            session = self.client.checkout.Session.create(
+                mode="subscription",
+                line_items=[{"price": price_id, "quantity": 1}],
+                client_reference_id=tenant_id,
                 success_url=success_url,
                 cancel_url=cancel_url,
-                metadata={
-                    "action": "upgrade",
-                    "subscription_id": subscription_id,
-                    "new_plan_id": new_plan_id,
-                    "new_price_id": price_id,
-                    "subscription_item_id": current_item,
-                },
             )
-            return session.url
-        except Exception:
+            return {"id": session.id, "url": session.url}
+        except Exception as e:
+            logger.error(f"Failed to create checkout session: {e}")
             return None
 
-    def cancel_subscription(self, subscription_id: str) -> bool:
+    def create_subscription(self, customer_id: str, price_id: str) -> Optional[Dict]:
+        if not self.client:
+            return None
         try:
-            stripe.Subscription.delete(subscription_id)
-            return True
-        except Exception:
-            return False
-
-    def get_subscription(self, subscription_id: str) -> dict | None:
-        try:
-            sub = stripe.Subscription.retrieve(subscription_id)
-            return {"id": sub.id, "status": sub.status, "plan": sub.plan}
-        except Exception:
+            subscription = self.client.Subscription.create(
+                customer=customer_id,
+                items=[{"price": price_id}],
+            )
+            return {"id": subscription.id, "status": subscription.status}
+        except Exception as e:
+            logger.error(f"Failed to create subscription: {e}")
             return None
 
-    def handle_webhook(self, payload: bytes, sig_header: str) -> dict:
-        endpoint_secret = self._get_webhook_secret()
-        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-        return {"type": event.type, "data": event.data.object}
+    def handle_webhook(self, payload: bytes, sig_header: str) -> Optional[Dict]:
+        if not self.client or not self.webhook_secret:
+            return None
+        try:
+            event = self.client.Webhook.construct_event(payload, sig_header, self.webhook_secret)
+            return {"type": event.type, "data": event.data.object}
+        except Exception as e:
+            logger.error(f"Webhook error: {e}")
+            return None
