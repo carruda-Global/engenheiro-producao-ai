@@ -19,6 +19,10 @@ PLANS = [
 ]
 
 
+def get_plan(plan_id: str) -> dict:
+    return get_plan_by_id(plan_id)
+
+
 def get_plan_by_id(plan_id: str) -> dict:
     for p in PLANS:
         if p["id"] == plan_id:
