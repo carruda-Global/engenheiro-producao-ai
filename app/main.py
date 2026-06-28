@@ -87,8 +87,10 @@ circuit_breaker = CircuitBreaker(threshold=5, reset_seconds=60)
 
 @app.on_event("startup")
 async def startup():
-    await init_pool()
-    await init_producer()
+    if init_pool:
+        await init_pool()
+    if init_producer:
+        await init_producer()
     logger.info("Inicializando H-MAS com 59 agentes...")
     await orchestrator.initialize()
     logger.info("Sistema pronto. 59/59 agentes ativos.")
@@ -96,8 +98,10 @@ async def startup():
 
 @app.on_event("shutdown")
 async def shutdown():
-    await close_producer()
-    await close_pool()
+    if close_producer:
+        await close_producer()
+    if close_pool:
+        await close_pool()
 
 
 class AgentExecuteRequest(BaseModel):
