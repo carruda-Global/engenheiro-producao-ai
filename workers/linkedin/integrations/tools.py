@@ -67,31 +67,44 @@ class LinkedInTools:
         industry: str | None = None,
         limit: int = 10,
     ) -> list[dict]:
-        logger.warning("LinkedIn deprecated /v2/search API in 2024. "
-                       "Use LinkedIn Sales Navigator or Marketing API instead.")
-        token = await self.oauth.ensure_token()
-        async with httpx.AsyncClient() as client:
-            query_parts = []
-            if keywords:
-                query_parts.append(keywords)
-            if company:
-                query_parts.append(f"company:{company}")
-            if title:
-                query_parts.append(f"title:{title}")
-            if location:
-                query_parts.append(f"location:{location}")
-            if industry:
-                query_parts.append(f"industry:{industry}")
-            query = " ".join(query_parts) if query_parts else keywords or ""
-            resp = await client.get(
-                f"{self.config.api_base_url}/search?q=people&query={query}&count={min(limit, 50)}",
-                headers=self.oauth.headers,
-                timeout=15,
+        # LinkedIn /v2/search was deprecated in 2024. The blended search REST endpoint
+        # requires Marketing Developer Platform (MDP) access. We try it first and fall
+        # back to an empty list so callers degrade gracefully.
+        await self.oauth.ensure_token()
+        query_parts = []
+        if keywords:
+            query_parts.append(keywords)
+        if company:
+            query_parts.append(company)
+        if title:
+            query_parts.append(title)
+        if location:
+            query_parts.append(location)
+        if industry:
+            query_parts.append(industry)
+        query = " ".join(query_parts)
+
+        try:
+            result = await self._get(
+                "/rest/search/blended",
+                params={
+                    "q": "blended",
+                    "query": query,
+                    "origin": "FACETED_SEARCH",
+                    "count": min(limit, 50),
+                },
+                restli=True,
             )
-            if resp.status_code == 200:
-                data = resp.json()
-                return data.get("elements", [])
-            logger.warning(f"Search people failed ({resp.status_code}): {resp.text[:200]}")
+            elements = result.get("elements", [])
+            people = [
+                e.get("hitInfo", {}).get("com.linkedin.voyager.search.SearchProfile", e)
+                for e in elements
+                if "error" not in e
+            ]
+            return people[:limit]
+        except Exception as e:
+            logger.warning(f"search_people via blended search failed: {e}. "
+                           "Sales Navigator API required for full people search.")
             return []
 
     async def search_companies(
@@ -99,18 +112,36 @@ class LinkedInTools:
         keywords: str,
         limit: int = 10,
     ) -> list[dict]:
-        logger.warning("LinkedIn deprecated /v2/search API in 2024. "
-                       "Use LinkedIn Sales Navigator or Marketing API instead.")
-        token = await self.oauth.ensure_token()
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(
-                f"{self.config.api_base_url}/search?q=companies&query={keywords}&count={min(limit, 50)}",
-                headers=self.oauth.headers,
-                timeout=15,
+        # Try the organizational entity search endpoint (MDP), then vanity name lookup.
+        await self.oauth.ensure_token()
+
+        try:
+            result = await self._get(
+                "/rest/organizationalEntitySearch",
+                params={
+                    "q": "search",
+                    "query": f"(keywords:{keywords})",
+                    "count": min(limit, 50),
+                },
+                restli=True,
             )
-            if resp.status_code == 200:
-                return resp.json().get("elements", [])
-            logger.warning(f"Search companies failed ({resp.status_code}): {resp.text[:200]}")
+            elements = result.get("elements", [])
+            if elements:
+                return elements[:limit]
+        except Exception as e:
+            logger.debug(f"organizationalEntitySearch failed: {e}")
+
+        # Fallback: vanity name exact-match lookup
+        try:
+            result = await self._get(
+                "/v2/organizations",
+                params={"q": "vanityName", "vanityName": re.sub(r"\s+", "", keywords.lower())},
+            )
+            org = result.get("elements", [result] if "id" in result else [])
+            return org[:limit]
+        except Exception as e:
+            logger.warning(f"search_companies fallback also failed: {e}. "
+                           "Marketing Developer Platform access may be required.")
             return []
 
     async def create_post(
@@ -178,7 +209,7 @@ class LinkedInTools:
             "object": post_id,
             "message": {"text": text[:2000]},
         }
-        result = await self._post("/socialActions/{post_id}/comments", comment_data)
+        result = await self._post(f"/socialActions/{post_id}/comments", comment_data)
         return result
 
     async def get_company_profile(self, company_id: str) -> dict:
@@ -192,9 +223,12 @@ class LinkedInTools:
         )
         return result
 
-    async def get_organic_analytics(self, date_range: tuple[str, str] = ("(start:1672531200000,end:1704067199000)")) -> dict:
+    async def get_organic_analytics(self, date_range: tuple[str, str] | None = None) -> dict:
+        if date_range is None:
+            date_range = ("1672531200000", "1704067199000")
+        date_range_param = f"(start:{date_range[0]},end:{date_range[1]})"
         result = await self._get(
-            f"/rest/organicPostAnalytics?q=analytics&dateRange={date_range}&fields=List(commentCount,likeCount,shareCount,impressionCount)",
+            f"/rest/organicPostAnalytics?q=analytics&dateRange={date_range_param}&fields=List(commentCount,likeCount,shareCount,impressionCount)",
             restli=True,
         )
         return result
