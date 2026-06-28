@@ -1,0 +1,46 @@
+name: "Prospeccao Automatica AION"
+description: "Workflow de prospeccao no LinkedIn com qualificacao automatica"
+
+triggers:
+  - schedule: "daily 08:00"
+  - manual: true
+
+steps:
+  - id: search_leads
+    agent: "prospect"
+    action: linkedin_search
+    params:
+      filters:
+        - industry: ["tecnologia", "engenharia", "construcao"]
+        - seniority: ["manager", "director", "head", "vp", "ceo"]
+        - location: ["Sao Paulo", "Brasil"]
+        - activity: "last_30_days"
+      limit: 50
+
+  - id: enrich_leads
+    agent: "prospect"
+    action: linkedin_enrich
+    params:
+      fields: ["company_size", "company_industry", "recent_posts"]
+
+  - id: score_leads
+    agent: "lead_qualifier"
+    action: score_lead
+    params:
+      thresholds:
+        high_score: 80
+        medium_score: 50
+        low_score: 30
+
+  - id: store_leads
+    agent: "lead_qualifier"
+    action: save_to_pipeline
+    params:
+      status: "prospected"
+
+  - id: start_outreach
+    agent: "outreach"
+    action: start_campaign
+    params:
+      campaign: "outreach_inicial"
+      leads_from: "qualified"

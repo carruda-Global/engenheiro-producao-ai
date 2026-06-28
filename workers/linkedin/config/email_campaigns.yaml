@@ -1,0 +1,68 @@
+campaigns:
+  welcome:
+    name: "Boas-vindas EcoSystem AION"
+    trigger: "lead_created"
+    steps:
+      - day: 0
+        channel: email
+        subject: "Bem-vindo ao EcoSystem AION"
+        template: "Ola {name}, obrigado pelo interesse! Seus agentes estarao prontos em 48h."
+      - day: 2
+        channel: email
+        subject: "Conheca nossos 59 agentes"
+        template: "Oi {name}, temos agentes especificos para {industry}."
+      - day: 5
+        channel: email
+        subject: "Caso de uso: Compliance com IA"
+        template: "{name}, veja como automatizar compliance em 48h."
+      - day: 10
+        channel: linkedin
+        subject: "Pronto para comecar?"
+        template: "{name}, quer testar gratis? Trial de 15 dias em global-engenharia.com/ecosystem"
+
+  diagnostic:
+    name: "Diagnostico Gratuito"
+    trigger: "diagnostic_requested"
+    steps:
+      - day: 1
+        channel: email
+        subject: "Seu diagnostico esta pronto"
+        template: "Ola {name}, acesse seus resultados."
+      - day: 4
+        channel: email
+        subject: "Proximos passos"
+        template: "Recomendamos comecar pelo Compliance Essencial."
+      - day: 8
+        channel: linkedin
+        subject: "Agende uma call"
+        template: "Quer discutir os resultados?"
+
+  abandoned_cart:
+    name: "Carrinho Abandonado"
+    trigger: "checkout_not_completed"
+    steps:
+      - day: 1
+        channel: email
+        subject: "Voce deixou algo para tras"
+        template: "Posso ajudar com alguma duvida?"
+      - day: 3
+        channel: email
+        subject: "Ainda avaliando?"
+        template: "Trial gratuito de 15 dias disponivel."
+      - day: 7
+        channel: linkedin
+        subject: "Ultima chance"
+        template: "59 agentes prontos para sua empresa."
+
+  micro:
+    name: "Micro-agentes Porta de Entrada"
+    trigger: "lead_score_low"
+    steps:
+      - day: 0
+        channel: email
+        subject: "Comece com R$ 99/mes"
+        template: "Ola {name}, conheca nossos micro-agentes de entrada."
+      - day: 3
+        channel: email
+        subject: "Micro Starter - R$ 199/mes"
+        template: "Diagnostico NR-1 + LGPD Scanner por apenas R$ 199."

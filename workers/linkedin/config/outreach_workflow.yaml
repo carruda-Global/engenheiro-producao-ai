@@ -1,0 +1,37 @@
+name: "Outreach Inicial AION"
+description: "Envia mensagens personalizadas para leads qualificados"
+
+steps:
+  - id: generate_message
+    agent: "outreach"
+    action: generate_linkedin_message
+    params:
+      style: "conversacional"
+      length: "curto"
+      includes: ["empresa", "setor", "dor_identificada"]
+
+  - id: send_connection
+    agent: "outreach"
+    action: linkedin_connect
+    params:
+      message: "{generated_message}"
+      wait_after: 48
+
+  - id: send_followup
+    agent: "outreach"
+    action: linkedin_message
+    params:
+      delay_days: 3
+      message: "Ola {first_name}, vi que voce atua em {industry}..."
+
+  - id: track_engagement
+    agent: "outreach"
+    action: track_linkedin_response
+    params:
+      keywords: ["interesse", "sim", "vamos marcar", "gostaria de saber"]
+
+  - id: qualify_engagement
+    agent: "lead_qualifier"
+    action: update_lead_score
+    params:
+      increase: 20

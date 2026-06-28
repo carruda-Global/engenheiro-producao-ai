@@ -141,6 +141,25 @@ services:
     healthCheckPath: /tools
     numInstances: 1
 
+  - type: worker
+    name: aion-linkedin-agent
+    env: python
+    repo: https://github.com/carruda-Global/engenheiro-producao-ai.git
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: python workers/linkedin/agent.py
+    envVars:
+      - key: LINKEDIN_CLIENT_ID
+        sync: false
+      - key: LINKEDIN_CLIENT_SECRET
+        sync: false
+      - key: LINKEDIN_REDIRECT_URI
+        value: "http://127.0.0.1:9876/callback"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: SALES_DB_URL
+        value: "sqlite:///sales_pipeline.db"
+
 databases:
   - name: hmas-database
     plan: starter

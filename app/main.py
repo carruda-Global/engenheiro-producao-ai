@@ -36,6 +36,7 @@ from app.routers.governance import router as governance_router
 from app.routers.bridge import router as bridge_router
 from app.routers.code_review import router as code_review_router
 from app.routers.physical_ai import router as physical_ai_router
+from app.routers.checkout import router as checkout_router
 from src.api.middleware.privacy import PrivacyConsentMiddleware
 
 logging.basicConfig(level=logging.INFO)
@@ -189,6 +190,7 @@ app.include_router(governance_router)
 app.include_router(bridge_router)
 app.include_router(code_review_router)
 app.include_router(physical_ai_router)
+app.include_router(checkout_router)
 
 
 @app.get("/")
