@@ -143,11 +143,10 @@ services:
 
   - type: worker
     name: aion-linkedin-agent
-    env: python
+    env: docker
     repo: https://github.com/carruda-Global/engenheiro-producao-ai.git
     branch: main
-    buildCommand: pip install -r requirements-worker.txt
-    startCommand: python workers/linkedin/agent.py
+    dockerfilePath: ./Dockerfile.worker
     envVars:
       - key: LINKEDIN_CLIENT_ID
         sync: false
