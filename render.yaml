@@ -146,7 +146,7 @@ services:
     env: python
     repo: https://github.com/carruda-Global/engenheiro-producao-ai.git
     branch: main
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements-worker.txt
     startCommand: python workers/linkedin/agent.py
     envVars:
       - key: LINKEDIN_CLIENT_ID
