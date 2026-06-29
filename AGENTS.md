@@ -1,8 +1,8 @@
-# 🏗️ EcoSystem AEC + Regulatory — 59 Agentes + 15 Micro-Agentes de IA
+# 🏗️ AION 7.0 — Agents Intelligence Orchestration Network
 
-**Projeto:** Engenheiro de Produção AI
+**Projeto:** AION — Agents Intelligence Orchestration Network
 **Proprietário:** Cristiano Arruda | Global Match Engenharia de Produção | CREA-SP 5071200171
-**Versão:** 3.0.0
+**Versão:** 7.0.0
 **LLM Core:** DeepSeek-V4-Flash (API OpenAI compatible) + Gemini (agentes sensíveis LGPD) + Claude API (raciocínio complexo)
 **Framework:** Python + FastAPI + A2A Protocol
 
