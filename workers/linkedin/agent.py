@@ -14,35 +14,47 @@ from workflows.content import run_content_workflow
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("auto-linkedin")
 
+HORARIOS = [8, 12, 17]
+TIPOS = ["calendario", "news", "dica"]
+
 
 class AutoLinkedInAgent:
     def __init__(self):
         self.linkedin = None
         self.running = False
         self.erros = 0
-        self.posts_hoje = 0
+        self.posts_hoje = {"total": 0, "calendario": False, "news": False, "dica": False}
         self.dia_atual = datetime.now().day
+        self.indices = {"news": datetime.now().day, "dica": datetime.now().day + 5}
 
     def resetar(self):
         hoje = datetime.now().day
         if hoje != self.dia_atual:
-            self.posts_hoje = 0
+            self.posts_hoje = {"total": 0, "calendario": False, "news": False, "dica": False}
             self.dia_atual = hoje
+            self.indices["news"] = hoje
+            self.indices["dica"] = hoje + 5
             self.erros = 0
 
-    def pode_postar(self):
+    def dia_util(self):
+        return datetime.now().weekday() < 5
+
+    def tipos_pendentes(self):
         self.resetar()
-        return self.posts_hoje < 1 and datetime.now().weekday() < 5
+        if not self.dia_util():
+            return []
+        return [t for t in TIPOS if not self.posts_hoje[t]]
 
-    async def postar(self):
-        if not self.pode_postar():
-            return
-
-        result = await run_content_workflow(self.linkedin)
+    async def postar(self, tipo: str):
+        indice = self.indices.get(tipo, -1)
+        result = await run_content_workflow(self.linkedin, tipo=tipo, indice=indice)
         if result.get("published"):
-            self.posts_hoje += 1
+            self.posts_hoje[tipo] = True
+            self.posts_hoje["total"] += 1
             self.erros = 0
-            logger.info(f"Post publicado: {result.get('tema','?')} - {result.get('post_url','')}")
+            logger.info(f"[{tipo}] Post publicado: {result.get('tema','?')}")
+        else:
+            logger.warning(f"[{tipo}] Falha ao publicar: {result}")
 
     async def start(self):
         li_config = LinkedInConfig()
@@ -50,23 +62,35 @@ class AutoLinkedInAgent:
         await self.linkedin.initialize()
         self.running = True
 
-        logger.info("=" * 50)
-        logger.info("  AGENTE LINKEDIN AUTOMATICO - RENDER")
-        logger.info("  Posta ao iniciar se ainda nao postou hoje")
-        logger.info("  Seg: NR-1 | Ter: LGPD | Qua: CBS/IBS | Qui: ESG | Sex: M1")
-        logger.info("=" * 50)
-
-        await self.postar()
+        logger.info("=" * 55)
+        logger.info("  AGENTE LINKEDIN - 3 POSTS/DIA (Render)")
+        logger.info("  08:00 - Calendario (NR-1/LGPD/CBS/ESG/M1)")
+        logger.info("  12:00 - News (educacional sobre agentes)")
+        logger.info("  17:00 - Dica (dicas e insights)")
+        logger.info("=" * 55)
 
         while self.running:
             try:
-                if self.erros >= 3:
+                if self.erros >= 5:
                     logger.warning("Muitos erros. Pausando 6h...")
                     await asyncio.sleep(21600)
                     self.erros = 0
 
-                logger.info(f"Ciclo {datetime.now().strftime('%d/%m/%Y %H:%M')} | posts_hoje: {self.posts_hoje} | erros: {self.erros}")
-                await self.postar()
+                now = datetime.now()
+                pendentes = self.tipos_pendentes()
+
+                if pendentes:
+                    for tipo in pendentes:
+                        hora = now.hour
+                        if (tipo == "calendario" and hora >= 8) or \
+                           (tipo == "news" and hora >= 12) or \
+                           (tipo == "dica" and hora >= 17):
+                            logger.info(f"Publicando [{tipo}] as {now.strftime('%H:%M')}")
+                            await self.postar(tipo)
+                            await asyncio.sleep(60)
+                else:
+                    logger.info(f"3/3 posts hoje. Proximo ciclo em 30min.")
+
                 await asyncio.sleep(1800)
 
             except Exception as e:
