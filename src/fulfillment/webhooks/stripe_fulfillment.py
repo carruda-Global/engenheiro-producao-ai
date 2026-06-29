@@ -18,7 +18,26 @@ router = APIRouter(prefix="/api/webhook", tags=["fulfillment"])
 settings = Settings()
 db = SupabaseClient(settings)
 activator = TenantActivator(db)
-brevo = BrevoClient()
+
+PRICE_TO_PLAN = {
+    "price_compliance_essencial": "compliance_essencial",
+    "price_regulatory_pro": "regulatory_pro",
+    "price_esg_carbono": "esg_carbono",
+    "price_tributario": "tributario_cbs_ibs",
+    "price_microsoft_pack": "microsoft_pack",
+    "price_full_suite": "full_suite",
+    "price_micro_starter": "micro_starter",
+    "price_micro_rh": "micro_rh",
+    "price_micro_dev": "micro_dev",
+    "price_micro_sales": "micro_sales",
+    "price_micro_full": "micro_full",
+    "price_tech_starter": "tech_starter",
+    "price_tech_professional": "tech_professional",
+    "price_tech_enterprise": "tech_enterprise",
+    "price_starter": "starter",
+    "price_professional": "professional",
+    "price_enterprise": "enterprise",
+}
 
 
 @router.post("/stripe/fulfillment")
@@ -45,7 +64,10 @@ async def stripe_fulfillment_webhook(request: Request):
         if not plan_id:
             line_items = getattr(session, "line_items", None)
             if line_items and line_items.data:
-                plan_id = line_items.data[0].get("price", {}).get("product", {}).get("metadata", {}).get("plan_id", "")
+                price_id = line_items.data[0].get("price", "")
+                plan_id = PRICE_TO_PLAN.get(price_id, "")
+                if not plan_id:
+                    plan_id = line_items.data[0].get("price", {}).get("product", {}).get("metadata", {}).get("plan_id", "")
 
         if not plan_id:
             logger.error(f"Plan ID nao encontrado na sessao {session.id}")
