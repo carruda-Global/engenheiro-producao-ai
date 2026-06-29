@@ -1,11 +1,11 @@
 campaigns:
   welcome:
-    name: "Boas-vindas EcoSystem AION"
+    name: "Boas-vindas AION"
     trigger: "lead_created"
     steps:
       - day: 0
         channel: email
-        subject: "Bem-vindo ao EcoSystem AION"
+        subject: "Bem-vindo ao AION"
         template: "Ola {name}, obrigado pelo interesse! Seus agentes estarao prontos em 48h."
       - day: 2
         channel: email

@@ -7,8 +7,8 @@ app:
   debug: false
   environment: ${APP_ENV:-development}
   log_level: INFO
-  name: H-MAS EcoSystem AEC + Regulatory + ERP
-  version: 3.0.0
+  name: AION 7.0 - Agents Intelligence Orchestration Network
+  version: 7.0.0
 budget:
   alerts_enabled: true
   auto_fallback: true

@@ -65,9 +65,9 @@ _is_production = settings.app_env == "production"
 cors_origins = [settings.base_url] if _is_production else ["*"]
 
 app = FastAPI(
-    title="H-MAS EcoSystem AEC + Regulatory",
-    description="63 Agentes de IA - Ecosystem completo + Enterprise Connectors + Physical AI",
-    version="6.2.0",
+    title="AION 7.0 - Agents Intelligence Orchestration Network",
+    description="71 Agentes de IA com seguranca AIP, Compliance Receipts e mTLS",
+    version="7.0.0",
 )
 
 app.add_middleware(
@@ -200,8 +200,8 @@ app.include_router(checkout_router)
 @app.get("/")
 async def root():
     return {
-        "service": "H-MAS EcoSystem AEC + Regulatory",
-        "version": "3.0.0",
+        "service": "AION 7.0 - Agents Intelligence Orchestration Network",
+        "version": "7.0.0",
         "status": "operational",
         "agents_total": len(orchestrator.agents),
         "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "tech", "self_improvement", "enterprise_connectors", "physical_ai"],
@@ -277,7 +277,7 @@ async def mcp_server_manifest(server_id: str):
     server = MCP_SERVERS.get(server_id)
     if not server:
         raise HTTPException(status_code=404, detail=f"MCP server '{server_id}' not found")
-    return {"id": server_id, "name": f"Ecosystem {server_id.title()} MCP", "description": f"MCP server for {server_id} agents", "tools": [{"name": t} for t in server["tools"]]}
+    return {"id": server_id, "name": f"AION {server_id.title()} MCP", "description": f"MCP server for {server_id} agents", "tools": [{"name": t} for t in server["tools"]]}
 
 
 @app.get("/api/v1/agents")
