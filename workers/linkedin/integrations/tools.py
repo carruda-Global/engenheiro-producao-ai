@@ -43,7 +43,12 @@ class LinkedInTools:
             if resp.status_code not in (200, 201):
                 logger.error(f"LinkedIn API error {resp.status_code}: {resp.text[:500]}")
                 return {"error": f"API error {resp.status_code}", "detail": resp.text[:500]}
-            return resp.json() if resp.text else {"status": "created"}
+            result = resp.json() if resp.text else {}
+            if restli:
+                restli_id = resp.headers.get("x-restli-id")
+                if restli_id:
+                    result["id"] = restli_id
+            return result if result else {"status": "created"}
 
     async def get_profile(self, person_id: str = "me") -> dict:
         path = f"/userinfo" if person_id == "me" else f"/userinfo?q=id&id={person_id}"
