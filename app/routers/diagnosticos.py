@@ -202,16 +202,14 @@ def gerar_token(agente_id: str, empresa: str) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()[:16]
 
 
-CAMPOS_PADRAO = [
-    {"nome": "CNPJ", "id": "cnpj", "placeholder": "Ex: 00.000.000/0001-00"},
-    {"nome": "Endereco", "id": "endereco", "placeholder": "Ex: Rua Exemplo, 123 - Sao Paulo - SP"},
-]
-
-
 def montar_campos(campos: list) -> str:
     html = ""
-    for c in CAMPOS_PADRAO + campos:
-        if c.get("textarea"):
+    for c in campos:
+        if c["id"] == "nome":
+            html += f'<label>{c["nome"]}</label>\n<input id="{c["id"]}" name="{c["id"]}" placeholder="{c["placeholder"]}">\n'
+            html += '<label>CNPJ</label>\n<input id="cnpj" name="cnpj" placeholder="Ex: 00.000.000/0001-00">\n'
+            html += '<label>Endereco</label>\n<input id="endereco" name="endereco" placeholder="Ex: Rua Exemplo, 123 - Sao Paulo - SP">\n'
+        elif c.get("textarea"):
             html += f'<label>{c["nome"]}</label>\n<textarea id="{c["id"]}" name="{c["id"]}" placeholder="{c["placeholder"]}"></textarea>\n'
         else:
             html += f'<label>{c["nome"]}</label>\n<input id="{c["id"]}" name="{c["id"]}" placeholder="{c["placeholder"]}">\n'
