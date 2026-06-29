@@ -26,7 +26,7 @@ AGENTES = {
             {"nome": "Jornada", "id": "jornada", "placeholder": "Ex: 44h, turnos alternantes"},
             {"nome": "Observacoes", "id": "obs", "placeholder": "Absenteismo, turnover, queixas...", "textarea": True},
         ],
-        "prompt_template": "Dados da empresa:\nNome: {nome}\nSetor: {setor}\nFuncionarios: {func}\nJornada: {jornada}\nObs: {obs}\n\nIdentifique e classifique os FRPRT conforme NR-1. Para cada fator: descricao, classificacao, grupo FRPRT e metodo. Gere inventario completo.",
+        "prompt_template": "Dados da empresa:\nNome: {nome}\nCNPJ: {cnpj}\nEndereco: {endereco}\nSetor: {setor}\nFuncionarios: {func}\nJornada: {jornada}\nObs: {obs}\n\nIdentifique e classifique os FRPRT conforme NR-1. Para cada fator: descricao, classificacao, grupo FRPRT e metodo. Gere inventario completo.",
         "rodape": "\n\n---\n\n**Documento gerado pelo AION 7.0 — Agente NR-1 Psicossocial**\n\nBase legal: Portaria MTE 1.419/2024, Manual GRO/NR-1 MTE 2026.\nMetodologias: COPSOQ III, JCQ, PHQ-9, GAD-7.\nResponsavel tecnico: Profissional com conhecimento tecnico compativel.\nEste documento NAO substitui o PGR completo nem dispensa ART.\n\nEmitido por Global Match Engenharia de Producao",
     },
     "lgpd": {
@@ -40,7 +40,7 @@ AGENTES = {
             {"nome": "Funcionarios", "id": "func", "placeholder": "Ex: 50"},
             {"nome": "Tipo de dados tratados", "id": "obs", "placeholder": "Ex: Dados de clientes, funcionarios, fornecedores", "textarea": True},
         ],
-        "prompt_template": "Dados:\nEmpresa: {nome}\nSetor: {setor}\nFuncionarios: {func}\nDados tratados: {obs}\n\nGere um RoPA (Registro de Atividades de Tratamento) completo conforme LGPD. Inclua: base legal, categoria de dados, finalidade, compartilhamento e prazo de retencao.",
+        "prompt_template": "Dados:\nEmpresa: {nome}\nCNPJ: {cnpj}\nEndereco: {endereco}\nSetor: {setor}\nFuncionarios: {func}\nDados tratados: {obs}\n\nGere um RoPA (Registro de Atividades de Tratamento) completo conforme LGPD. Inclua: base legal, categoria de dados, finalidade, compartilhamento e prazo de retencao.",
         "rodape": "\n\n---\n\n**Documento gerado pelo AION 7.0 — Agente LGPD Operacional**\n\nBase legal: Lei 13.709/2018.\n\nEmitido por Global Match Engenharia de Producao",
     },
     "cbs_ibs": {
@@ -54,7 +54,7 @@ AGENTES = {
             {"nome": "Faturamento mensal estimado", "id": "func", "placeholder": "Ex: R$ 200.000"},
             {"nome": "Produtos/servicos comercializados", "id": "obs", "placeholder": "Ex: Venda de equipamentos, prestacao de servicos de instalacao", "textarea": True},
         ],
-        "prompt_template": "Dados:\nEmpresa: {nome}\nSetor: {setor}\nFaturamento: {func}\nProdutos: {obs}\n\nGere um relatorio de classificacao NCM e simulacao de impacto CBS/IBS conforme LC 214/2025. Inclua aliquotas, cenarios e recomendacoes.",
+        "prompt_template": "Dados:\nEmpresa: {nome}\nCNPJ: {cnpj}\nEndereco: {endereco}\nSetor: {setor}\nFaturamento: {func}\nProdutos: {obs}\n\nGere um relatorio de classificacao NCM e simulacao de impacto CBS/IBS conforme LC 214/2025. Inclua aliquotas, cenarios e recomendacoes.",
         "rodape": "\n\n---\n\n**Documento gerado pelo AION 7.0 — Agente CBS/IBS Tributario**\n\nBase legal: LC 214/2025.\n\nEmitido por Global Match Engenharia de Producao",
     },
     "esg": {
@@ -68,7 +68,7 @@ AGENTES = {
             {"nome": "Funcionarios", "id": "func", "placeholder": "Ex: 200"},
             {"nome": "Informacoes adicionais", "id": "obs", "placeholder": "Ex: Possui certificacao ISO, exporta para Europa, consome muita energia", "textarea": True},
         ],
-        "prompt_template": "Dados:\nEmpresa: {nome}\nSetor: {setor}\nFuncionarios: {func}\nInfo: {obs}\n\nGere um diagnostico ESG preliminar conforme IFRS S1/S2. Inclua: riscos e oportunidades ESG, metricas atuais e recomendacoes.",
+        "prompt_template": "Dados:\nEmpresa: {nome}\nCNPJ: {cnpj}\nEndereco: {endereco}\nSetor: {setor}\nFuncionarios: {func}\nInfo: {obs}\n\nGere um diagnostico ESG preliminar conforme IFRS S1/S2. Inclua: riscos e oportunidades ESG, metricas atuais e recomendacoes.",
         "rodape": "\n\n---\n\n**Documento gerado pelo AION 7.0 — Agente ESG IFRS S1/S2**\n\nBase legal: Res. CVM 193/2023, IFRS S1/S2.\n\nEmitido por Global Match Engenharia de Producao",
     },
     "denuncias": {
@@ -82,7 +82,7 @@ AGENTES = {
             {"nome": "Funcionarios", "id": "func", "placeholder": "Ex: 120"},
             {"nome": "Canal atual (se houver)", "id": "obs", "placeholder": "Ex: Nao possui, apenas email informal", "textarea": True},
         ],
-        "prompt_template": "Dados:\nEmpresa: {nome}\nSetor: {setor}\nFuncionarios: {func}\nCanal atual: {obs}\n\nGere um plano de implementacao de canal de denuncias conforme Lei 14.457/2022. Inclua: canais obrigatorios, fluxo de apuracao, prazos e modelo de relatorio.",
+        "prompt_template": "Dados:\nEmpresa: {nome}\nCNPJ: {cnpj}\nEndereco: {endereco}\nSetor: {setor}\nFuncionarios: {func}\nCanal atual: {obs}\n\nGere um plano de implementacao de canal de denuncias conforme Lei 14.457/2022. Inclua: canais obrigatorios, fluxo de apuracao, prazos e modelo de relatorio.",
         "rodape": "\n\n---\n\n**Documento gerado pelo AION 7.0 — Agente Canal de Denuncias**\n\nBase legal: Lei 14.457/2022.\n\nEmitido por Global Match Engenharia de Producao",
     },
     "igualdade": {
@@ -96,7 +96,7 @@ AGENTES = {
             {"nome": "Total de funcionarios", "id": "func", "placeholder": "Ex: 80 homens, 60 mulheres"},
             {"nome": "Dados salariais (cargos e faixas)", "id": "obs", "placeholder": "Ex: 3 diretores (2H/1M), 20 gerentes (12H/8M), 60 operadores (40H/20M)", "textarea": True},
         ],
-        "prompt_template": "Dados:\nEmpresa: {nome}\nSetor: {setor}\nQuadro: {func}\nSalarios: {obs}\n\nGere um relatorio de equidade salarial conforme Lei 14.611/2023. Inclua: analise por cargo, gap salarial por genero, plano de adequacao e cronograma.",
+        "prompt_template": "Dados:\nEmpresa: {nome}\nCNPJ: {cnpj}\nEndereco: {endereco}\nSetor: {setor}\nQuadro: {func}\nSalarios: {obs}\n\nGere um relatorio de equidade salarial conforme Lei 14.611/2023. Inclua: analise por cargo, gap salarial por genero, plano de adequacao e cronograma.",
         "rodape": "\n\n---\n\n**Documento gerado pelo AION 7.0 — Agente Igualdade Salarial**\n\nBase legal: Lei 14.611/2023.\n\nEmitido por Global Match Engenharia de Producao",
     },
 }
@@ -202,9 +202,15 @@ def gerar_token(agente_id: str, empresa: str) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()[:16]
 
 
+CAMPOS_PADRAO = [
+    {"nome": "CNPJ", "id": "cnpj", "placeholder": "Ex: 00.000.000/0001-00"},
+    {"nome": "Endereco", "id": "endereco", "placeholder": "Ex: Rua Exemplo, 123 - Sao Paulo - SP"},
+]
+
+
 def montar_campos(campos: list) -> str:
     html = ""
-    for c in campos:
+    for c in CAMPOS_PADRAO + campos:
         if c.get("textarea"):
             html += f'<label>{c["nome"]}</label>\n<textarea id="{c["id"]}" name="{c["id"]}" placeholder="{c["placeholder"]}"></textarea>\n'
         else:
@@ -241,6 +247,8 @@ async def gerar(agente_id: str, dados: dict, request: Request):
 
     prompt = info["prompt_template"].format(
         nome=dados.get("nome", "N/I"),
+        cnpj=dados.get("cnpj", "N/I"),
+        endereco=dados.get("endereco", "N/I"),
         setor=dados.get("setor", "N/I"),
         func=dados.get("func", "N/I"),
         jornada=dados.get("jornada", "N/I"),
