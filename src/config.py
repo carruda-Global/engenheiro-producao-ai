@@ -46,6 +46,12 @@ class Settings:
         self.deepseek_api_base: str = self.config.get("deepseek", {}).get("api_base", "https://api.deepseek.com/v1")
         self.deepseek_timeout: int = self.config.get("deepseek", {}).get("timeout", 120)
 
+        self.openrouter_api_key: str = os.getenv("OPENROUTER_API_KEY", "")
+        self.openrouter_api_base: str = self.config.get("openrouter", {}).get("api_base", "https://openrouter.ai/api/v1")
+        self.openrouter_model: str = self.config.get("openrouter", {}).get("model", "openai/gpt-4o-mini")
+        self.llm_timeout: int = self.config.get("openrouter", {}).get("timeout", 120)
+        self.llm_default_provider: str = self.config.get("llm_routing", {}).get("default", "openrouter")
+
         self.stripe_secret_key: str = os.getenv("STRIPE_SECRET_KEY", "")
         self.stripe_publishable_key: str = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
         self.stripe_webhook_secret: str = os.getenv("STRIPE_WEBHOOK_SECRET", "")

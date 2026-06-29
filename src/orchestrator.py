@@ -3,6 +3,7 @@ from typing import Any
 
 from src.config import Settings
 from src.api.deepseek_client import DeepSeekClient
+from src.api.openai_client import OpenAIClient
 from src.api.gemini_client import GeminiClient
 from src.api.claude_client import ClaudeClient
 from src.agents import (
@@ -36,6 +37,7 @@ class Orchestrator:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.llm = DeepSeekClient(settings)
+        self.openrouter = OpenAIClient(settings)
         self.gemini = GeminiClient()
         self.claude = ClaudeClient()
         self.logger = logging.getLogger(__name__)
@@ -57,6 +59,9 @@ class Orchestrator:
                 return self.claude
             if agent_id in sensitive_agents:
                 return self.gemini
+            provider = self.settings.llm_default_provider
+            if provider == "openrouter":
+                return self.openrouter
             return self.llm
 
         _agent_map = {
