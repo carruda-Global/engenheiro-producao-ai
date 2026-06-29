@@ -4,13 +4,16 @@ from src.config import Settings
 from src.fulfillment.provisioning.activate_tenant import TenantsAPI
 
 router = APIRouter(prefix="/api/status", tags=["status"])
-db = SupabaseClient(Settings())
-tenants = TenantsAPI(db)
+
+
+def _get_tenants():
+    return TenantsAPI(SupabaseClient(Settings()))
 
 
 @router.get("/{tenant_id}")
 async def get_tenant_status(tenant_id: str):
-    tenant = tenants.get_tenant(tenant_id)
+    t = _get_tenants()
+    tenant = t.get_tenant(tenant_id)
     if not tenant:
         return {"error": "Tenant nao encontrado"}
     return {
@@ -25,13 +28,15 @@ async def get_tenant_status(tenant_id: str):
 
 @router.get("/{tenant_id}/agents")
 async def get_tenant_agents(tenant_id: str):
-    agents = tenants.get_tenant_agents(tenant_id)
+    t = _get_tenants()
+    agents = t.get_tenant_agents(tenant_id)
     return {"tenant_id": tenant_id, "agents": agents, "total": len(agents)}
 
 
 @router.get("/email/{email}")
 async def get_tenant_by_email(email: str):
-    tenant = tenants.get_tenant_by_email(email)
+    t = _get_tenants()
+    tenant = t.get_tenant_by_email(email)
     if not tenant:
         return {"error": "Tenant nao encontrado para este email"}
     return {

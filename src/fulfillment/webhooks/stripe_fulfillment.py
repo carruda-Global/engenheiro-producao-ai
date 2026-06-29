@@ -15,9 +15,12 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/webhook", tags=["fulfillment"])
-settings = Settings()
-db = SupabaseClient(settings)
-activator = TenantActivator(db)
+
+
+def _get_activator():
+    s = Settings()
+    d = SupabaseClient(s)
+    return TenantActivator(d)
 
 PRICE_TO_PLAN = {
     "price_compliance_essencial": "compliance_essencial",
@@ -75,6 +78,7 @@ async def stripe_fulfillment_webhook(request: Request):
             return {"status": "error", "detail": "plan_id not found"}
 
         try:
+            activator = _get_activator()
             tenant = activator.activate(customer_email, customer_name, plan_id, session.get("metadata", {}))
             logger.info(f"Entrega automatica concluida: {tenant['id']}")
 
