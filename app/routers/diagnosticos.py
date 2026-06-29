@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from openai import OpenAI
 
-router = APIRouter(prefix="/diagnostico", tags=["diagnosticos"])
+router = APIRouter(prefix="/aion", tags=["aion"])
 
 API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 LLM_MODEL = os.getenv("LLM_MODEL", "openai/gpt-4o-mini")
@@ -166,7 +166,7 @@ document.getElementById('empresaInfo').textContent = 'Empresa: ' + (d.nome || 'N
 document.getElementById('formCard').style.display = 'none';
 document.getElementById('loading').style.display = 'block';
 try {{
-var r = await fetch('/diagnostico/{agente_id}/gerar', {{
+var r = await fetch('/aion/{agente_id}/gerar', {{
 method:'POST',
 headers:{{'Content-Type':'application/json'}},
 body: JSON.stringify(d)
