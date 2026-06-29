@@ -45,8 +45,9 @@ async def stripe_fulfillment_webhook(request: Request):
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
 
+    fulfillment_secret = os.getenv("STRIPE_FULFILLMENT_SECRET", stripe.webhook_secret)
     try:
-        event = stripe.Webhook.construct_event(payload, sig_header, stripe.webhook_secret)
+        event = stripe.Webhook.construct_event(payload, sig_header, fulfillment_secret)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid payload")
     except stripe.error.SignatureVerificationError:
