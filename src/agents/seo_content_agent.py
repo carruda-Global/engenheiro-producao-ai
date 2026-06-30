@@ -1,7 +1,7 @@
 import asyncio
 import itertools
 from fastapi import APIRouter
-from src.api.deepseek_client import DeepSeekClient
+from openai import OpenAI
 from src.database.supabase_client import SupabaseClient
 from src.config import Settings
 
@@ -82,6 +82,18 @@ MARKET_CONFIGS = {
 class SEOContentAgent:
     def __init__(self, settings: Settings):
         self.settings = settings
+        self.llm = OpenAI(
+            api_key=settings.openrouter_api_key,
+            base_url="https://openrouter.ai/api/v1",
+        )
+
+    def _generate(self, prompt: str) -> str:
+        resp = self.llm.chat.completions.create(
+            model="openai/gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1000,
+        )
+        return resp.choices[0].message.content or ""
 
     async def generate_market_pages(self, market: str):
         config = MARKET_CONFIGS.get(market)
@@ -89,7 +101,6 @@ class SEOContentAgent:
             return {"error": f"Unknown market: {market}"}
         normas, setores, portes, _ = config
         combinations = list(itertools.product(normas.keys(), setores, portes.keys()))
-        deepseek = DeepSeekClient(self.settings)
         db = SupabaseClient(self.settings)
         generated = []
         for norma_key, setor, porte_key in combinations:
@@ -107,7 +118,7 @@ class SEOContentAgent:
                 f"Direct tone, real numbers, max 600 words."
             )
             try:
-                content = await asyncio.to_thread(deepseek.chat, "", prompt)
+                content = await asyncio.to_thread(self._generate, prompt)
                 page_data = {
                     "slug": slug,
                     "title": f"{norma['nome']} — {setor.title()} — {porte_label}",
