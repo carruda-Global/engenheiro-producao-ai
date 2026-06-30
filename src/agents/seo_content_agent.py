@@ -142,50 +142,41 @@ async def trigger_generation(market: str):
     return await agent.generate_market_pages(market.upper())
 
 
-@router.get("/page/{slug}", response_class=HTMLResponse)
+@router.get("/page/{slug}")
 async def get_seo_page(slug: str):
-    from fastapi.responses import HTMLResponse
     settings = Settings()
     db = SupabaseClient(settings)
     result = db.client.table("seo_pages").select("*").eq("slug", slug).execute()
     if not result.data:
-        return HTMLResponse("<h1>Pagina nao encontrada</h1>", status_code=404)
+        return {"error": "not_found"}
     page = result.data[0]
     title = page.get("title", slug)
     meta_desc = page.get("meta_description", "")
     body = page.get("body", "")
     link = page.get("stripe_link", "")
-    market = page.get("market", "BR")
-    html = f"""<!DOCTYPE html>
-<html lang="pt-BR">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>{title} | SallesJam</title>
-<meta name="description" content="{meta_desc}">
-<meta name="robots" content="index,follow">
-<link rel="canonical" href="https://engenheiro-producao-ai.onrender.com/api/seo/page/{slug}">
-<style>
-body{{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0C1322;color:#e2e8f0;margin:0;padding:40px 24px;line-height:1.6}}
-h1{{color:#00C36B;font-size:1.8rem;margin-bottom:16px}}
-p{{color:#94a3b8;font-size:.95rem;margin-bottom:12px}}
-.cta{{display:inline-block;background:#00C36B;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:20px}}
-.cta:hover{{background:#009E56}}
-</style>
-</head>
-<body>
-<h1>{title}</h1>
-<div>{body}</div>
-<a href="{link}" class="cta">Ativar SallesJam agora</a>
-</body>
-</html>"""
-    return HTMLResponse(html)
+    html = (
+        '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1.0">'
+        '<title>' + title + ' | SallesJam</title>'
+        '<meta name="description" content="' + meta_desc + '">'
+        '<meta name="robots" content="index,follow">'
+        '<link rel="canonical" href="https://engenheiro-producao-ai.onrender.com/api/seo/page/' + slug + '">'
+        '<style>body{font-family:sans-serif;background:#0C1322;color:#e2e8f0;padding:40px 24px}'
+        'h1{color:#00C36B}.cta{display:inline-block;background:#00C36B;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:20px}</style>'
+        '</head><body><h1>' + title + '</h1><div>' + body + '</div>'
+        '<a href="' + link + '" class="cta">Ativar SallesJam agora</a>'
+        '</body></html>'
+    )
+    return HTMLResponse(content=html)
 
-@router.get("/sitemap.xml", response_class=HTMLResponse)
+@router.get("/sitemap.xml")
 async def sitemap():
     settings = Settings()
     db = SupabaseClient(settings)
     result = db.client.table("seo_pages").select("slug, market").eq("published", True).execute()
-    urls = []
+    items = []
     for p in result.data or []:
-        urls.append(f"  <url><loc>https://engenheiro-producao-ai.onrender.com/api/seo/page/{p['slug']}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>")
-    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>"
-    return HTMLResponse(xml, media_type="application/xml")
+        slug = p["slug"]
+        items.append('  <url><loc>https://engenheiro-producao-ai.onrender.com/api/seo/page/' + slug + '</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>')
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(items) + "\n</urlset>"
+    return HTMLResponse(content=xml, media_type="application/xml")
