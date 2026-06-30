@@ -215,7 +215,6 @@ async def root():
 @app.get("/.well-known/agent-card.json")
 async def agent_card():
     return {
-        "protocolVersion": "1.0",
         "name": "AION - Agents Intelligence Orchestration Network",
         "description": "78 agentes de IA para Engenharia, Construcao, Conformidade Regulatoria (NR-1, LGPD, ESG), Microsoft Dynamics 365, Salesforce Agentforce, Oracle Fusion e SAP S/4HANA.",
         "version": "7.0.0",
@@ -224,12 +223,13 @@ async def agent_card():
             "url": "https://engenheiro-producao-ai.onrender.com",
             "email": "cristiano@globalengenharia.com.br",
         },
-        "url": "https://engenheiro-producao-ai.onrender.com/a2a/jsonrpc",
         "documentationUrl": "https://engenheiro-producao-ai.onrender.com/docs",
-        "capabilities": {
-            "streaming": True,
-            "pushNotifications": False,
-        },
+        "supportedInterfaces": [
+            {
+                "type": "a2a",
+                "url": "https://engenheiro-producao-ai.onrender.com/a2a/jsonrpc",
+            }
+        ],
         "defaultInputModes": ["text"],
         "defaultOutputModes": ["text"],
         "skills": [
