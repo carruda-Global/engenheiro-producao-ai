@@ -238,11 +238,11 @@ if static_dir.exists():
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 async def root(request: Request):
     ua = request.headers.get("user-agent", "")
     if "Google" in ua or "google" in ua:
-        return '<!DOCTYPE html><html><head><meta name="google-site-verification" content="ofHIVuOsmwHY-JSIStSCtLW0Y_UrzJyyf_-HcsyTeGk" /></head><body></body></html>'
+        return HTMLResponse(content='<!DOCTYPE html><html><head><meta name="google-site-verification" content="ofHIVuOsmwHY-JSIStSCtLW0Y_UrzJyyf_-HcsyTeGk" /></head><body></body></html>')
     return {
         "service": "SallesJam - Multi-Market Sales Intelligence",
         "version": "7.0.0",
