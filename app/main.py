@@ -230,6 +230,7 @@ async def agent_card():
         "supportedInterfaces": [
             {
                 "protocolBinding": "JSONRPC",
+                "protocolVersion": "1.0",
                 "url": "https://engenheiro-producao-ai.onrender.com/a2a/jsonrpc",
             }
         ],
