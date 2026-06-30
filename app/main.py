@@ -4,6 +4,8 @@ import logging
 
 from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from pydantic import BaseModel
 
 from src.config import Settings, get_settings
@@ -222,6 +224,10 @@ app.include_router(usage_billing_router)
 app.include_router(office_addin_router)
 app.include_router(india_agent_router)
 app.include_router(uae_agent_router)
+
+static_dir = Path(__file__).parent.parent / "static"
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 
 @app.get("/")

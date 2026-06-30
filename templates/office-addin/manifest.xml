@@ -11,9 +11,9 @@
   <DefaultLocale>pt-BR</DefaultLocale>
   <DisplayName DefaultValue="SallesJam Compliance"/>
   <Description DefaultValue="Agentes de IA para compliance regulatorio - NR-1, LGPD, CBS/IBS e mais"/>
-  <IconUrl DefaultValue="https://global-engenharia.com/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://global-engenharia.com/assets/icon-80.png"/>
-  <SupportUrl DefaultValue="https://global-engenharia.com/suporte"/>
+  <IconUrl DefaultValue="https://engenheiro-producao-ai.onrender.com/static/icons/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://engenheiro-producao-ai.onrender.com/static/icons/icon-80.png"/>
+  <SupportUrl DefaultValue="https://engenheiro-producao-ai.onrender.com/suporte"/>
   <Hosts>
     <Host Name="Workbook"/>
     <Host Name="Document"/>
@@ -66,9 +66,9 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://global-engenharia.com/assets/icon-16.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://global-engenharia.com/assets/icon-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://global-engenharia.com/assets/icon-80.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://engenheiro-producao-ai.onrender.com/static/icons/icon-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://engenheiro-producao-ai.onrender.com/static/icons/icon-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://engenheiro-producao-ai.onrender.com/static/icons/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="https://engenheiro-producao-ai.onrender.com/office-addin/commands.html"/>
