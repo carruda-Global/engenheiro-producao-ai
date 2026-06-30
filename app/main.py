@@ -46,6 +46,7 @@ from src.api.middleware.privacy import PrivacyConsentMiddleware
 from app.routers.sales_agent_chat import router as sales_agent_chat_router
 from src.agents.visitor_id_agent import router as visitor_id_router
 from src.agents.seo_content_agent import router as seo_agent_router
+from src.agents.seo_pages_router import router as seo_pages_router
 from src.agents.eu_ai_act_agent import router as eu_ai_act_router
 from src.agents.lfpdppp_agent import router as lfpdppp_router
 from src.agents.ley1581_agent import router as ley1581_router
@@ -216,6 +217,7 @@ app.include_router(status_router)
 app.include_router(sales_agent_chat_router)
 app.include_router(visitor_id_router)
 app.include_router(seo_agent_router)
+app.include_router(seo_pages_router)
 app.include_router(eu_ai_act_router)
 app.include_router(lfpdppp_router)
 app.include_router(ley1581_router)
