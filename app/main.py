@@ -223,7 +223,12 @@ async def agent_card():
             "url": "https://engenheiro-producao-ai.onrender.com",
         },
         "documentationUrl": "https://engenheiro-producao-ai.onrender.com/docs",
-        "supportedInterfaces": {"a2a": {}},
+        "supportedInterfaces": [
+            {
+                "protocolBinding": "JSONRPC",
+                "url": "https://engenheiro-producao-ai.onrender.com/a2a/jsonrpc",
+            }
+        ],
         "defaultInputModes": ["text"],
         "defaultOutputModes": ["text"],
         "skills": [
