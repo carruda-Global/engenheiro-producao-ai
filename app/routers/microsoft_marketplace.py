@@ -1,6 +1,5 @@
 import json
 import logging
-import uuid
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
@@ -31,10 +30,12 @@ class MicrosoftActivationResponse(BaseModel):
     redirect_url: str | None = None
     message: str | None = None
 
+
 class MicrosoftWebhookResponse(BaseModel):
     received: bool
     event_type: str | None = None
     subscription_id: str | None = None
+
 
 class MicrosoftFulfillmentRequest(BaseModel):
     token: str
@@ -44,34 +45,54 @@ def _get_settings() -> Settings:
     return get_settings()
 
 
-async def process_microsoft_subscription(action: str, subscription_id: str, data: dict):
+async def _validate_microsoft_jwt(request: Request, settings: Settings) -> None:
+    tenant_id = settings.microsoft_tenant_id
+    client_id = settings.microsoft_client_id
+
+    if not tenant_id or not client_id:
+        logger.warning(
+            "AZURE_TENANT_ID/AZURE_CLIENT_ID nao configurados — "
+            "pulando validacao JWT do webhook Microsoft"
+        )
+        return
+
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        logger.warning("Microsoft webhook sem Authorization header")
+        raise HTTPException(status_code=401, detail="Authorization header ausente")
+
+    token = auth_header[7:]
     try:
-        db = SupabaseClient(get_settings())
-        if action == "Subscribed":
-            db.client.table("microsoft_subscriptions").insert({
-                "subscription_id": subscription_id,
-                "plan": data.get("planId"),
-                "status": "active",
-                "company": data.get("purchaser", {}).get("emailId", ""),
-                "source": "microsoft_marketplace",
-            }).execute()
-            logger.info(f"Novo cliente Microsoft ativado: {subscription_id}")
-        elif action in ["Unsubscribed", "Suspended"]:
-            db.client.table("microsoft_subscriptions").update(
-                {"status": action.lower()}
-            ).eq("subscription_id", subscription_id).execute()
-        elif action == "Reinstated":
-            db.client.table("microsoft_subscriptions").update(
-                {"status": "active"}
-            ).eq("subscription_id", subscription_id).execute()
-    except Exception as e:
-        logger.error(f"Erro ao processar subscription {subscription_id}: {e}")
+        from jose import jwt
+        import httpx as _httpx
+
+        jwks_url = f"https://login.microsoftonline.com/{tenant_id}/discovery/v2.0/keys"
+        async with _httpx.AsyncClient() as http:
+            jwks_resp = await http.get(jwks_url, timeout=10)
+        jwks = jwks_resp.json()
+
+        jwt.decode(
+            token,
+            jwks,
+            algorithms=["RS256"],
+            audience=client_id,
+            issuer=f"https://sts.windows.net/{tenant_id}/",
+        )
+    except ImportError:
+        logger.warning("python-jose nao instalado; pulando validacao JWT do webhook Microsoft")
+    except Exception:
+        logger.exception("Microsoft webhook com JWT invalido")
+        raise HTTPException(status_code=401, detail="Token Microsoft invalido")
 
 
 @router.get("/landing")
 async def landing_page(token: str = Query(default="")):
+    if not token:
+        return RedirectResponse(url="https://global-engenharia.com/?ms_error=missing_token")
+
+    settings = get_settings()
+
     try:
-        settings = get_settings()
         db = SupabaseClient(settings)
         db.client.table("microsoft_subscriptions").insert({
             "token": token,
@@ -79,20 +100,131 @@ async def landing_page(token: str = Query(default="")):
             "source": "microsoft_marketplace",
         }).execute()
     except Exception as e:
-        logger.warning(f"Supabase indisponivel no landing: {e}")
+        logger.warning("Supabase indisponivel no landing: %s", e)
+
+    try:
+        client = MicrosoftMarketplaceClient(settings)
+        resolved = client.resolve_purchase(token)
+
+        if resolved and resolved.get("subscription_id"):
+            subscription_id = resolved["subscription_id"]
+            plan_id = resolved.get("plan_id", "compliance_essencial")
+            customer_id = resolved["customer_id"]
+            customer_email = resolved.get("purchaser_email", "")
+            customer_name = resolved.get("customer_name", "")
+
+            activate_subscription(
+                source="microsoft",
+                external_id=subscription_id,
+                customer_id=customer_id,
+                plan_id=plan_id,
+                customer_email=customer_email,
+                customer_name=customer_name,
+            )
+
+            client.activate_subscription(subscription_id, plan_id)
+
+            logger.info(
+                "Landing page fulfillment: sub=%s customer=%s plan=%s",
+                subscription_id, customer_id, plan_id,
+            )
+
+            return RedirectResponse(
+                url=(
+                    f"https://global-engenharia.com/ecosystem/"
+                    f"?activated=true"
+                    f"&plan={plan_id}"
+                    f"&email={customer_email}"
+                    f"&sub={subscription_id}"
+                )
+            )
+    except Exception as e:
+        logger.exception("Erro no fulfillment do landing page: %s", e)
+
     return RedirectResponse(
-        url=f"https://global-engenharia.com/ecosystem/activate?token={token}"
+        url=f"https://global-engenharia.com/?ms_error=activation_failed&token={token}"
     )
 
 
 @router.post("/webhook")
-async def fulfillment_webhook(request: Request, background_tasks: BackgroundTasks):
-    data = await request.json()
-    action = data.get("action", "")
-    subscription_id = data.get("subscriptionId", "")
-    logger.info(f"Microsoft webhook: {action} | {subscription_id}")
-    background_tasks.add_task(process_microsoft_subscription, action, subscription_id, data)
-    return {"status": "ok"}
+async def handle_webhook(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    settings: Settings = Depends(get_settings),
+):
+    await _validate_microsoft_jwt(request, settings)
+
+    try:
+        payload = await request.json()
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
+
+    # Microsoft uses "action" in fulfillment webhooks, "eventType" in newer event-based
+    action = payload.get("action") or payload.get("eventType", "")
+    subscription_id = payload.get("subscriptionId", "")
+    logger.info("Microsoft webhook: %s sub=%s", action, subscription_id)
+
+    if action == "Unsubscribe":
+        background_tasks.add_task(deactivate_subscription, "microsoft", subscription_id)
+
+    elif action == "ChangePlan":
+        new_plan_id = payload.get("planId", "")
+        background_tasks.add_task(
+            update_subscription_plan, "microsoft", subscription_id, new_plan_id
+        )
+
+    elif action == "Suspend":
+        background_tasks.add_task(_handle_suspend, subscription_id)
+
+    elif action == "Reinstate":
+        background_tasks.add_task(_handle_reinstate, subscription_id)
+
+    elif action == "Subscribed":
+        plan_id = payload.get("planId", "")
+        purchaser = payload.get("purchaser", {})
+        background_tasks.add_task(
+            activate_subscription,
+            source="microsoft",
+            external_id=subscription_id,
+            customer_id=purchaser.get("objectId", subscription_id),
+            plan_id=plan_id,
+            customer_email=purchaser.get("emailId", ""),
+            customer_name=payload.get("subscriberName", ""),
+        )
+
+    return MicrosoftWebhookResponse(
+        received=True,
+        event_type=action,
+        subscription_id=subscription_id,
+    )
+
+
+def _handle_suspend(subscription_id: str) -> None:
+    from src.monetization.subscription_activator import _active_subscriptions, _init_supabase
+    sub_id = f"microsoft_{subscription_id}"
+    if sub_id in _active_subscriptions:
+        _active_subscriptions[sub_id]["status"] = "suspended"
+    try:
+        db = _init_supabase()
+        if db:
+            db.table("subscriptions").update({"status": "suspended"}).eq("id", sub_id).execute()
+    except Exception as e:
+        logger.warning("Falha ao suspender subscription %s: %s", subscription_id, e)
+    logger.info("Subscription suspensa: %s", sub_id)
+
+
+def _handle_reinstate(subscription_id: str) -> None:
+    from src.monetization.subscription_activator import _active_subscriptions, _init_supabase
+    sub_id = f"microsoft_{subscription_id}"
+    if sub_id in _active_subscriptions:
+        _active_subscriptions[sub_id]["status"] = "active"
+    try:
+        db = _init_supabase()
+        if db:
+            db.table("subscriptions").update({"status": "active"}).eq("id", sub_id).execute()
+    except Exception as e:
+        logger.warning("Falha ao reativar subscription %s: %s", subscription_id, e)
+    logger.info("Subscription reativada: %s", sub_id)
 
 
 @router.post("/fulfill")
@@ -110,7 +242,9 @@ async def fulfill_subscription(payload: MicrosoftFulfillmentRequest):
         raise HTTPException(status_code=502, detail=f"Falha ao resolver token Azure: {e}")
 
     if not resolved:
-        raise HTTPException(status_code=502, detail="Token Azure resolvido mas sem dados de subscription")
+        raise HTTPException(
+            status_code=502, detail="Token Azure resolvido mas sem dados de subscription"
+        )
 
     subscription_id = resolved["subscription_id"]
     plan_id = resolved.get("plan_id", "compliance_essencial")
@@ -206,56 +340,6 @@ async def subscribe(
         plan=plan,
         redirect_url=redirect_url,
         message="Assinatura ativada com sucesso!" if activated else "Assinatura pendente de ativacao.",
-    )
-
-
-@router.post("/webhook")
-async def handle_webhook(request: Request, settings: Settings = Depends(get_settings)):
-    auth_header = request.headers.get("Authorization", "")
-    if not auth_header.startswith("Bearer "):
-        logger.warning("Microsoft webhook sem Authorization header")
-        raise HTTPException(status_code=401, detail="Authorization header ausente")
-
-    token = auth_header[7:]
-    try:
-        from jose import jwt
-        import httpx as httpx_jwks
-
-        jwks_url = f"https://login.microsoftonline.com/{settings.microsoft_tenant_id}/discovery/v2.0/keys"
-        async with httpx_jwks.AsyncClient() as http:
-            jwks_resp = await http.get(jwks_url)
-        jwks = jwks_resp.json()
-
-        jwt.decode(
-            token,
-            jwks,
-            algorithms=["RS256"],
-            audience=settings.microsoft_client_id,
-            issuer=f"https://sts.windows.net/{settings.microsoft_tenant_id}/",
-        )
-    except Exception:
-        logger.exception("Microsoft webhook com JWT invalido")
-        raise HTTPException(status_code=401, detail="Token Microsoft invalido")
-
-    try:
-        payload = await request.json()
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Invalid JSON payload")
-
-    event_type = payload.get("eventType", "")
-    subscription_id = payload.get("subscriptionId", "")
-    logger.info("Microsoft webhook: %s sub=%s", event_type, subscription_id)
-
-    if event_type == "Unsubscribe":
-        deactivate_subscription("microsoft", subscription_id)
-    elif event_type == "ChangePlan":
-        new_plan_id = payload.get("planId", "")
-        update_subscription_plan("microsoft", subscription_id, new_plan_id)
-
-    return MicrosoftWebhookResponse(
-        received=True,
-        event_type=event_type,
-        subscription_id=subscription_id,
     )
 
 
