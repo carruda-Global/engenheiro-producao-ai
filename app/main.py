@@ -365,135 +365,33 @@ async def list_mcp_servers():
     return {"servers": MCP_SERVERS, "total": len(MCP_SERVERS)}
 
 
-@app.get("/mcp/toolspec.json")
-@app.post("/mcp/toolspec.json")
-async def mcp_toolspec():
+async def _mcp_toolspec_data():
     return {
         "tools": [
-            {
-                "name": "nr1_psicossocial",
-                "description": "Avalia riscos psicossociais conforme NR-1 e gera plano de acao para conformidade trabalhista brasileira.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "empresa": {"type": "string", "description": "Nome da empresa"},
-                        "setor": {"type": "string", "description": "Setor ou departamento"},
-                        "num_funcionarios": {"type": "integer", "description": "Numero de funcionarios"},
-                    },
-                    "required": ["empresa"],
-                },
-            },
-            {
-                "name": "lgpd_operacional",
-                "description": "Mapeia dados pessoais e gera politica de privacidade conforme LGPD brasileira.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "empresa": {"type": "string", "description": "Nome da empresa"},
-                        "tipo_dados": {"type": "string", "description": "Tipos de dados pessoais tratados"},
-                    },
-                    "required": ["empresa"],
-                },
-            },
-            {
-                "name": "esg_ifrs",
-                "description": "Gera relatorio de sustentabilidade conforme IFRS S1/S2 e calcula inventario de carbono.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "empresa": {"type": "string", "description": "Nome da empresa"},
-                        "ano_referencia": {"type": "integer", "description": "Ano de referencia do relatorio"},
-                    },
-                    "required": ["empresa"],
-                },
-            },
-            {
-                "name": "spec_analyst",
-                "description": "Analisa documentos de engenharia (plantas, memoriais, normas NBR) e extrai requisitos tecnicos.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "documento": {"type": "string", "description": "Texto ou URL do documento de engenharia"},
-                        "norma": {"type": "string", "description": "Norma tecnica de referencia (ex: NBR 6118)"},
-                    },
-                    "required": ["documento"],
-                },
-            },
-            {
-                "name": "bim_coordinator",
-                "description": "Coordena modelos BIM, detecta conflitos e gera relatorio de compatibilizacao IFC.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "projeto": {"type": "string", "description": "Nome do projeto de construcao"},
-                        "disciplinas": {"type": "array", "items": {"type": "string"}, "description": "Disciplinas do projeto (Arquitetura, Estrutura, MEP)"},
-                    },
-                    "required": ["projeto"],
-                },
-            },
-            {
-                "name": "dynamics_sales",
-                "description": "Automatiza vendas no Dynamics 365: qualifica leads, preve receita e gerencia pipeline.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "lead_id": {"type": "string", "description": "ID do lead no Dynamics 365"},
-                        "acao": {"type": "string", "enum": ["qualificar", "prever_receita", "atualizar_pipeline"]},
-                    },
-                    "required": ["lead_id", "acao"],
-                },
-            },
-            {
-                "name": "compliance_score",
-                "description": "Calcula score de conformidade regulatoria da empresa com base em NR-1, LGPD e ESG.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "empresa": {"type": "string", "description": "Nome da empresa"},
-                        "frameworks": {"type": "array", "items": {"type": "string"}, "description": "Frameworks a avaliar: nr1, lgpd, esg, anticorrupcao"},
-                    },
-                    "required": ["empresa"],
-                },
-            },
-            {
-                "name": "canal_denuncias",
-                "description": "Gerencia canal de denuncias anonimo conforme Lei Anticorrupcao e ISO 37001.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "descricao": {"type": "string", "description": "Descricao da denuncia ou consulta"},
-                        "categoria": {"type": "string", "enum": ["corrupcao", "assedio", "fraude", "seguranca", "outro"]},
-                    },
-                    "required": ["descricao"],
-                },
-            },
-            {
-                "name": "inventario_carbono",
-                "description": "Calcula inventario de emissoes de carbono (Escopos 1, 2 e 3) conforme GHG Protocol.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "empresa": {"type": "string", "description": "Nome da empresa"},
-                        "escopos": {"type": "array", "items": {"type": "integer"}, "description": "Escopos a calcular: [1, 2, 3]"},
-                        "ano": {"type": "integer", "description": "Ano de referencia"},
-                    },
-                    "required": ["empresa"],
-                },
-            },
-            {
-                "name": "igualdade_salarial",
-                "description": "Analisa equidade salarial conforme Lei 14.611/2023 e gera relatorio para MTE.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "empresa": {"type": "string", "description": "Nome da empresa"},
-                        "cnpj": {"type": "string", "description": "CNPJ da empresa"},
-                    },
-                    "required": ["empresa"],
-                },
-            },
+            {"name": "nr1_psicossocial", "description": "Avalia riscos psicossociais conforme NR-1 e gera plano de acao para conformidade trabalhista brasileira.", "inputSchema": {"type": "object", "properties": {"empresa": {"type": "string", "description": "Nome da empresa"}, "setor": {"type": "string"}}, "required": ["empresa"]}},
+            {"name": "lgpd_operacional", "description": "Mapeia dados pessoais e gera politica de privacidade conforme LGPD brasileira.", "inputSchema": {"type": "object", "properties": {"empresa": {"type": "string"}, "tipo_dados": {"type": "string"}}, "required": ["empresa"]}},
+            {"name": "esg_ifrs", "description": "Gera relatorio de sustentabilidade conforme IFRS S1/S2 e calcula inventario de carbono.", "inputSchema": {"type": "object", "properties": {"empresa": {"type": "string"}, "ano_referencia": {"type": "integer"}}, "required": ["empresa"]}},
+            {"name": "spec_analyst", "description": "Analisa documentos de engenharia (plantas, memoriais, normas NBR) e extrai requisitos tecnicos.", "inputSchema": {"type": "object", "properties": {"documento": {"type": "string"}, "norma": {"type": "string"}}, "required": ["documento"]}},
+            {"name": "bim_coordinator", "description": "Coordena modelos BIM, detecta conflitos e gera relatorio de compatibilizacao IFC.", "inputSchema": {"type": "object", "properties": {"projeto": {"type": "string"}, "disciplinas": {"type": "array", "items": {"type": "string"}}}, "required": ["projeto"]}},
+            {"name": "dynamics_sales", "description": "Automatiza vendas no Dynamics 365: qualifica leads, preve receita e gerencia pipeline.", "inputSchema": {"type": "object", "properties": {"lead_id": {"type": "string"}, "acao": {"type": "string"}}, "required": ["lead_id", "acao"]}},
+            {"name": "compliance_score", "description": "Calcula score de conformidade regulatoria da empresa com base em NR-1, LGPD e ESG.", "inputSchema": {"type": "object", "properties": {"empresa": {"type": "string"}, "frameworks": {"type": "array", "items": {"type": "string"}}}, "required": ["empresa"]}},
+            {"name": "canal_denuncias", "description": "Gerencia canal de denuncias anonimo conforme Lei Anticorrupcao e ISO 37001.", "inputSchema": {"type": "object", "properties": {"descricao": {"type": "string"}, "categoria": {"type": "string"}}, "required": ["descricao"]}},
+            {"name": "inventario_carbono", "description": "Calcula inventario de emissoes de carbono (Escopos 1, 2 e 3) conforme GHG Protocol.", "inputSchema": {"type": "object", "properties": {"empresa": {"type": "string"}, "escopos": {"type": "array", "items": {"type": "integer"}}}, "required": ["empresa"]}},
+            {"name": "igualdade_salarial", "description": "Analisa equidade salarial conforme Lei 14.611/2023 e gera relatorio para MTE.", "inputSchema": {"type": "object", "properties": {"empresa": {"type": "string"}, "cnpj": {"type": "string"}}, "required": ["empresa"]}},
         ]
     }
+
+
+@app.get("/mcp/toolspec.json")
+async def mcp_toolspec_get():
+    return await _mcp_toolspec_data()
+
+
+@app.post("/mcp/toolspec.json")
+async def mcp_toolspec_post():
+    return await _mcp_toolspec_data()
+
+
 
 
 @app.get("/mcp/{server_id}/manifest")
