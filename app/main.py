@@ -41,6 +41,15 @@ from src.fulfillment.webhooks.stripe_fulfillment import router as fulfillment_ro
 from src.api.routes.status import router as status_router
 from src.api.middleware.privacy import PrivacyConsentMiddleware
 
+from app.routers.sales_agent_chat import router as sales_agent_chat_router
+from src.agents.visitor_id_agent import router as visitor_id_router
+from src.agents.seo_content_agent import router as seo_agent_router
+from src.agents.eu_ai_act_agent import router as eu_ai_act_router
+from src.agents.lfpdppp_agent import router as lfpdppp_router
+from src.agents.ley1581_agent import router as ley1581_router
+from src.agents.sdr_backoffice_agent import router as sdr_backoffice_router
+from src.agents.usage_billing import router as usage_billing_router
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -67,8 +76,8 @@ _is_production = settings.app_env == "production"
 cors_origins = [settings.base_url] if _is_production else ["*"]
 
 app = FastAPI(
-    title="AION 7.0 - Agents Intelligence Orchestration Network",
-    description="71 Agentes de IA com seguranca AIP, Compliance Receipts e mTLS",
+    title="SallesJam - Multi-Market Sales Intelligence",
+    description="SallesJam: IA multi-mercado para vendas e compliance (Brasil, EUA, México, Colômbia, Argentina)",
     version="7.0.0",
 )
 
@@ -199,15 +208,24 @@ app.include_router(physical_ai_router)
 app.include_router(checkout_router)
 app.include_router(fulfillment_router)
 app.include_router(status_router)
+app.include_router(sales_agent_chat_router)
+app.include_router(visitor_id_router)
+app.include_router(seo_agent_router)
+app.include_router(eu_ai_act_router)
+app.include_router(lfpdppp_router)
+app.include_router(ley1581_router)
+app.include_router(sdr_backoffice_router)
+app.include_router(usage_billing_router)
 
 
 @app.get("/")
 async def root():
     return {
-        "service": "AION 7.0 - Agents Intelligence Orchestration Network",
+        "service": "SallesJam - Multi-Market Sales Intelligence",
         "version": "7.0.0",
         "status": "operational",
         "agents_total": len(orchestrator.agents),
+        "markets": ["BR", "US", "MX", "CO", "AR"],
         "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "tech", "self_improvement", "enterprise_connectors", "physical_ai"],
     }
 
@@ -215,8 +233,8 @@ async def root():
 @app.get("/.well-known/agent-card.json")
 async def agent_card():
     return {
-        "name": "AION - Agents Intelligence Orchestration Network",
-        "description": "78 agentes de IA para Engenharia, Construcao, Conformidade Regulatoria (NR-1, LGPD, ESG), Microsoft Dynamics 365, Salesforce Agentforce, Oracle Fusion e SAP S/4HANA.",
+        "name": "SallesJam - Multi-Market Sales Intelligence",
+        "description": "SallesJam: IA para vendas e compliance em 5 mercados. Brasil (NR-1, LGPD, ESG), EUA (EU AI Act), México (LFPDPPP), Colômbia (Ley 1581), Argentina (SDR/Back-office).",
         "version": "7.0.0",
         "provider": {
             "organization": "Global Engenharia",
