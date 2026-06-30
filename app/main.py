@@ -2,8 +2,9 @@ import os
 import uuid
 import logging
 
-from fastapi import FastAPI, HTTPException, APIRouter
+from fastapi import FastAPI, HTTPException, APIRouter, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from pydantic import BaseModel
@@ -208,6 +209,11 @@ app.include_router(stripe_app_router)
 app.include_router(privacy_router)
 app.include_router(stripe_webhook_router)
 app.include_router(governance_router)
+
+
+@app.get("/googlef3d8c8be30343045.html")
+async def google_verify():
+    return HTMLResponse(content="google-site-verification: googlef3d8c8be30343045.html")
 app.include_router(bridge_router)
 app.include_router(code_review_router)
 app.include_router(physical_ai_router)
@@ -232,15 +238,17 @@ if static_dir.exists():
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 
-@app.get("/")
-async def root():
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    ua = request.headers.get("user-agent", "")
+    if "Google" in ua or "google" in ua:
+        return '<!DOCTYPE html><html><head><meta name="google-site-verification" content="ofHIVuOsmwHY-JSIStSCtLW0Y_UrzJyyf_-HcsyTeGk" /></head><body></body></html>'
     return {
         "service": "SallesJam - Multi-Market Sales Intelligence",
         "version": "7.0.0",
         "status": "operational",
         "agents_total": len(orchestrator.agents),
         "markets": ["BR", "US", "MX", "CO", "AR"],
-        "clusters": ["aec_core", "aec_specialized", "aec_compliance", "regulatory", "microsoft", "cross_sell", "dynamics", "agentforce", "oracle", "sap", "coordination", "intelligence", "tech", "self_improvement", "enterprise_connectors", "physical_ai"],
     }
 
 
