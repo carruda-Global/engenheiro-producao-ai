@@ -1,4 +1,4 @@
-agent_versioning:
+﻿agent_versioning:
   enabled: true
   max_snapshots: 50
   rollback_enabled: true
@@ -363,6 +363,12 @@ llm_routing:
   - onboarding_funcionarios
   sensitive_llm: gemini
 marketplace:
+  google:
+    product_id: global-engenharia-498823
+    project_id: global-engenharia-498823
+    webhook_url: https://engenheiro-producao-ai.onrender.com/google/webhook
+    pubsub_topic: ecosystem-aion-webhook
+    enabled: true
   microsoft:
     client_id: ${AZURE_CLIENT_ID}
     client_secret: ${AZURE_CLIENT_SECRET}
