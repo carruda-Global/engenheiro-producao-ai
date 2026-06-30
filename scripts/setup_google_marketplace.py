@@ -1,11 +1,11 @@
-"""
+﻿"""
 Google Cloud Marketplace - Setup Completo
 Cria Service Account + Oferta + Registro de Endpoints
 
 Uso:
     python scripts/setup_google_marketplace.py
 
-Pré-requisitos:
+PrÃ©-requisitos:
     pip install google-auth-oauthlib google-api-python-client google-cloud-aiplatform
 """
 
@@ -155,14 +155,14 @@ def create_marketplace_offer(creds):
         "description": description,
         "category": "AI_AGENTS_AND_TOOLS",
         "productType": "SAAS",
-        "fulfillmentUrl": "https://aion.engenheiro-producao-ai.com",
-        "termsOfService": "https://aion.engenheiro-producao-ai.com/terms",
-        "privacyPolicy": "https://aion.engenheiro-producao-ai.com/privacy",
+        "fulfillmentUrl": "https://engenheiro-producao-ai.onrender.com",
+        "termsOfService": "https://engenheiro-producao-ai.onrender.com/terms",
+        "privacyPolicy": "https://engenheiro-producao-ai.onrender.com/privacy",
         "supportEmail": "cristiano@globalengenharia.com.br",
         "webhooks": [
             {
                 "name": "Entitlement Events",
-                "uri": "https://aion.engenheiro-producao-ai.com/google/webhook",
+                "uri": "https://engenheiro-producao-ai.onrender.com/google/webhook",
                 "eventTypes": [
                     "ENTITLEMENT_CREATED",
                     "ENTITLEMENT_ACTIVATED",
@@ -218,9 +218,9 @@ def register_endpoints():
     }
     print("\n=== Endpoints registrados ===")
     for name, endpoint in endpoints.items():
-        print(f"  {name:15s} -> https://aion.engenheiro-producao-ai.com{endpoint}")
-    print(f"\nURL base: https://aion.engenheiro-producao-ai.com")
-    print(f"MCP Registry: https://aion.engenheiro-producao-ai.com/mcp/servers")
+        print(f"  {name:15s} -> https://engenheiro-producao-ai.onrender.com{endpoint}")
+    print(f"\nURL base: https://engenheiro-producao-ai.onrender.com")
+    print(f"MCP Registry: https://engenheiro-producao-ai.onrender.com/mcp/servers")
     return endpoints
 
 
@@ -246,7 +246,7 @@ def main():
     print(f"\nProximo passo - Configurar Pub/Sub:")
     print(f"  https://console.cloud.google.com/cloudpubsub/topic")
     print(f"  Topico: ecosystem-aion-webhook")
-    print(f"  Subscription -> https://aion.engenheiro-producao-ai.com/google/webhook")
+    print(f"  Subscription -> https://engenheiro-producao-ai.onrender.com/google/webhook")
     print(f"\nProximo passo - Publicar listing:")
     print(f"  https://console.cloud.google.com/partners")
     print(f"\nChave da SA salva em: {SA_KEY_PATH}")
