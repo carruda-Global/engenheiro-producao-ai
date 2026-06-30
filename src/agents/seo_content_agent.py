@@ -144,11 +144,16 @@ async def trigger_generation(market: str):
 
 @router.get("/page/{slug}")
 async def get_seo_page(slug: str):
-    settings = Settings()
-    db = SupabaseClient(settings)
-    result = db.client.table("seo_pages").select("*").eq("slug", slug).execute()
+    import os
+    from supabase import create_client
+    supa_url = os.getenv("SUPABASE_URL", "")
+    supa_key = os.getenv("SUPABASE_API_KEY", "")
+    if not supa_url or not supa_key:
+        return HTMLResponse(content="<h1>Erro de configuracao</h1>", status_code=500)
+    client = create_client(supa_url, supa_key)
+    result = client.table("seo_pages").select("*").eq("slug", slug).execute()
     if not result.data:
-        return {"error": "not_found"}
+        return HTMLResponse(content="<h1>Pagina nao encontrada</h1>", status_code=404)
     page = result.data[0]
     title = page.get("title", slug)
     meta_desc = page.get("meta_description", "")
@@ -171,9 +176,14 @@ async def get_seo_page(slug: str):
 
 @router.get("/sitemap.xml")
 async def sitemap():
-    settings = Settings()
-    db = SupabaseClient(settings)
-    result = db.client.table("seo_pages").select("slug, market").eq("published", True).execute()
+    import os
+    from supabase import create_client
+    supa_url = os.getenv("SUPABASE_URL", "")
+    supa_key = os.getenv("SUPABASE_API_KEY", "")
+    if not supa_url or not supa_key:
+        return HTMLResponse(content="", status_code=500)
+    client = create_client(supa_url, supa_key)
+    result = client.table("seo_pages").select("slug, market").eq("published", True).execute()
     items = []
     for p in result.data or []:
         slug = p["slug"]
