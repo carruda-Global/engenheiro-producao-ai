@@ -49,6 +49,9 @@ from src.agents.lfpdppp_agent import router as lfpdppp_router
 from src.agents.ley1581_agent import router as ley1581_router
 from src.agents.sdr_backoffice_agent import router as sdr_backoffice_router
 from src.agents.usage_billing import router as usage_billing_router
+from app.routers.office_addin import router as office_addin_router
+from src.agents.india_multilingual_agent import router as india_agent_router
+from src.agents.uae_government_agent import router as uae_agent_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -216,6 +219,9 @@ app.include_router(lfpdppp_router)
 app.include_router(ley1581_router)
 app.include_router(sdr_backoffice_router)
 app.include_router(usage_billing_router)
+app.include_router(office_addin_router)
+app.include_router(india_agent_router)
+app.include_router(uae_agent_router)
 
 
 @app.get("/")

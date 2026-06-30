@@ -1,0 +1,23 @@
+{
+  "timeZone": "America/Sao_Paulo",
+  "addOns": {
+    "common": {
+      "name": "SallesJam Compliance",
+      "logoUrl": "https://global-engenharia.com/assets/icon-80.png",
+      "homepageTrigger": {
+        "runFunction": "onHomepage"
+      }
+    },
+    "gmail": {
+      "contextualTriggers": [{
+        "unconditional": {},
+        "onTriggerFunction": "onGmailMessageOpen"
+      }]
+    }
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/script.external_request"
+  ]
+}
