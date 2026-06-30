@@ -226,7 +226,6 @@ async def agent_card():
         "capabilities": {
             "streaming": False,
             "pushNotifications": False,
-            "stateTransitionHistory": False,
         },
         "supportedInterfaces": [
             {
