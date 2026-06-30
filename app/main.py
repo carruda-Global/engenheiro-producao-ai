@@ -224,7 +224,7 @@ async def agent_card():
             "url": "https://engenheiro-producao-ai.onrender.com",
             "email": "cristiano@globalengenharia.com.br",
         },
-        "url": "https://engenheiro-producao-ai.onrender.com",
+        "url": "https://engenheiro-producao-ai.onrender.com/a2a/jsonrpc",
         "documentationUrl": "https://engenheiro-producao-ai.onrender.com/docs",
         "capabilities": {
             "streaming": True,
