@@ -8,6 +8,31 @@
 
 ---
 
+## ⏸️ Ponto de Parada — SallesJam (30/06/2026)
+
+### ✅ Completo
+- Sales Agent Chat multi-mercado (`app/routers/sales_agent_chat.py`)
+- Visitor ID Agent (`src/agents/visitor_id_agent.py`)
+- SEO Content Agent (`src/agents/seo_content_agent.py`) — ~290 páginas
+- EU AI Act Readiness Agent (`src/agents/eu_ai_act_agent.py`)
+- LFPDPPP Compliance Agent México (`src/agents/lfpdppp_agent.py`)
+- Ley 1581 Compliance Agent Colômbia (`src/agents/ley1581_agent.py`)
+- SDR/Back-office Agent Argentina (`src/agents/sdr_backoffice_agent.py`)
+- Pay-per-use billing (`src/agents/usage_billing.py`)
+- Widget HTML chat (`templates/sallesjam_widget.html`)
+- SQL migration rodada no Supabase (4 tabelas: chat_logs, identified_leads, seo_pages, usage_charges)
+- Testes: 15/15 passando (`tests/test_sallesjam_agents.py`)
+- Commit + push para main no GitHub
+
+### 🔜 Pendente (quando voltar)
+1. **Render deploy** — já está configurado no render.yaml, só esperar o auto-deploy ou trigger manual
+2. **Configurar env vars no Render** — DEEPSEEK_API_KEY, SUPABASE_URL, SUPABASE_API_KEY, STRIPE_SECRET_KEY (sync:false)
+3. **Rodar geração SEO** — 5 chamadas curl para `/api/seo/generate/{BR,US,MX,CO,AR}`
+4. **Inserir widget HTML** — colar `templates/sallesjam_widget.html` antes do `</body>` no site
+5. **Publicar listings** — Replit, MindStudio, GPT Store (EU AI Act), Hugging Face
+
+---
+
 ## Status dos Agentes por Fase de Lançamento
 
 | Status | Significado |
