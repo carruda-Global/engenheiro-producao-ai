@@ -314,9 +314,9 @@ openrouter:
   timeout: 120
 
 deepseek:
-  api_base: https://api.deepseek.com/v1
+  api_base: https://openrouter.ai/api/v1
   max_tokens: 16384
-  model: deepseek-chat
+  model: openai/gpt-4o-mini
   temperature: 0.3
   timeout: 120
 evolution:
