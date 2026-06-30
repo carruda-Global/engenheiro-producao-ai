@@ -212,6 +212,64 @@ async def root():
     }
 
 
+@app.get("/.well-known/agent-card.json")
+async def agent_card():
+    return {
+        "name": "AION - Agents Intelligence Orchestration Network",
+        "description": "78 agentes de IA para Engenharia, Construcao, Conformidade Regulatoria (NR-1, LGPD, ESG), Microsoft Dynamics 365, Salesforce Agentforce, Oracle Fusion e SAP S/4HANA.",
+        "version": "7.0.0",
+        "provider": {
+            "organization": "Global Engenharia",
+            "url": "https://engenheiro-producao-ai.onrender.com",
+            "email": "cristiano@globalengenharia.com.br",
+        },
+        "url": "https://engenheiro-producao-ai.onrender.com",
+        "documentationUrl": "https://engenheiro-producao-ai.onrender.com/docs",
+        "capabilities": {
+            "streaming": True,
+            "a2a": True,
+            "mcp": True,
+        },
+        "defaultInputModes": ["text", "json"],
+        "defaultOutputModes": ["text", "json"],
+        "endpoints": {
+            "a2a": "https://engenheiro-producao-ai.onrender.com/a2a/jsonrpc",
+            "mcp": "https://engenheiro-producao-ai.onrender.com/mcp/servers",
+            "subscribe": "https://engenheiro-producao-ai.onrender.com/google/subscribe",
+            "webhook": "https://engenheiro-producao-ai.onrender.com/google/webhook",
+            "plans": "https://engenheiro-producao-ai.onrender.com/google/plans",
+        },
+        "googleCloudMarketplace": {
+            "productId": "global-engenharia-498823",
+            "fulfillmentUrl": "https://engenheiro-producao-ai.onrender.com/google/subscribe",
+            "plans": [
+                {"id": "compliance_essencial", "name": "Compliance Essencial - NR-1 + LGPD", "priceUsd": 119},
+                {"id": "regulatory_pro", "name": "Regulatory Pro - 6 Agentes", "priceUsd": 299},
+                {"id": "esg_carbono", "name": "ESG + Carbono", "priceUsd": 499},
+                {"id": "microsoft_pack", "name": "Microsoft Pack - 6 Agentes M365", "priceUsd": 899},
+                {"id": "dynamics_pack", "name": "Dynamics 365 Pack - 6 Agentes", "priceUsd": 999},
+                {"id": "agentforce_pack", "name": "Agentforce Pack - 5 Agentes", "priceUsd": 929},
+                {"id": "oracle_pack", "name": "Oracle Fusion Pack - 4 Agentes", "priceUsd": 999},
+                {"id": "sap_pack", "name": "SAP Integration Pack - 3 Agentes", "priceUsd": 1079},
+                {"id": "erp_full_bridge", "name": "ERP Full Bridge - 18 Agentes", "priceUsd": 3299},
+                {"id": "full_suite", "name": "Full Suite - 78 Agentes", "priceUsd": 4999},
+            ],
+        },
+        "skills": [
+            {"id": "nr1_psicossocial", "name": "NR-1 Psicossocial", "cluster": "regulatory"},
+            {"id": "lgpd_operacional", "name": "LGPD Operacional", "cluster": "regulatory"},
+            {"id": "esg_ifrs", "name": "ESG IFRS S1/S2", "cluster": "regulatory"},
+            {"id": "spec_analyst", "name": "Analista de Especificacoes", "cluster": "aec_core"},
+            {"id": "bim_coordinator", "name": "BIM Coordinator", "cluster": "aec_specialized"},
+            {"id": "regulatory_analyst", "name": "Regulatory Analyst M365", "cluster": "microsoft"},
+            {"id": "dynamics_sales", "name": "Dynamics 365 Sales", "cluster": "dynamics"},
+            {"id": "agentforce_sdr", "name": "Agentforce SDR", "cluster": "agentforce"},
+            {"id": "oracle_erp_compliance", "name": "Oracle ERP Compliance", "cluster": "oracle"},
+            {"id": "sap_joule_compliance", "name": "SAP Joule Compliance", "cluster": "sap"},
+        ],
+    }
+
+
 @app.get("/api/status/{tenant_id}")
 async def get_status(tenant_id: str):
     return dashboard.get_agent_status(tenant_id)
