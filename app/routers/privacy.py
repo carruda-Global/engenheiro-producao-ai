@@ -7,6 +7,31 @@ from src.data.models.consent import PrivacyConsent, PrivacyRequest, PrivacyRespo
 
 router = APIRouter(prefix="/api/privacy", tags=["Privacy"])
 
+PRIVACY_POLICY_HTML = """<!DOCTYPE html>
+<html lang="pt-br">
+<head><meta charset="UTF-8"><title>Política de Privacidade - SallesJam</title></head>
+<body style="background:#0C1322;color:#e2e8f0;font-family:sans-serif;padding:40px;max-width:800px;margin:0 auto">
+<h1 style="color:#00C36B">Política de Privacidade</h1>
+<p><strong>SallesJam</strong> | Global Match Engenharia de Produção | CREA-SP 5071200171</p>
+<p>Esta extensão coleta apenas os dados necessários para fornecer respostas de compliance via IA:</p>
+<ul>
+<li>Mensagens de texto enviadas pelo usuário no chat</li>
+<li>URL da página atual (apenas para contexto)</li>
+<li>Preferência de idioma armazenada localmente</li>
+</ul>
+<p><strong>Não coletamos:</strong> dados pessoais, senhas, histórico de navegação completo, cookies de terceiros.</p>
+<p><strong>Compartilhamento:</strong> nenhum dado é compartilhado com terceiros. As mensagens são processadas pela API DeepSeek para gerar respostas.</p>
+<p><strong>Armazenamento:</strong> dados são armazenados em Supabase (PostgreSQL) com criptografia em trânsito e em repouso.</p>
+<p><strong>Contato:</strong> contato@global-engenharia.com</p>
+<p style="color:#94a3b8;font-size:12px">Última atualização: Junho 2026</p>
+</body>
+</html>"""
+
+
+@router.get("/policy", response_class=HTMLResponse)
+async def privacy_policy():
+    return PRIVACY_POLICY_HTML
+
 
 @router.post("/consent")
 async def register_consent(consent: PrivacyConsent):
