@@ -71,6 +71,7 @@ from src.agents.regulatory_monitor_agent import router as reg_monitor_router
 from src.agents.contract_risk_agent import router as contract_risk_router
 from src.agents.whistleblower_agent import router as whistleblower_router
 from src.agents.zapier_integration_agent import router as zapier_router
+from src.agents.dashboard_agent import router as dashboard_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -262,6 +263,7 @@ app.include_router(reg_monitor_router)
 app.include_router(contract_risk_router)
 app.include_router(whistleblower_router)
 app.include_router(zapier_router)
+app.include_router(dashboard_router)
 
 async def _job_seo():
     """Every 6h: generates 10 SEO pages per market (40/day)."""
