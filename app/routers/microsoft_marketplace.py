@@ -131,7 +131,7 @@ async def landing_page(token: str = Query(default="")):
 
             return RedirectResponse(
                 url=(
-                    f"https://global-engenharia.com/ecosystem/"
+                    f"https://global-engenharia.com/ms-ativacao/"
                     f"?activated=true"
                     f"&plan={plan_id}"
                     f"&email={customer_email}"
@@ -142,7 +142,7 @@ async def landing_page(token: str = Query(default="")):
         logger.exception("Erro no fulfillment do landing page: %s", e)
 
     return RedirectResponse(
-        url=f"https://global-engenharia.com/?ms_error=activation_failed&token={token}"
+        url=f"https://global-engenharia.com/ms-ativacao/?ms_error=activation_failed&token={token}"
     )
 
 
