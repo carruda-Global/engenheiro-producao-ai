@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.carruda-global/ecosystem-aec-erp",
+  "description": "AI compliance and automation tools for enterprise ERP/CRM systems: Dynamics 365 (Sales, Finance, HR), Salesforce Agentforce (SDR, Contracts), Oracle (ERP compliance, HCM regulatory), SAP compliance bridge, SAP CBAM export, Power BI compliance dashboards.",
+  "version": "1.0.0",
+  "websiteUrl": "https://global-engenharia.com/ecosystem",
+  "repository": {
+    "url": "https://github.com/carruda-Global/engenheiro-producao-ai",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "sse",
+      "url": "https://engenheiro-producao-ai.onrender.com/mcp/erp/sse"
+    }
+  ]
+}

@@ -6,28 +6,50 @@ terceiro — não posso fazer isso por você, mas deixei tudo pronto para copiar
 
 ---
 
-## 1. Registries MCP (Model Context Protocol) — 10-15 min
+## 1. Registry MCP oficial (Anthropic) — ~5 min, 3 comandos
 
-A AION já expõe o manifest de cada servidor MCP publicamente:
-- `https://engenheiro-producao-ai.onrender.com/mcp/servers` (lista os 4 servidores)
-- `https://engenheiro-producao-ai.onrender.com/mcp/{server_id}/manifest` (regulatory, esg, erp, microsoft)
+**Correção:** não é PR — é uma CLI (`mcp-publisher`) com login OAuth do GitHub (device
+flow, você autoriza no navegador). Os 3 `server.json` já estão prontos em
+[`mcp-registry/`](../mcp-registry/) (regulatory, esg, erp) — só rodar:
 
-Use essas URLs ao submeter em:
+```powershell
+# 1. Instalar (Windows PowerShell)
+$arch = if ([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture -eq "Arm64") { "arm64" } else { "amd64" }
+Invoke-WebRequest -Uri "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_windows_$arch.tar.gz" -OutFile "mcp-publisher.tar.gz"
+tar xf mcp-publisher.tar.gz mcp-publisher.exe
 
-| Registry | Link de submissão | O que colar |
-|---|---|---|
-| MCP oficial (Anthropic) | github.com/modelcontextprotocol/registry → abrir PR | URL do manifest + descrição abaixo |
-| Smithery | smithery.ai/new | URL do manifest + descrição abaixo |
-| Glama | glama.ai/mcp/servers (botão "Submit") | URL do manifest + descrição abaixo |
-| PulseMCP | pulsemcp.com/submit | URL do manifest + descrição abaixo |
-| mcp.so | mcp.so/submit | URL do manifest + descrição abaixo |
+# 2. Login (abre o navegador, pede pra autorizar — só você pode fazer isso)
+.\mcp-publisher.exe login github
+
+# 3. Publicar os 3 servidores (rodar de dentro de AION 7.0/mcp-registry/)
+cd mcp-registry
+..\mcp-publisher.exe publish --file regulatory.server.json
+..\mcp-publisher.exe publish --file esg.server.json
+..\mcp-publisher.exe publish --file erp.server.json
+```
+
+> Nota: o campo `name` usa `io.github.carruda-global/...` — se seu login pessoal do GitHub
+> for diferente de `carruda-global`, ajuste o campo `name` nos 3 arquivos antes de publicar
+> (precisa bater com o namespace do usuário autenticado).
+
+## 2. Outros registries MCP (Smithery, Glama, PulseMCP, mcp.so) — 10 min
+
+Esses são formulários web (exigem conta própria). Usar a URL do manifest existente:
+`https://engenheiro-producao-ai.onrender.com/mcp/{server_id}/manifest` (regulatory, esg, erp)
+
+| Registry | Link de submissão |
+|---|---|
+| Smithery | smithery.ai/new |
+| Glama | glama.ai/mcp/servers (botão "Submit") |
+| PulseMCP | pulsemcp.com/submit |
+| mcp.so | mcp.so/submit |
 
 **Descrição padrão (copiar e colar):**
-> EcoSystem AEC Regulatory/ESG/ERP/Microsoft MCP Servers — 4 Model Context Protocol servers exposing AI compliance tools (EU AI Act, LGPD/GDPR, NR-1, ESG/carbon inventory, ERP integrations for Dynamics/Salesforce/Oracle/SAP). Built by Global Match Engenharia (Brazil). SSE transport, no auth required for read-only tool discovery.
+> EcoSystem AEC Regulatory/ESG/ERP MCP Servers — 3 Model Context Protocol servers exposing AI compliance tools (LGPD/GDPR, NR-1, ESG/carbon inventory, ERP integrations for Dynamics/Salesforce/Oracle/SAP). Built by Global Match Engenharia (Brazil). SSE transport, no auth required for read-only tool discovery.
 
 ---
 
-## 2. Crunchbase — 5 min (crunchbase.com/add-new-organization)
+## 3. Crunchbase — 5 min (crunchbase.com/add-new-organization)
 
 ```
 Company name: Global Match Engenharia (EcoSystem AEC)
@@ -39,7 +61,7 @@ Headquarters: São Paulo, Brazil
 Company type: Privately held, bootstrapped
 ```
 
-## 3. Wellfound / AngelList — 5 min (wellfound.com/company/new)
+## 4. Wellfound / AngelList — 5 min (wellfound.com/company/new)
 
 ```
 Tagline: 106 AI agents for global compliance — EU AI Act, LGPD, CSRD, DORA, NR-1
