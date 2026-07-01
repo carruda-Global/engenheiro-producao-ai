@@ -6,8 +6,11 @@ from fastapi.responses import HTMLResponse
 from src.api.deepseek_client import DeepSeekClient
 from src.config import Settings
 
-router = APIRouter(prefix="/api/pmoc-seo", tags=["pmoc_seo"])
+router = APIRouter(prefix="/pmoc", tags=["pmoc_seo"])
 logger = logging.getLogger(__name__)
+
+# Cache em memória: slug → html
+_PAGE_CACHE: dict[str, str] = {}
 
 # 30 bairros/regiões SP com maior volume de buscas por PMOC
 BAIRROS_SP = [
@@ -235,25 +238,58 @@ async def generate_pmoc_pages(batch: str = "bairros", count: int = 10) -> dict:
             logger.info("[PMOC-SEO] Gerado: %s", slug)
             await asyncio.sleep(2)
 
-    return {"batch": batch, "generated": len(generated), "pages": generated}
+    # Salva no cache global
+    for p in generated:
+        _PAGE_CACHE[p["slug"]] = p["html"]
+
+    return {"batch": batch, "generated": len(generated), "slugs": [p["slug"] for p in generated]}
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
-@router.post("/generate")
-async def generate_endpoint(data: dict):
-    batch = data.get("batch", "bairros")
-    count = min(data.get("count", 10), 30)
-    return await generate_pmoc_pages(batch, count)
+@router.get("/{slug}", response_class=HTMLResponse)
+async def serve_page(slug: str):
+    """Serve página PMOC gerada dinamicamente."""
+    from fastapi import HTTPException
+    if slug in _PAGE_CACHE:
+        return HTMLResponse(content=_PAGE_CACHE[slug])
+    # Gera sob demanda se não estiver no cache
+    for batch, items in [("bairros", BAIRROS_SP), ("empresas", TIPOS_EMPRESA), ("problemas", PROBLEMAS)]:
+        for item in items:
+            s = item.lower().replace(" ", "-").replace("/", "-").replace(",", "")
+            if batch == "bairros":
+                s = f"pmoc-{s}-sp"
+            elif batch == "empresas":
+                s = f"pmoc-{s}"
+            if s == slug:
+                result = await generate_pmoc_pages(batch, 1)
+                if slug in _PAGE_CACHE:
+                    return HTMLResponse(content=_PAGE_CACHE[slug])
+    raise HTTPException(status_code=404, detail="Página não encontrada")
 
-@router.get("/bairros")
+@router.get("/sitemap.xml")
+async def sitemap():
+    from fastapi.responses import Response
+    urls = list(_PAGE_CACHE.keys())
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    xml += '  <url><loc>https://global-engenharia.com</loc><priority>1.0</priority></url>\n'
+    for slug in urls:
+        xml += f'  <url><loc>https://global-engenharia.com/pmoc/{slug}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n'
+    xml += '</urlset>'
+    return Response(content=xml, media_type="application/xml")
+
+@router.get("/api/bairros")
 async def list_bairros():
     return {"bairros": BAIRROS_SP, "total": len(BAIRROS_SP)}
 
-@router.get("/empresas")
+@router.get("/api/empresas")
 async def list_empresas():
     return {"tipos": TIPOS_EMPRESA, "total": len(TIPOS_EMPRESA)}
 
-@router.get("/problemas")
+@router.get("/api/problemas")
 async def list_problemas():
     return {"problemas": PROBLEMAS, "total": len(PROBLEMAS)}
+
+@router.get("/api/cache-status")
+async def cache_status():
+    return {"pages_cached": len(_PAGE_CACHE), "slugs": list(_PAGE_CACHE.keys())}
