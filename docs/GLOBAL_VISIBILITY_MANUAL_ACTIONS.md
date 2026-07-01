@@ -6,31 +6,16 @@ terceiro — não posso fazer isso por você, mas deixei tudo pronto para copiar
 
 ---
 
-## 1. Registry MCP oficial (Anthropic) — ~5 min, 3 comandos
+## 1. Registry MCP oficial (Anthropic) — ✅ CONCLUÍDO (01/07/2026)
 
-**Correção:** não é PR — é uma CLI (`mcp-publisher`) com login OAuth do GitHub (device
-flow, você autoriza no navegador). Os 3 `server.json` já estão prontos em
-[`mcp-registry/`](../mcp-registry/) (regulatory, esg, erp) — só rodar:
+Os 3 servidores estão publicados em registry.modelcontextprotocol.io:
+- `io.github.carruda-Global/ecosystem-aec-regulatory` v1.0.0
+- `io.github.carruda-Global/ecosystem-aec-esg` v1.0.0
+- `io.github.carruda-Global/ecosystem-aec-erp` v1.0.0
 
-```powershell
-# 1. Instalar (Windows PowerShell)
-$arch = if ([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture -eq "Arm64") { "arm64" } else { "amd64" }
-Invoke-WebRequest -Uri "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_windows_$arch.tar.gz" -OutFile "mcp-publisher.tar.gz"
-tar xf mcp-publisher.tar.gz mcp-publisher.exe
-
-# 2. Login (abre o navegador, pede pra autorizar — só você pode fazer isso)
-.\mcp-publisher.exe login github
-
-# 3. Publicar os 3 servidores (rodar de dentro de AION 7.0/mcp-registry/)
-cd mcp-registry
-..\mcp-publisher.exe publish --file regulatory.server.json
-..\mcp-publisher.exe publish --file esg.server.json
-..\mcp-publisher.exe publish --file erp.server.json
-```
-
-> Nota: o campo `name` usa `io.github.carruda-global/...` — se seu login pessoal do GitHub
-> for diferente de `carruda-global`, ajuste o campo `name` nos 3 arquivos antes de publicar
-> (precisa bater com o namespace do usuário autenticado).
+Manifests em [`mcp-registry/`](../mcp-registry/). Para publicar uma nova versão no futuro,
+suba o `version` no arquivo e rode `mcp-publisher publish <arquivo>.server.json` (login já
+fica salvo localmente).
 
 ## 2. Outros registries MCP (Smithery, Glama, PulseMCP, mcp.so) — 10 min
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.carruda-global/ecosystem-aec-regulatory",
-  "description": "AI compliance tools for Brazilian labor and data protection law: NR-1 psychosocial risk diagnosis, LGPD data mapping, CBS/IBS tax classification, whistleblower channel, pay equity analysis, anti-corruption compliance, employee onboarding, financial reconciliation.",
+  "name": "io.github.carruda-Global/ecosystem-aec-regulatory",
+  "description": "NR-1 psychosocial risk, LGPD, whistleblower, pay equity & anti-corruption tools (Brazil)",
   "version": "1.0.0",
   "websiteUrl": "https://global-engenharia.com/ecosystem",
   "repository": {
