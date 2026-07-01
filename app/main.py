@@ -273,110 +273,86 @@ app.include_router(directories_router)
 app.include_router(nurture_router)
 app.include_router(pmoc_seo_router)
 
-async def _job_seo():
-    """Every 6h: generates 10 SEO pages per market (40/day)."""
-    import asyncio
-    from src.agents.seo_content_agent import generate_seo_pages
-    await asyncio.sleep(300)  # 5min warm-up on first start
-    while True:
-        try:
-            for market in ["br", "us", "eu", "mx"]:
-                try:
-                    await generate_seo_pages(market, count=10)
-                except Exception as e:
-                    logger.warning("SEO job error market=%s: %s", market, e)
-            logger.info("[CRON] SEO: 40 pages generated")
-        except Exception as e:
-            logger.error("[CRON] SEO failed: %s", e)
-        await asyncio.sleep(21600)  # 6h
-
-
-async def _job_content_syndication():
-    """Every 8h: publishes article to Dev.to (3/day)."""
-    import asyncio
-    import random
-    from src.agents.content_syndication_agent import _publish_to_devto, TOPICS
-    await asyncio.sleep(600)  # 10min warm-up
-    while True:
-        try:
-            topic = random.choice(TOPICS)
-            await _publish_to_devto(topic)
-            logger.info("[CRON] Syndication: Dev.to article published")
-        except Exception as e:
-            logger.error("[CRON] Syndication failed: %s", e)
-        await asyncio.sleep(28800)  # 8h
-
-
-async def _job_outbound_sdr():
-    """Every 12h: fires outbound SDR email campaign directly (no HTTP self-call)."""
-    import asyncio
-    await asyncio.sleep(1800)  # 30min warm-up
-    sectors = ["construction_br", "finance_eu", "tech_saas", "manufacturing_eu", "any_eu"]
-    while True:
-        try:
-            from src.agents.outbound_sdr_agent import send_campaign
-            for sector in sectors:
-                try:
-                    await send_campaign({"sector": sector, "limit": 100})
-                    logger.info("[CRON] SDR campaign sent: sector=%s", sector)
-                except Exception as e:
-                    logger.warning("[CRON] SDR sector=%s error: %s", sector, e)
-        except ImportError:
-            logger.warning("[CRON] SDR module not available, skipping")
-        await asyncio.sleep(43200)  # 12h
-
-
-async def _job_press_release():
-    """Weekly: auto-generates and logs press release for distribution."""
-    import asyncio
-    await asyncio.sleep(3600)  # 1h warm-up
-    while True:
-        try:
-            async with __import__("httpx").AsyncClient(timeout=60) as client:
-                resp = await client.post(
-                    "http://localhost:8000/api/zapier/press-release",
-                    json={"angle": "86 AI compliance agents now available — EU AI Act, CSRD, DORA, NIS2 coverage"},
-                )
-                logger.info("[CRON] Press release generated — distribute to OpenPR/EIN")
-        except Exception as e:
-            logger.warning("[CRON] Press release failed: %s", e)
-        await asyncio.sleep(604800)  # 7 days
+def _make_loop(name: str, fn, interval: int):
+    """Wraps any async fn into an infinite loop that starts immediately, no warm-up."""
+    async def _loop():
+        while True:
+            try:
+                await fn()
+                logger.info("[24/7] %s done", name)
+            except Exception as e:
+                logger.error("[24/7] %s error: %s", name, e)
+            await asyncio.sleep(interval)
+    return _loop
 
 
 @app.on_event("startup")
 async def startup_event():
     import asyncio
-    asyncio.create_task(_job_seo())
-    asyncio.create_task(_job_content_syndication())
-    asyncio.create_task(_job_outbound_sdr())
-    asyncio.create_task(_job_press_release())
-    # Growth & distribution jobs
+    import random
+    from src.agents.seo_content_agent import generate_seo_pages
+    from src.agents.content_syndication_agent import _publish_to_devto, TOPICS
+    from src.agents.pmoc_seo_agent import generate_pmoc_pages
     from src.agents.social_auto_agent import auto_job_reddit, auto_job_linkedin_content
     from src.agents.directory_submission_agent import auto_job_directories, auto_job_press_release_distribution
     from src.agents.review_nurture_agent import auto_job_nurture_sequence, auto_job_reactivation
-    asyncio.create_task(auto_job_reddit())
-    asyncio.create_task(auto_job_linkedin_content())
-    asyncio.create_task(auto_job_directories())
-    asyncio.create_task(auto_job_press_release_distribution())
-    asyncio.create_task(auto_job_nurture_sequence())
-    asyncio.create_task(auto_job_reactivation())
-    # PMOC SEO — 90 páginas em 3 batches automáticos
-    from src.agents.pmoc_seo_agent import generate_pmoc_pages
-    async def _job_pmoc_seo():
-        await asyncio.sleep(1800)  # 30min warm-up
-        batches = [("bairros", 30), ("empresas", 20), ("problemas", 20)]
-        cycle = 0
-        while True:
-            batch, count = batches[cycle % len(batches)]
+
+    # ── SEO Ecosystem — 40 páginas/dia, roda a cada 6h ──────────────────────
+    async def _seo():
+        for market in ["br", "us", "eu", "mx"]:
             try:
-                result = await generate_pmoc_pages(batch, count)
-                logger.info("[CRON] PMOC-SEO: %d páginas geradas (batch=%s)", result["generated"], batch)
+                await generate_seo_pages(market, count=10)
             except Exception as e:
-                logger.error("[CRON] PMOC-SEO error: %s", e)
-            cycle += 1
-            await asyncio.sleep(43200)  # 12h entre batches
-    asyncio.create_task(_job_pmoc_seo())
-    logger.info("[CRON] All 11 automation jobs started: SEO / Syndication / SDR / PR / Reddit / LinkedIn / Directories / NurtureEmails / Reactivation")
+                logger.warning("[24/7] SEO market=%s: %s", market, e)
+
+    # ── Dev.to — 3 artigos/dia, roda a cada 8h ──────────────────────────────
+    async def _devto():
+        await _publish_to_devto(random.choice(TOPICS))
+
+    # ── SDR — 1000 emails/dia, roda a cada 12h ──────────────────────────────
+    async def _sdr():
+        try:
+            from src.agents.outbound_sdr_agent import send_campaign
+            for sector in ["construction_br", "finance_eu", "tech_saas", "manufacturing_eu", "any_eu"]:
+                try:
+                    await send_campaign({"sector": sector, "limit": 100})
+                except Exception as e:
+                    logger.warning("[24/7] SDR sector=%s: %s", sector, e)
+        except ImportError:
+            pass
+
+    # ── Press Release — roda a cada 7 dias ──────────────────────────────────
+    async def _pr():
+        from src.agents.zapier_integration_agent import generate_press_release
+        await generate_press_release({"angle": "86 AI compliance agents — EU AI Act, CSRD, DORA, NIS2"})
+
+    # ── PMOC SEO — 90 páginas em ciclo de 3 batches a cada 12h ─────────────
+    _pmoc_cycle = [0]
+    _pmoc_batches = [("bairros", 30), ("empresas", 20), ("problemas", 20)]
+    async def _pmoc():
+        batch, count = _pmoc_batches[_pmoc_cycle[0] % 3]
+        result = await generate_pmoc_pages(batch, count)
+        logger.info("[24/7] PMOC-SEO: %d páginas (batch=%s)", result["generated"], batch)
+        _pmoc_cycle[0] += 1
+
+    JOBS = [
+        ("SEO-Ecosystem",    _seo,                          21600),   # 6h
+        ("Dev.to",           _devto,                        28800),   # 8h
+        ("SDR-Emails",       _sdr,                          43200),   # 12h
+        ("Press-Release",    _pr,                           604800),  # 7d
+        ("Reddit",           auto_job_reddit,               172800),  # 48h
+        ("LinkedIn",         auto_job_linkedin_content,     86400),   # 24h
+        ("Directories",      auto_job_directories,          259200),  # 72h
+        ("PR-Distribution",  auto_job_press_release_distribution, 1209600),  # 14d
+        ("Nurture-Emails",   auto_job_nurture_sequence,     86400),   # 24h
+        ("Reactivation",     auto_job_reactivation,         604800),  # 7d
+        ("PMOC-SEO",         _pmoc,                         43200),   # 12h
+    ]
+
+    for name, fn, interval in JOBS:
+        asyncio.create_task(_make_loop(name, fn, interval))
+
+    logger.info("[24/7] %d jobs iniciados — sem calendário, sem intervenção manual", len(JOBS))
 
 
 static_dir = Path(__file__).parent.parent / "static"
