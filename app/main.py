@@ -77,6 +77,7 @@ from src.agents.social_auto_agent import router as social_auto_router
 from src.agents.directory_submission_agent import router as directories_router
 from src.agents.review_nurture_agent import router as nurture_router
 from src.agents.pmoc_seo_agent import router as pmoc_seo_router
+from src.agents.pricing_optimizer_agent import router as pricing_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -300,6 +301,7 @@ app.include_router(social_auto_router)
 app.include_router(directories_router)
 app.include_router(nurture_router)
 app.include_router(pmoc_seo_router)
+app.include_router(pricing_router)
 
 def _make_loop(name: str, fn, interval: int):
     """Wraps any async fn into an infinite loop that starts immediately, no warm-up."""
@@ -324,6 +326,7 @@ async def startup_event():
     from src.agents.social_auto_agent import auto_job_reddit, auto_job_linkedin_content
     from src.agents.directory_submission_agent import auto_job_directories, auto_job_press_release_distribution, auto_job_regtech_press
     from src.agents.review_nurture_agent import auto_job_nurture_sequence, auto_job_reactivation
+    from src.agents.pricing_optimizer_agent import auto_job_price_optimizer
 
     # ── SEO Ecosystem — 40 páginas/dia, roda a cada 6h ──────────────────────
     async def _seo():
@@ -377,6 +380,7 @@ async def startup_event():
         ("Nurture-Emails",   auto_job_nurture_sequence,     86400),   # 24h
         ("Reactivation",     auto_job_reactivation,         604800),  # 7d
         ("PMOC-SEO",         _pmoc,                         43200),   # 12h
+        ("Price-Optimizer",  auto_job_price_optimizer,      86400),   # 24h
     ]
 
     for name, fn, interval in JOBS:
