@@ -1,6 +1,10 @@
 """
 AgentVerse message handler — responde ao protocolo uAgents (Fetch.ai).
 Recebe mensagens de outros agentes e roteia para os serviços de compliance.
+
+AgentVerse entrega mensagens como um `Envelope` uAgents assinado (não JSON solto).
+A resposta também precisa ser um Envelope assinado com a identidade do agente
+(derivada de AGENT_SEED_PHRASE), senão o remetente não reconhece a resposta.
 """
 import os
 import json
@@ -10,10 +14,30 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+try:
+    from uagents_core.envelope import Envelope
+    from uagents_core.identity import Identity
+    from uagents_core.models import Model
+    from uagents_core.contrib.protocols.chat import ChatMessage, TextContent
+    _UAGENTS_AVAILABLE = True
+except ImportError:
+    _UAGENTS_AVAILABLE = False
+
 router = APIRouter(prefix="/api/agentverse", tags=["agentverse"])
 logger = logging.getLogger(__name__)
 
 BASE_URL = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
+AGENT_SEED = os.getenv("AGENT_SEED_PHRASE", "")
+
+_identity = None
+_chat_schema_digest = None
+if _UAGENTS_AVAILABLE and AGENT_SEED:
+    try:
+        _identity = Identity.from_seed(AGENT_SEED, 0)
+        _chat_schema_digest = Model.build_schema_digest(ChatMessage)
+        logger.info("[AgentVerse] Identidade carregada: %s", _identity.address)
+    except Exception as e:
+        logger.error("[AgentVerse] Falha ao carregar identidade: %s", e)
 
 # Mapa de intenção → service_id
 INTENT_MAP = {
@@ -218,24 +242,134 @@ async def _run_service(service_id: str, payload: dict) -> dict:
     return _quick_result(service_id, payload)
 
 
+def _extract_context(text: str) -> dict:
+    """Extrai empresa/setor/sistema de IA de um texto livre em inglês."""
+    import re as _re
+    payload_ctx: dict = {}
+
+    company_match = _re.search(r"for (?:a company (?:named|called) )?'?([A-Z][A-Za-z\s]+(?:Solutions|Inc|Corp|Ltd|SA|SAS|GmbH|BV|AG|SE)?)'?", text)
+    if company_match:
+        payload_ctx["company"] = company_match.group(1).strip().rstrip("'")
+
+    sector_match = _re.search(r"in the ([a-zA-Z\s]+) sector", text)
+    if sector_match:
+        payload_ctx["sector"] = sector_match.group(1).strip()
+
+    ai_match = _re.search(r"(?:using|utilizes|with) (?:a |an )?'?([\w\s]+(?:AI|chatbot|system|model|classifier|tool)[^.']*)'?", text, _re.IGNORECASE)
+    if ai_match:
+        payload_ctx["ai_systems"] = [ai_match.group(1).strip().rstrip("'")]
+
+    return payload_ctx
+
+
+async def _build_reply_text(text: str) -> str:
+    """Gera o texto de resposta (markdown) a partir do texto livre recebido."""
+    service_id = _detect_service({"text": text})
+    name, price = SERVICE_DESCRIPTIONS.get(service_id, ("Unknown", 0))
+    payload_ctx = _extract_context(text)
+
+    result = await _run_service(service_id, payload_ctx)
+
+    status = result.get("status", "partial")
+    risk_score = result.get("risk_score", 50)
+    summary = result.get("summary", "")
+    findings = result.get("findings", [])
+    action_plan = result.get("action_plan", [])
+
+    findings_text = "\n".join(
+        f"• {f}" if isinstance(f, str) else f"• [{f.get('severity','').upper()}] {f.get('description', str(f))}"
+        for f in findings[:5]
+    )
+    actions_text = "\n".join(
+        f"{i+1}. {a}" if isinstance(a, str) else f"{i+1}. {a.get('action', str(a))} (within {a.get('deadline_days',30)} days)"
+        for i, a in enumerate(action_plan[:5])
+    )
+
+    return f"""## {name}
+
+**Status:** {status.upper()} | **Risk Score:** {risk_score}/100
+
+{summary}
+
+**Key Findings:**
+{findings_text}
+
+**Action Plan:**
+{actions_text}
+
+---
+*EcoSystem AEC · Global Match Engenharia de Produção*
+*Full paid report: {BASE_URL}/api/marketplace/execute/{service_id}*
+""".strip()
+
+
 @router.post("/messages")
 async def receive_message(request: Request):
     """
     Endpoint principal de mensagens uAgents.
-    AgentVerse entrega mensagens aqui quando outro agente envia para este agente.
-    Resposta em <1s (sem LLM) para evitar timeout do AgentVerse.
+    AgentVerse entrega mensagens aqui como um Envelope assinado. A resposta
+    também precisa ser um Envelope assinado, senão o AgentVerse reporta
+    "Response was not received from agent" mesmo com HTTP 200.
     """
     try:
         body = await request.json()
     except Exception:
         body = {}
 
+    if not isinstance(body, dict):
+        body = {}
+
+    # ── Tráfego real do AgentVerse: uAgents Envelope assinado ──────────────
+    if _UAGENTS_AVAILABLE and "schema_digest" in body and "payload" in body and isinstance(body.get("payload"), str):
+        return await _handle_envelope(body)
+
+    # ── Fallback: JSON solto (testes manuais, curl, warmup) ────────────────
+    return await _handle_plain(body)
+
+
+async def _handle_envelope(body: dict) -> JSONResponse:
+    incoming_sender = body.get("sender", "")
+    incoming_session = body.get("session")
+    logger.info("[AgentVerse] Envelope recebido de: %s | session: %s", incoming_sender, incoming_session)
+
+    text = ""
+    try:
+        env = Envelope.model_validate(body)
+        raw = env.decode_payload()
+        chat_msg = ChatMessage.model_validate_json(raw)
+        text = chat_msg.text()
+    except Exception as e:
+        logger.warning("[AgentVerse] Falha ao decodificar payload do envelope: %s", e)
+
+    logger.info("[AgentVerse] Texto extraído: %s", text[:200])
+    reply_text = await _build_reply_text(text)
+
+    if _identity is None:
+        logger.error("[AgentVerse] Identidade não configurada (AGENT_SEED_PHRASE ausente) — não é possível assinar resposta")
+        return JSONResponse({"error": "agent identity not configured"}, status_code=503)
+
+    reply_msg = ChatMessage(content=[TextContent(text=reply_text)])
+    reply_env = Envelope(
+        version=1,
+        sender=_identity.address,
+        target=incoming_sender,
+        session=incoming_session,
+        schema_digest=_chat_schema_digest,
+    )
+    reply_env.encode_payload(reply_msg.model_dump_json())
+    reply_env.sign(_identity)
+
+    return JSONResponse(json.loads(reply_env.model_dump_json()))
+
+
+async def _handle_plain(body: dict) -> JSONResponse:
     sender = body.get("sender", "unknown")
     session = body.get("session", "")
-    logger.info("[AgentVerse] Mensagem recebida de: %s | session: %s", sender, session)
+    logger.info("[AgentVerse] Mensagem (plain) recebida de: %s | session: %s", sender, session)
+
+    text = _extract_text(body).lower()
 
     # Ping / descoberta
-    text = _extract_text(body).lower()
     if not body or "ping" in text or body.get("type") == "ping":
         return JSONResponse({
             "type": "pong",
@@ -257,72 +391,16 @@ async def receive_message(request: Request):
             ]
         })
 
-    # Detecta serviço e gera resposta rápida
-    service_id = body.get("service_id") or _detect_service(body)
-    name, price = SERVICE_DESCRIPTIONS.get(service_id, ("Unknown", 0))
-    logger.info("[AgentVerse] Executando service=%s para sender=%s", service_id, sender)
-
-    # Extrai contexto da empresa do texto
-    payload_ctx: dict = {}
-    if isinstance(body.get("payload"), dict):
-        payload_ctx = body["payload"]
-
     full_text = _extract_text(body)
-    # Tenta extrair nome da empresa do texto livre
-    import re as _re
-    company_match = _re.search(r"for ([A-Z][A-Za-z\s]+(?:Solutions|Inc|Corp|Ltd|SA|SAS|GmbH|BV|AG|SE)?)", full_text)
-    if company_match and not payload_ctx.get("company"):
-        payload_ctx["company"] = company_match.group(1).strip()
+    chat_response = await _build_reply_text(full_text)
+    service_id = _detect_service({"text": full_text})
 
-    sector_match = _re.search(r"in the ([a-zA-Z\s]+) sector", full_text)
-    if sector_match and not payload_ctx.get("sector"):
-        payload_ctx["sector"] = sector_match.group(1).strip()
-
-    ai_match = _re.search(r"with (?:a |an )?([\w\s]+(?:AI|chatbot|system|model|classifier|tool)[^.]*)", full_text, _re.IGNORECASE)
-    if ai_match and not payload_ctx.get("ai_systems"):
-        payload_ctx["ai_systems"] = [ai_match.group(1).strip()]
-
-    result = await _run_service(service_id, payload_ctx)
-
-    status = result.get("status", "partial")
-    risk_score = result.get("risk_score", 50)
-    summary = result.get("summary", "")
-    findings = result.get("findings", [])
-    action_plan = result.get("action_plan", [])
-
-    findings_text = "\n".join(
-        f"• {f}" if isinstance(f, str) else f"• [{f.get('severity','').upper()}] {f.get('description', str(f))}"
-        for f in findings[:5]
-    )
-    actions_text = "\n".join(
-        f"{i+1}. {a}" if isinstance(a, str) else f"{i+1}. {a.get('action', str(a))} (within {a.get('deadline_days',30)} days)"
-        for i, a in enumerate(action_plan[:5])
-    )
-
-    chat_response = f"""## {name}
-
-**Status:** {status.upper()} | **Risk Score:** {risk_score}/100
-
-{summary}
-
-**Key Findings:**
-{findings_text}
-
-**Action Plan:**
-{actions_text}
-
----
-*EcoSystem AEC · Global Match Engenharia de Produção*
-*Full paid report: {BASE_URL}/api/marketplace/execute/{service_id}*
-"""
-
-    # Formato AgentVerse Chat Protocol
     return JSONResponse({
         "type": "agent_message",
         "sender": body.get("target", "agent1qwfezkcfvjaze692t5s0kjfcw0v8drd599r4npax6vkwmgd88ehzxx6x96f"),
         "target": sender,
         "session": session,
-        "content": [{"type": "text", "text": chat_response.strip()}],
+        "content": [{"type": "text", "text": chat_response}],
         "status": "success",
     })
 
