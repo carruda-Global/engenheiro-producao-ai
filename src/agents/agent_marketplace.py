@@ -29,8 +29,8 @@ AGENTVERSE_KEY      = os.getenv("AGENTVERSE_API_KEY", "")
 BITTE_KEY           = os.getenv("BITTE_API_KEY", "")
 MASA_KEY            = os.getenv("MASA_API_KEY", "")
 
-# Carteira USDC do merchant (Base network) — adicionar no Render
-MERCHANT_WALLET = os.getenv("MERCHANT_WALLET_ADDRESS", "")
+# Carteira USDC do merchant (Base network)
+MERCHANT_WALLET = os.getenv("MERCHANT_WALLET_ADDRESS", "0xadf695146d93281dCfaa711F2B38719CF520DD9A")
 
 # CDP facilitator — único aceito pelo CDP Bazaar
 CDP_FACILITATOR = "https://api.cdp.coinbase.com/platform/v2/x402/facilitator"
@@ -243,8 +243,6 @@ async def probe_or_execute_service(service_id: str, request: Request):
     """
     if service_id not in SERVICES:
         raise HTTPException(status_code=404, detail=f"Service '{service_id}' not found.")
-    if not MERCHANT_WALLET:
-        raise HTTPException(status_code=503, detail="MERCHANT_WALLET_ADDRESS not configured.")
 
     payment_ok = await _verify_x402_payment(request)
     if not payment_ok:
@@ -280,8 +278,6 @@ async def execute_service(service_id: str, req: AgentCallRequest, request: Reque
     if service_id not in SERVICES:
         raise HTTPException(status_code=404, detail=f"Service '{service_id}' not found.")
 
-    if not MERCHANT_WALLET:
-        raise HTTPException(status_code=503, detail="MERCHANT_WALLET_ADDRESS not configured.")
 
     # Sem header X-PAYMENT → retorna 402
     payment_ok = await _verify_x402_payment(request)
