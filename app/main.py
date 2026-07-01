@@ -402,7 +402,18 @@ async def startup_event():
         logger.info("[24/7] PMOC-SEO: %d páginas (batch=%s)", result["generated"], batch)
         _pmoc_cycle[0] += 1
 
+    # ── Keep-alive — pinga o próprio serviço a cada 10min (Render free tier) ───
+    async def _keepalive():
+        try:
+            import httpx as _httpx
+            base = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
+            async with _httpx.AsyncClient(timeout=5) as c:
+                await c.get(f"{base}/api/agentverse/warmup")
+        except Exception:
+            pass
+
     JOBS = [
+        ("Keep-Alive",       _keepalive,                    600),     # 10min
         ("SEO-Ecosystem",    _seo,                          21600),   # 6h
         ("Dev.to",           _devto,                        28800),   # 8h
         ("SDR-Emails",       _sdr,                          43200),   # 12h
