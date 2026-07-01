@@ -49,33 +49,6 @@ Markets: Brazil, USA, Mexico, Colombia, Argentina, India, UAE, European Union
 
 ---
 
-## 4. Vídeo — roteiros prontos (60-90s cada, gravação por conta própria)
-
-Formato sugerido: screen recording da tela de vendas + voz sobre resultado de um diagnóstico
-real. Publicar como YouTube Shorts (atinge Índia/LATAM/MENA melhor que texto em inglês).
-
-### Roteiro 1 — EU AI Act (mercado EUA/UE)
-1. "Is your AI system high-risk under the EU AI Act? You have until August 2026 to find out."
-2. [tela: formulário de nome da empresa + setor]
-3. "In under a second, our AI agent classifies your system and gives you an action plan."
-4. [tela: resultado com risk score e findings]
-5. "EcoSystem AEC — global-engenharia.com/ecosystem"
-
-### Roteiro 2 — NR-1 (mercado Brasil)
-1. "Sua empresa já fez o inventário de riscos psicossociais da NR-1? O prazo já passou."
-2. [tela: diagnóstico rodando]
-3. "Nosso agente de IA gera o FRPRT e o plano de ação em segundos."
-4. [tela: resultado]
-5. "EcoSystem AEC — global-engenharia.com/ecosystem"
-
-### Roteiro 3 — Agent-to-Agent (ângulo técnico/dev, para YouTube + Dev.to embed)
-1. "We made our compliance AI payable by other AI agents. No login. No credit card."
-2. [tela: curl mostrando HTTP 402 → pagamento USDC → resposta]
-3. "x402 protocol, live on Base network, registered on 9 agent marketplaces."
-4. "engenheiro-producao-ai.onrender.com/.well-known/agent-card.json"
-
----
-
 ## Já implementado automaticamente (não precisa fazer nada)
 
 - `/llms.txt` servido pela API — descoberta por ChatGPT/Perplexity/Claude
