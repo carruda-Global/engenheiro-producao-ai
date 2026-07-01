@@ -298,22 +298,21 @@ async def _job_content_syndication():
 
 
 async def _job_outbound_sdr():
-    """Every 12h: fires outbound SDR email campaign (2x/day = 1000 emails/day)."""
+    """Every 12h: fires outbound SDR email campaign directly (no HTTP self-call)."""
     import asyncio
-    import httpx
     await asyncio.sleep(1800)  # 30min warm-up
     sectors = ["construction_br", "finance_eu", "tech_saas", "manufacturing_eu", "any_eu"]
     while True:
-        for sector in sectors:
-            try:
-                async with httpx.AsyncClient(timeout=60) as client:
-                    await client.post(
-                        "http://localhost:8000/api/sdr/send-campaign",
-                        json={"sector": sector, "limit": 100},
-                    )
-                logger.info("[CRON] SDR campaign sent: sector=%s", sector)
-            except Exception as e:
-                logger.warning("[CRON] SDR sector=%s failed: %s", sector, e)
+        try:
+            from src.agents.outbound_sdr_agent import send_campaign
+            for sector in sectors:
+                try:
+                    await send_campaign({"sector": sector, "limit": 100})
+                    logger.info("[CRON] SDR campaign sent: sector=%s", sector)
+                except Exception as e:
+                    logger.warning("[CRON] SDR sector=%s error: %s", sector, e)
+        except ImportError:
+            logger.warning("[CRON] SDR module not available, skipping")
         await asyncio.sleep(43200)  # 12h
 
 
