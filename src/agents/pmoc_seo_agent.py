@@ -31,15 +31,18 @@ TIPOS_EMPRESA = [
     "coworking",
 ]
 
-# 20 keywords de problema/intenção
+# 20 keywords de problema/intenção — priorizadas por conversão e CTR do Google Ads
 PROBLEMAS = [
-    "PMOC vencido", "ART PMOC vencida", "como renovar PMOC", "PMOC para auditoria",
-    "fiscalização Vigilância Sanitária PMOC", "PMOC urgente em 15 dias",
-    "PMOC com laudo fotográfico", "PMOC para alvará", "PMOC para licitação",
-    "diferença PMOC e manutenção", "multa PMOC não regularizado",
-    "PMOC feito por outra empresa", "PMOC split inverter", "PMOC VRF",
-    "PMOC chiller", "PMOC fan coil", "PMOC central de ar",
-    "PMOC para condomínio", "PMOC para ANVISA", "PMOC Portaria 3523",
+    # Alto CTR e conversão comprovada (Google Ads)
+    "laudo PMOC", "PMOC para ar condicionado", "vistoria ar condicionado",
+    "laudo tecnico ar condicionado", "validade do PMOC", "renovação PMOC",
+    "PMOC obrigatorio empresa", "quanto custa PMOC", "PMOC Vigilância Sanitária",
+    # Intenção de compra alta
+    "PMOC vencido urgente", "PMOC com ART", "PMOC para alvará",
+    "PMOC para licitação", "PMOC para auditoria", "PMOC urgente 15 dias",
+    # Termos técnicos de volume
+    "PMOC split inverter", "PMOC VRF", "PMOC central de ar",
+    "PMOC Portaria 3523", "PMOC ANVISA",
 ]
 
 GTM_SCRIPT = """

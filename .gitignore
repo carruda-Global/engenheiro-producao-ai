@@ -23,6 +23,9 @@ data/trust_history/
 microsoft ids.txt
 .env.render
 
-src/security/aip/credentials/*.json
+# GCP service account credentials (nunca commitar)
+service-account.json
+*-sa-key.json
+*.googleusercontent.com.json
 
 scripts/deploy_render_env.ps1

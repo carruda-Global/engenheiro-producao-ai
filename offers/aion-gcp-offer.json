@@ -1,10 +1,10 @@
-﻿{
+{
   "name": "projects/global-engenharia-498823/providers/global-engenharia-498823/offers/aion-marketplace",
   "displayName": "AION - 78 Agentes de IA para Engenharia e Compliance",
   "description": "AION - Agents Intelligence Orchestration Network. 78 agentes de IA para Arquitetura, Engenharia, Construcao, Conformidade Regulatoria (NR-1, LGPD, ESG), Microsoft Dynamics 365, Salesforce Agentforce, Oracle Fusion e SAP S/4HANA.\n\nAgentes AEC: Spec Analyst, Procurement, Inventory, Logistics, Field Execution, BIM Coordinator, Requirements Analyst, Engineering Assistant, Work Synopsis, Photo Intelligence, RFI Creation, Compliance PGRS/PGRSS.\n\nAgentes Regulatorios: NR-1 Psicossocial, Tributario CBS/IBS, LGPD Operacional, ESG IFRS S1/S2, Inventario de Carbono, Escopo 3 Fornecedores, Canal de Denuncias, Igualdade Salarial, Compliance Anticorrupcao.\n\nAgentes Microsoft: Regulatory Analyst, Compliance PM, Channel Agent, Knowledge Agent, Facilitator Agent, Dev Experience.",
   "category": "AI_AGENTS_AND_TOOLS",
   "productType": "SAAS",
-  "fulfillmentUrl": "https://engenheiro-producao-ai.onrender.com/google/subscribe",
+  "fulfillmentUrl": "https://engenheiro-producao-ai.onrender.com",
   "termsOfService": "https://engenheiro-producao-ai.onrender.com/terms",
   "privacyPolicy": "https://engenheiro-producao-ai.onrender.com/privacy",
   "supportEmail": "cristiano@globalengenharia.com.br",

@@ -1,9 +1,12 @@
 {
   "timeZone": "America/Sao_Paulo",
+  "urlFetchWhitelist": [
+    "https://engenheiro-producao-ai.onrender.com/"
+  ],
   "addOns": {
     "common": {
       "name": "SallesJam Compliance",
-      "logoUrl": "https://global-engenharia.com/assets/icon-80.png",
+      "logoUrl": "https://engenheiro-producao-ai.onrender.com/static/icons/icon-80.png",
       "homepageTrigger": {
         "runFunction": "onHomepage"
       }

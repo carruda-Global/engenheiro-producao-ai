@@ -10,6 +10,9 @@ from src.monetization.abacatepay_client import AbacatepayClient
 from src.monetization.subscription_activator import (
     activate_subscription,
     deactivate_subscription,
+    list_active_subscriptions,
+    query_active_subscriptions_supabase,
+    resolve_plan_agents,
 )
 
 logger = logging.getLogger(__name__)
@@ -19,6 +22,49 @@ router = APIRouter()
 @router.get("/plans")
 async def list_plans():
     return {"plans": PLANS}
+
+
+@router.get("/active")
+async def get_active_subscriptions():
+    """Lista todas as assinaturas ativas com planos e agentes."""
+    from supabase import create_client
+    from src.config import get_settings
+    from src.monetization.plans import get_plan
+
+    settings = get_settings()
+
+    memoria = list_active_subscriptions()
+
+    supabase_active = query_active_subscriptions_supabase()
+
+    ambas = {s["id"]: s for s in supabase_active}
+    for s in memoria:
+        if s["subscription_id"] not in ambas:
+            plan = get_plan(s["plan_id"])
+            agent_refs = plan.get("agents", []) if plan else []
+            ambas[s["subscription_id"]] = {
+                "id": s["subscription_id"],
+                "source": s["source"],
+                "customer_email": s["customer_email"],
+                "customer_name": s["customer_name"],
+                "customer_id": s["customer_id"],
+                "plan_id": s["plan_id"],
+                "plan_name": plan.get("name", "") if plan else "",
+                "plan_price_brl": plan.get("price_brl", 0) if plan else 0,
+                "status": s["status"],
+                "activated_at": s["activated_at"],
+                "agents": resolve_plan_agents(agent_refs) if agent_refs else [],
+                "agent_count": len(resolve_plan_agents(agent_refs)) if agent_refs else 0,
+            }
+
+    subscriptions = sorted(ambas.values(), key=lambda x: x.get("activated_at", ""), reverse=True)
+    total_agentes = sum(s["agent_count"] for s in subscriptions)
+
+    return {
+        "total_subscriptions": len(subscriptions),
+        "total_agents_sold": total_agentes,
+        "subscriptions": subscriptions,
+    }
 
 
 @router.get("/plans/{plan_id}")

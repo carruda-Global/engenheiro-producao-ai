@@ -54,6 +54,7 @@ from src.agents.ley1581_agent import router as ley1581_router
 from src.agents.sdr_backoffice_agent import router as sdr_backoffice_router
 from src.agents.usage_billing import router as usage_billing_router
 from app.routers.office_addin import router as office_addin_router
+from app.routers.office_addin_commands import router as office_addin_commands_router
 from src.agents.india_multilingual_agent import router as india_agent_router
 from src.agents.uae_government_agent import router as uae_agent_router
 from src.agents.csrd_reporting_agent import router as csrd_router
@@ -231,6 +232,23 @@ app.include_router(stripe_webhook_router)
 app.include_router(governance_router)
 
 
+@app.get("/suporte", response_class=HTMLResponse)
+async def support_page():
+    return HTMLResponse(content="""<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><title>Suporte - SallesJam</title>
+<style>body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:20px;background:#0C1322;color:#e2e8f0}h1{color:#00C36B}a{color:#00C36B}</style>
+</head>
+<body>
+<h1>Suporte SallesJam</h1>
+<p><strong>Email:</strong> cristiano.arruda@global-engenharia.com</p>
+<p><strong>Telefone:</strong> (11) 99479-8464</p>
+<p><strong>Documentacao:</strong> <a href="https://global-engenharia.com/ecosystem">global-engenharia.com/ecosystem</a></p>
+<p style="color:#64748b;font-size:12px">Respondemos em ate 24h uteis.</p>
+</body>
+</html>""")
+
+
 @app.get("/googlef3d8c8be30343045.html")
 async def google_verify():
     return HTMLResponse(content="google-site-verification: googlef3d8c8be30343045.html")
@@ -290,7 +308,7 @@ def _make_loop(name: str, fn, interval: int):
 async def startup_event():
     import asyncio
     import random
-    from src.agents.seo_content_agent import generate_seo_pages
+    from src.agents.seo_content_agent import SEOContentAgent
     from src.agents.content_syndication_agent import _publish_to_devto, TOPICS
     from src.agents.pmoc_seo_agent import generate_pmoc_pages
     from src.agents.social_auto_agent import auto_job_reddit, auto_job_linkedin_content
@@ -299,9 +317,10 @@ async def startup_event():
 
     # ── SEO Ecosystem — 40 páginas/dia, roda a cada 6h ──────────────────────
     async def _seo():
-        for market in ["br", "us", "eu", "mx"]:
+        agent = SEOContentAgent()
+        for market in ["BR", "US", "MX", "CO", "AR"]:
             try:
-                await generate_seo_pages(market, count=10)
+                await agent.generate_market_pages(market)
             except Exception as e:
                 logger.warning("[24/7] SEO market=%s: %s", market, e)
 
