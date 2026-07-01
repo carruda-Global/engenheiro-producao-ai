@@ -72,6 +72,9 @@ from src.agents.contract_risk_agent import router as contract_risk_router
 from src.agents.whistleblower_agent import router as whistleblower_router
 from src.agents.zapier_integration_agent import router as zapier_router
 from src.agents.dashboard_agent import router as dashboard_router
+from src.agents.social_auto_agent import router as social_auto_router
+from src.agents.directory_submission_agent import router as directories_router
+from src.agents.review_nurture_agent import router as nurture_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -264,6 +267,9 @@ app.include_router(contract_risk_router)
 app.include_router(whistleblower_router)
 app.include_router(zapier_router)
 app.include_router(dashboard_router)
+app.include_router(social_auto_router)
+app.include_router(directories_router)
+app.include_router(nurture_router)
 
 async def _job_seo():
     """Every 6h: generates 10 SEO pages per market (40/day)."""
@@ -342,7 +348,17 @@ async def startup_event():
     asyncio.create_task(_job_content_syndication())
     asyncio.create_task(_job_outbound_sdr())
     asyncio.create_task(_job_press_release())
-    logger.info("[CRON] All 4 automation jobs started: SEO / Syndication / SDR / Press-Release")
+    # Growth & distribution jobs
+    from src.agents.social_auto_agent import auto_job_reddit, auto_job_linkedin_content
+    from src.agents.directory_submission_agent import auto_job_directories, auto_job_press_release_distribution
+    from src.agents.review_nurture_agent import auto_job_nurture_sequence, auto_job_reactivation
+    asyncio.create_task(auto_job_reddit())
+    asyncio.create_task(auto_job_linkedin_content())
+    asyncio.create_task(auto_job_directories())
+    asyncio.create_task(auto_job_press_release_distribution())
+    asyncio.create_task(auto_job_nurture_sequence())
+    asyncio.create_task(auto_job_reactivation())
+    logger.info("[CRON] All 10 automation jobs started: SEO / Syndication / SDR / PR / Reddit / LinkedIn / Directories / NurtureEmails / Reactivation")
 
 
 static_dir = Path(__file__).parent.parent / "static"
