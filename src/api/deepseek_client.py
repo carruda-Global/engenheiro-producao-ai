@@ -6,15 +6,23 @@ from src.i18n.translations import get_system_prompt_instruction
 
 logger = logging.getLogger(__name__)
 
-_HF_TOKEN = os.getenv("HF_TOKEN", "")
-_HF_MODEL = os.getenv("HF_MODEL", "moonshotai/Kimi-K2-Instruct")
-_HF_BASE_URL = "https://router.huggingface.co/v1"
+_OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY", "")
+_OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "moonshotai/kimi-k2")
+_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 
-def _make_hf_client() -> OpenAI | None:
-    if not _HF_TOKEN:
+def _make_openrouter_client() -> OpenAI | None:
+    if not _OPENROUTER_KEY:
         return None
-    return OpenAI(api_key=_HF_TOKEN, base_url=_HF_BASE_URL, timeout=60)
+    return OpenAI(
+        api_key=_OPENROUTER_KEY,
+        base_url=_OPENROUTER_BASE_URL,
+        timeout=60,
+        default_headers={
+            "HTTP-Referer": "https://global-engenharia.com",
+            "X-Title": "EcoSystem AEC",
+        },
+    )
 
 
 class DeepSeekClient:
@@ -25,7 +33,7 @@ class DeepSeekClient:
             base_url=settings.deepseek_api_base,
             timeout=settings.deepseek_timeout,
         )
-        self._hf_client = _make_hf_client()
+        self._or_client = _make_openrouter_client()
 
     def _call(self, client: OpenAI, model: str, messages: list[dict], temperature: float, max_tokens: int) -> str:
         response = client.chat.completions.create(
@@ -37,13 +45,13 @@ class DeepSeekClient:
         return response.choices[0].message.content or ""
 
     def _call_with_fallback(self, messages: list[dict], temperature: float, max_tokens: int) -> str:
-        """Tenta DeepSeek primeiro; se falhar, usa Kimi-K2 via HF router."""
+        """Tenta DeepSeek primeiro; se falhar, usa OpenRouter (Kimi-K2)."""
         try:
             return self._call(self.client, self.settings.deepseek_model, messages, temperature, max_tokens)
         except Exception as e:
-            if self._hf_client:
-                logger.warning("[LLM] DeepSeek falhou (%s) — usando Kimi-K2 via HF router", e)
-                return self._call(self._hf_client, _HF_MODEL, messages, temperature, max_tokens)
+            if self._or_client:
+                logger.warning("[LLM] DeepSeek falhou (%s) — fallback OpenRouter/%s", e, _OPENROUTER_MODEL)
+                return self._call(self._or_client, _OPENROUTER_MODEL, messages, temperature, max_tokens)
             raise
 
     def chat(
