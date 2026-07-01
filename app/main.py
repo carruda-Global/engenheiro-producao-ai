@@ -64,6 +64,13 @@ from src.agents.nis2_agent import router as nis2_router
 from src.agents.outbound_sdr_agent import router as outbound_sdr_router
 from src.agents.content_syndication_agent import router as syndication_router
 from src.agents.partnership_agent import router as partnership_router
+from src.agents.vendor_risk_agent import router as vendor_risk_router
+from src.agents.board_reporting_agent import router as board_report_router
+from src.agents.ma_due_diligence_agent import router as ma_diligence_router
+from src.agents.regulatory_monitor_agent import router as reg_monitor_router
+from src.agents.contract_risk_agent import router as contract_risk_router
+from src.agents.whistleblower_agent import router as whistleblower_router
+from src.agents.zapier_integration_agent import router as zapier_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -248,6 +255,13 @@ app.include_router(nis2_router)
 app.include_router(outbound_sdr_router)
 app.include_router(syndication_router)
 app.include_router(partnership_router)
+app.include_router(vendor_risk_router)
+app.include_router(board_report_router)
+app.include_router(ma_diligence_router)
+app.include_router(reg_monitor_router)
+app.include_router(contract_risk_router)
+app.include_router(whistleblower_router)
+app.include_router(zapier_router)
 
 async def _daily_cron():
     """Runs daily: publishes SEO pages + content syndication automatically."""
