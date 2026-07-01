@@ -53,6 +53,6 @@ async def sitemap():
         return HTMLResponse(content="", status_code=500)
     items = []
     for p in pages or []:
-        items.append('  <url><loc>https://engenheiro-producao-ai.onrender.com/api/seo/page/' + p["slug"] + '</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>')
+        items.append('  <url><loc>https://global-engenharia.com/artigos/' + p["slug"] + '</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>')
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(items) + "\n</urlset>"
     return HTMLResponse(content=xml, media_type="application/xml")
