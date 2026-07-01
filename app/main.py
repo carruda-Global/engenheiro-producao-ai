@@ -56,6 +56,14 @@ from src.agents.usage_billing import router as usage_billing_router
 from app.routers.office_addin import router as office_addin_router
 from src.agents.india_multilingual_agent import router as india_agent_router
 from src.agents.uae_government_agent import router as uae_agent_router
+from src.agents.csrd_reporting_agent import router as csrd_router
+from src.agents.dora_compliance_agent import router as dora_router
+from src.agents.soc2_agent import router as soc2_router
+from src.agents.iso27001_agent import router as iso27001_router
+from src.agents.nis2_agent import router as nis2_router
+from src.agents.outbound_sdr_agent import router as outbound_sdr_router
+from src.agents.content_syndication_agent import router as syndication_router
+from src.agents.partnership_agent import router as partnership_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -232,6 +240,42 @@ app.include_router(usage_billing_router)
 app.include_router(office_addin_router)
 app.include_router(india_agent_router)
 app.include_router(uae_agent_router)
+app.include_router(csrd_router)
+app.include_router(dora_router)
+app.include_router(soc2_router)
+app.include_router(iso27001_router)
+app.include_router(nis2_router)
+app.include_router(outbound_sdr_router)
+app.include_router(syndication_router)
+app.include_router(partnership_router)
+
+async def _daily_cron():
+    """Runs daily: publishes SEO pages + content syndication automatically."""
+    import asyncio
+    import random
+    from src.agents.seo_content_agent import generate_seo_pages
+    from src.agents.content_syndication_agent import _publish_to_devto, TOPICS
+    while True:
+        await asyncio.sleep(86400)  # 24h
+        try:
+            for market in ["br", "us", "eu", "mx"]:
+                try:
+                    await generate_seo_pages(market, count=10)
+                except Exception as e:
+                    logger.warning("SEO cron error market=%s: %s", market, e)
+            topic = random.choice(TOPICS)
+            await _publish_to_devto(topic)
+            logger.info("Daily cron completed: SEO + Dev.to syndication")
+        except Exception as e:
+            logger.error("Daily cron failed: %s", e)
+
+
+@app.on_event("startup")
+async def startup_event():
+    import asyncio
+    asyncio.create_task(_daily_cron())
+    logger.info("Daily cron scheduled: SEO + content syndication")
+
 
 static_dir = Path(__file__).parent.parent / "static"
 if static_dir.exists():
