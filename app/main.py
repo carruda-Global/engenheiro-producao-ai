@@ -263,32 +263,85 @@ app.include_router(contract_risk_router)
 app.include_router(whistleblower_router)
 app.include_router(zapier_router)
 
-async def _daily_cron():
-    """Runs daily: publishes SEO pages + content syndication automatically."""
+async def _job_seo():
+    """Every 6h: generates 10 SEO pages per market (40/day)."""
     import asyncio
-    import random
     from src.agents.seo_content_agent import generate_seo_pages
-    from src.agents.content_syndication_agent import _publish_to_devto, TOPICS
+    await asyncio.sleep(300)  # 5min warm-up on first start
     while True:
-        await asyncio.sleep(86400)  # 24h
         try:
             for market in ["br", "us", "eu", "mx"]:
                 try:
                     await generate_seo_pages(market, count=10)
                 except Exception as e:
-                    logger.warning("SEO cron error market=%s: %s", market, e)
+                    logger.warning("SEO job error market=%s: %s", market, e)
+            logger.info("[CRON] SEO: 40 pages generated")
+        except Exception as e:
+            logger.error("[CRON] SEO failed: %s", e)
+        await asyncio.sleep(21600)  # 6h
+
+
+async def _job_content_syndication():
+    """Every 8h: publishes article to Dev.to (3/day)."""
+    import asyncio
+    import random
+    from src.agents.content_syndication_agent import _publish_to_devto, TOPICS
+    await asyncio.sleep(600)  # 10min warm-up
+    while True:
+        try:
             topic = random.choice(TOPICS)
             await _publish_to_devto(topic)
-            logger.info("Daily cron completed: SEO + Dev.to syndication")
+            logger.info("[CRON] Syndication: Dev.to article published")
         except Exception as e:
-            logger.error("Daily cron failed: %s", e)
+            logger.error("[CRON] Syndication failed: %s", e)
+        await asyncio.sleep(28800)  # 8h
+
+
+async def _job_outbound_sdr():
+    """Every 12h: fires outbound SDR email campaign (2x/day = 1000 emails/day)."""
+    import asyncio
+    import httpx
+    await asyncio.sleep(1800)  # 30min warm-up
+    sectors = ["construction_br", "finance_eu", "tech_saas", "manufacturing_eu", "any_eu"]
+    while True:
+        for sector in sectors:
+            try:
+                async with httpx.AsyncClient(timeout=60) as client:
+                    await client.post(
+                        "http://localhost:8000/api/sdr/send-campaign",
+                        json={"sector": sector, "limit": 100},
+                    )
+                logger.info("[CRON] SDR campaign sent: sector=%s", sector)
+            except Exception as e:
+                logger.warning("[CRON] SDR sector=%s failed: %s", sector, e)
+        await asyncio.sleep(43200)  # 12h
+
+
+async def _job_press_release():
+    """Weekly: auto-generates and logs press release for distribution."""
+    import asyncio
+    await asyncio.sleep(3600)  # 1h warm-up
+    while True:
+        try:
+            async with __import__("httpx").AsyncClient(timeout=60) as client:
+                resp = await client.post(
+                    "http://localhost:8000/api/zapier/press-release",
+                    json={"angle": "86 AI compliance agents now available — EU AI Act, CSRD, DORA, NIS2 coverage"},
+                )
+                logger.info("[CRON] Press release generated — distribute to OpenPR/EIN")
+        except Exception as e:
+            logger.warning("[CRON] Press release failed: %s", e)
+        await asyncio.sleep(604800)  # 7 days
 
 
 @app.on_event("startup")
 async def startup_event():
     import asyncio
-    asyncio.create_task(_daily_cron())
-    logger.info("Daily cron scheduled: SEO + content syndication")
+    asyncio.create_task(_job_seo())
+    asyncio.create_task(_job_content_syndication())
+    asyncio.create_task(_job_outbound_sdr())
+    asyncio.create_task(_job_press_release())
+    logger.info("[CRON] All 4 automation jobs started: SEO / Syndication / SDR / Press-Release")
 
 
 static_dir = Path(__file__).parent.parent / "static"
