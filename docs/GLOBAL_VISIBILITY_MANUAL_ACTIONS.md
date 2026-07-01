@@ -34,17 +34,13 @@ Esses são formulários web (exigem conta própria). Usar a URL do manifest exis
 
 ---
 
-## 3. Crunchbase — 5 min (crunchbase.com/add-new-organization)
+## 3. Crunchbase — ✅ CONCLUÍDO (01/07/2026)
 
-```
-Company name: Global Match Engenharia (EcoSystem AEC)
-Website: https://global-engenharia.com/ecosystem
-Short description (max 140 chars): AI compliance platform: 106 agents for EU AI Act, LGPD, CSRD, DORA, NIS2, SOC2, ISO27001, NR-1. SaaS subscriptions + pay-per-use USDC.
-Industry: Regulatory Technology (RegTech), Artificial Intelligence, Compliance Software
-Founded: 2024
-Headquarters: São Paulo, Brazil
-Company type: Privately held, bootstrapped
-```
+Perfil criado: https://www.crunchbase.com/compare/organization/global-match-engenharia-ecosystem-aec/
+
+Campos que funcionaram (para referência futura ao editar):
+- Industries: até 3 tags do autocomplete (`Artificial Intelligence (AI)`, `Compliance`, `SaaS`) — mais que isso deu erro
+- Description: texto simples sem `:` ou `+`, ~110-115 caracteres
 
 ## 4. Wellfound / AngelList — 5 min (wellfound.com/company/new)
 
