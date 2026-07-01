@@ -39,7 +39,7 @@ Esses são formulários web (exigem conta própria). Usar a URL do manifest exis
 ```
 Company name: Global Match Engenharia (EcoSystem AEC)
 Website: https://global-engenharia.com/ecosystem
-Short description: AI compliance automation platform with 106 specialized agents covering EU AI Act, LGPD/GDPR, CSRD, DORA, NIS2, SOC2, ISO27001 and NR-1. Sold as SaaS subscriptions and pay-per-use via x402/USDC to both human customers and autonomous AI agents.
+Short description (max 140 chars): AI compliance platform: 106 agents for EU AI Act, LGPD, CSRD, DORA, NIS2, SOC2, ISO27001, NR-1. SaaS subscriptions + pay-per-use USDC.
 Industry: Regulatory Technology (RegTech), Artificial Intelligence, Compliance Software
 Founded: 2024
 Headquarters: São Paulo, Brazil
