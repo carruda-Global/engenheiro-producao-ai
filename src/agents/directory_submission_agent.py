@@ -125,49 +125,111 @@ async def _send_listing_email(directory: dict) -> bool:
         return False
 
 
-async def _submit_ein_presswire() -> bool:
-    """Envia press release para EIN Presswire via API REST."""
-    if not EIN_API_KEY:
+DEVTO_KEY = os.getenv("DEVTO_API_KEY", "")
+REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID", "")
+REDDIT_CLIENT_SECRET = os.getenv("REDDIT_CLIENT_SECRET", "")
+REDDIT_USERNAME = os.getenv("REDDIT_USERNAME", "")
+REDDIT_PASSWORD = os.getenv("REDDIT_PASSWORD", "")
+
+# Subreddits de compliance/regtech para PR posts (gratuito, alto engajamento)
+PR_SUBREDDITS = ["r/legalops", "r/compliance", "r/RegTech", "r/LegalTech", "r/fintech"]
+
+PR_DEVTO_ARTICLE = """---
+title: 86 AI Compliance Agents Covering EU AI Act, DORA, CSRD & LGPD in One Platform
+published: true
+tags: compliance, regtech, ai, legaltech
+---
+
+Brazilian startup Global Match Engenharia launches **EcoSystem AEC** — the first AI compliance platform with 86 specialized agents covering all major 2026 regulatory deadlines.
+
+## What It Covers
+
+- **EU AI Act** (August 2026 deadline) — AI system risk classification & documentation
+- **CSRD** — Sustainability reporting for 50,000+ EU companies
+- **DORA** — Digital operational resilience for financial entities
+- **NIS2** — Cybersecurity scope & implementation roadmap
+- **LGPD / GDPR** — Data protection gap analysis
+- **SOC2 Type II & ISO 27001:2022** — Audit-ready assessments
+- **Whistleblower** (EU Dir 2019/1937) — Case management portal
+- **M&A Due Diligence** — Compliance screening for acquisitions
+
+## Why It Matters
+
+Compliance teams are now facing **5+ simultaneous regulatory deadlines**. Most platforms handle one regulation. EcoSystem AEC handles all of them in a single workflow.
+
+## Try It
+
+Starting at $149/month: [global-engenharia.com/ecosystem](https://global-engenharia.com/ecosystem)
+
+Available on Microsoft Azure Marketplace and Google Cloud Marketplace.
+"""
+
+PR_REDDIT_POST = """**EcoSystem AEC: 86 AI compliance agents in one platform — covering EU AI Act, DORA, CSRD, LGPD, NIS2, SOC2 and more**
+
+Brazilian startup just launched a compliance automation platform with 86 specialized AI agents covering all major 2026 regulatory deadlines simultaneously.
+
+Key capabilities:
+- EU AI Act readiness (August 2026 deadline)
+- CSRD sustainability reporting
+- DORA for financial entities
+- NIS2 scope determination
+- LGPD/GDPR gap analysis
+- SOC2 Type II & ISO 27001
+- Whistleblower case management
+- M&A due diligence
+
+Starts at $149/month. Free trial available.
+
+https://global-engenharia.com/ecosystem
+
+Happy to answer questions about any of the regulatory frameworks covered.
+"""
+
+
+async def _publish_pr_to_devto() -> bool:
+    """Publica press release como artigo no Dev.to (gratuito, indexado pelo Google)."""
+    if not DEVTO_KEY:
         return False
     try:
         async with httpx.AsyncClient(timeout=20) as client:
             r = await client.post(
-                "https://www.einpresswire.com/api/v1/news",
-                headers={"Authorization": f"Bearer {EIN_API_KEY}"},
-                json={
-                    "headline": "Brazilian AI Startup Launches 86 Compliance Agents Covering All Major 2026 Regulatory Deadlines",
-                    "body": PR_TEMPLATE,
-                    "keywords": "regtech,compliance,AI,LGPD,GDPR,DORA,CSRD,EU AI Act",
-                    "distribution": "global",
-                },
+                "https://dev.to/api/articles",
+                headers={"api-key": DEVTO_KEY, "Content-Type": "application/json"},
+                json={"article": {"title": "86 AI Compliance Agents for EU AI Act, DORA, CSRD & LGPD — One Platform", "body_markdown": PR_DEVTO_ARTICLE, "published": True, "tags": ["compliance", "regtech", "ai", "legaltech"]}},
             )
-        logger.info("[EIN] Press release submitted: %s", r.status_code)
+        logger.info("[DevTo-PR] Published: %s", r.status_code)
         return r.status_code < 300
     except Exception as e:
-        logger.warning("[EIN] Submit error: %s", e)
+        logger.warning("[DevTo-PR] Error: %s", e)
         return False
 
 
-async def _submit_jdsupra(article_html: str) -> bool:
-    """Publica artigo no JD Supra via API."""
-    if not JDSUPRA_TOKEN:
+async def _publish_pr_to_reddit() -> bool:
+    """Posta press release nos subreddits de compliance/regtech (gratuito)."""
+    if not all([REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USERNAME, REDDIT_PASSWORD]):
         return False
     try:
         async with httpx.AsyncClient(timeout=20) as client:
-            r = await client.post(
-                "https://www.jdsupra.com/api/v1/documents",
-                headers={"Authorization": f"Token {JDSUPRA_TOKEN}", "Content-Type": "application/json"},
-                json={
-                    "title": "AION: 86 AI Compliance Agents for EU AI Act, DORA, CSRD & LGPD in 2026",
-                    "content": article_html,
-                    "topics": ["Regulatory Compliance", "Artificial Intelligence", "FinTech"],
-                    "practice_areas": ["Corporate/Business Organizations", "Technology"],
-                },
+            auth_r = await client.post(
+                "https://www.reddit.com/api/v1/access_token",
+                auth=(REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET),
+                data={"grant_type": "password", "username": REDDIT_USERNAME, "password": REDDIT_PASSWORD},
+                headers={"User-Agent": "EcoSystemAEC/1.0"},
             )
-        logger.info("[JDSupra] Article submitted: %s", r.status_code)
-        return r.status_code < 300
+            token = auth_r.json().get("access_token", "")
+            if not token:
+                return False
+            for sub in PR_SUBREDDITS[:2]:  # 2 subreddits por ciclo para não spam
+                await client.post(
+                    "https://oauth.reddit.com/api/submit",
+                    headers={"Authorization": f"bearer {token}", "User-Agent": "EcoSystemAEC/1.0"},
+                    data={"sr": sub.replace("r/", ""), "kind": "self", "title": "EcoSystem AEC: 86 AI compliance agents — EU AI Act, DORA, CSRD, LGPD in one platform", "text": PR_REDDIT_POST},
+                )
+                await asyncio.sleep(5)
+        logger.info("[Reddit-PR] Posted to %s", PR_SUBREDDITS[:2])
+        return True
     except Exception as e:
-        logger.warning("[JDSupra] Submit error: %s", e)
+        logger.warning("[Reddit-PR] Error: %s", e)
         return False
 
 
@@ -215,8 +277,8 @@ async def auto_job_directories():
 async def auto_job_press_release_distribution():
     """Every 14 days: distribui press release via EIN API + JD Supra + publicações regtech."""
     try:
-        await _submit_ein_presswire()
-        await _submit_jdsupra(f"<p>{PR_TEMPLATE.replace(chr(10), '</p><p>')}</p>")
+        await _publish_pr_to_devto()
+        await _publish_pr_to_reddit()
         await auto_job_regtech_press()
         # Fallback: envia para dono encaminhar ao OpenPR
         if RESEND_KEY:
