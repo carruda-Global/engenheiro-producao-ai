@@ -19,9 +19,15 @@ router = APIRouter(prefix="/api/marketplace", tags=["agent_marketplace"])
 logger = logging.getLogger(__name__)
 
 BASE_URL = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
-AGENTIC_MARKET_KEY = os.getenv("AGENTIC_MARKET_KEY", "")
-PRISM_KEY = os.getenv("PRISM_KEY", "")
-OBOL_KEY = os.getenv("OBOL_KEY", "")
+AGENTIC_MARKET_KEY  = os.getenv("AGENTIC_MARKET_KEY", "")
+PRISM_KEY           = os.getenv("PRISM_KEY", "")
+OBOL_KEY            = os.getenv("OBOL_KEY", "")
+THEORIQ_KEY         = os.getenv("THEORIQ_API_KEY", "")
+VIRTUALS_KEY        = os.getenv("VIRTUALS_API_KEY", "")
+NEVERMINED_KEY      = os.getenv("NEVERMINED_API_KEY", "")
+AGENTVERSE_KEY      = os.getenv("AGENTVERSE_API_KEY", "")
+BITTE_KEY           = os.getenv("BITTE_API_KEY", "")
+MASA_KEY            = os.getenv("MASA_API_KEY", "")
 
 # Carteira USDC do merchant (Base network) — adicionar no Render
 MERCHANT_WALLET = os.getenv("MERCHANT_WALLET_ADDRESS", "")
@@ -340,8 +346,14 @@ async def registration_status():
         "services": list(SERVICES.keys()),
         "keys_configured": {
             "agentic_market": bool(AGENTIC_MARKET_KEY),
-            "prism": bool(PRISM_KEY),
-            "obol": bool(OBOL_KEY),
+            "prism":          bool(PRISM_KEY),
+            "obol":           bool(OBOL_KEY),
+            "theoriq":        bool(THEORIQ_KEY),
+            "virtuals":       bool(VIRTUALS_KEY),
+            "nevermined":     bool(NEVERMINED_KEY),
+            "agentverse":     bool(AGENTVERSE_KEY),
+            "bitte":          bool(BITTE_KEY),
+            "masa":           bool(MASA_KEY),
         },
     }
 
@@ -430,27 +442,197 @@ async def _register_on_obol() -> dict:
     return results
 
 
+async def _register_on_theoriq() -> dict:
+    """Theoriq — USDC, Base/Polygon. Mesma carteira EVM."""
+    if not THEORIQ_KEY:
+        return {"skipped": True, "reason": "THEORIQ_API_KEY not set"}
+    results = {}
+    async with httpx.AsyncClient(timeout=30) as client:
+        for service_id, svc in SERVICES.items():
+            try:
+                resp = await client.post(
+                    "https://api.theoriq.ai/api/v1alpha2/agent",
+                    headers={"Authorization": f"Bearer {THEORIQ_KEY}", "Content-Type": "application/json"},
+                    json={
+                        "name": svc["name"],
+                        "description": svc["description"],
+                        "tags": svc["capabilities"],
+                        "uri": f"{BASE_URL}/api/marketplace/execute/{service_id}",
+                        "cost": {"amount": str(svc["amount_atomic"]), "token": "USDC", "network": NETWORK_BASE},
+                        "virtualAddress": MERCHANT_WALLET,
+                    },
+                )
+                results[service_id] = {"status": resp.status_code}
+            except Exception as e:
+                results[service_id] = {"error": str(e)}
+    return results
+
+
+async def _register_on_virtuals() -> dict:
+    """Virtuals Protocol — Base network, mesma carteira EVM."""
+    if not VIRTUALS_KEY:
+        return {"skipped": True, "reason": "VIRTUALS_API_KEY not set"}
+    results = {}
+    async with httpx.AsyncClient(timeout=30) as client:
+        for service_id, svc in SERVICES.items():
+            try:
+                resp = await client.post(
+                    "https://api.virtuals.io/api/agents",
+                    headers={"Authorization": f"Bearer {VIRTUALS_KEY}"},
+                    json={
+                        "name": f"EcoSystem AEC — {svc['name']}",
+                        "description": svc["description"],
+                        "category": "compliance",
+                        "tags": svc["capabilities"],
+                        "endpoint": f"{BASE_URL}/api/marketplace/execute/{service_id}",
+                        "price_usdc": svc["price_usdc"],
+                        "wallet": MERCHANT_WALLET,
+                        "chain": "base",
+                    },
+                )
+                results[service_id] = {"status": resp.status_code}
+            except Exception as e:
+                results[service_id] = {"error": str(e)}
+    return results
+
+
+async def _register_on_nevermined() -> dict:
+    """Nevermined — USDC Polygon, mesma carteira EVM."""
+    if not NEVERMINED_KEY:
+        return {"skipped": True, "reason": "NEVERMINED_API_KEY not set"}
+    results = {}
+    async with httpx.AsyncClient(timeout=30) as client:
+        for service_id, svc in SERVICES.items():
+            try:
+                resp = await client.post(
+                    "https://one.nevermined.app/api/v1/assets",
+                    headers={"Authorization": f"Bearer {NEVERMINED_KEY}"},
+                    json={
+                        "main": {
+                            "name": svc["name"],
+                            "type": "ai-agent",
+                            "description": svc["description"],
+                            "tags": svc["capabilities"],
+                            "author": "Global Match Engenharia de Produção",
+                            "url": f"{BASE_URL}/api/marketplace/execute/{service_id}",
+                        },
+                        "pricing": {
+                            "price": svc["amount_atomic"],
+                            "token": "USDC",
+                            "receiver": MERCHANT_WALLET,
+                        },
+                    },
+                )
+                results[service_id] = {"status": resp.status_code, "did": resp.json().get("id")}
+            except Exception as e:
+                results[service_id] = {"error": str(e)}
+    return results
+
+
+async def _register_on_agentverse() -> dict:
+    """Fetch.ai AgentVerse — FET token, endereço Fetch.ai separado."""
+    if not AGENTVERSE_KEY:
+        return {"skipped": True, "reason": "AGENTVERSE_API_KEY not set"}
+    results = {}
+    async with httpx.AsyncClient(timeout=30) as client:
+        for service_id, svc in SERVICES.items():
+            try:
+                resp = await client.post(
+                    "https://agentverse.ai/v1/hosting/agents",
+                    headers={"Authorization": f"Bearer {AGENTVERSE_KEY}"},
+                    json={
+                        "name": f"EcoSystem-{service_id}",
+                        "description": svc["description"],
+                        "tags": svc["capabilities"],
+                        "protocols": ["rest"],
+                        "endpoint": f"{BASE_URL}/api/marketplace/execute/{service_id}",
+                    },
+                )
+                results[service_id] = {"status": resp.status_code, "address": resp.json().get("address")}
+            except Exception as e:
+                results[service_id] = {"error": str(e)}
+    return results
+
+
+async def _register_on_bitte() -> dict:
+    """Bitte Protocol — NEAR, publica via OpenAPI schema (já existe)."""
+    if not BITTE_KEY:
+        return {"skipped": True, "reason": "BITTE_API_KEY not set"}
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                "https://wallet.bitte.ai/api/v1/agents/register",
+                headers={"Authorization": f"Bearer {BITTE_KEY}"},
+                json={
+                    "name": "EcoSystem AEC — 86 AI Compliance Agents",
+                    "description": "AI compliance diagnostics: NR-1, LGPD, EU AI Act, CSRD, DORA, Carbon. 86 agents.",
+                    "openapi_url": f"{BASE_URL}/openapi.json",
+                    "agent_card_url": f"{BASE_URL}/.well-known/agent-card.json",
+                    "tags": ["compliance", "esg", "lgpd", "eu-ai-act", "csrd", "brazil", "eu"],
+                },
+            )
+            return {"status": resp.status_code, "agent_id": resp.json().get("id")}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+async def _register_on_masa() -> dict:
+    """Masa Network — dados + agentes, MASA token."""
+    if not MASA_KEY:
+        return {"skipped": True, "reason": "MASA_API_KEY not set"}
+    results = {}
+    async with httpx.AsyncClient(timeout=30) as client:
+        for service_id, svc in SERVICES.items():
+            try:
+                resp = await client.post(
+                    "https://api.masa.ai/v1/agents/register",
+                    headers={"Authorization": f"Bearer {MASA_KEY}"},
+                    json={
+                        "name": svc["name"],
+                        "description": svc["description"],
+                        "endpoint": f"{BASE_URL}/api/marketplace/execute/{service_id}",
+                        "categories": svc["capabilities"],
+                        "price_usd": svc["price_usdc"],
+                    },
+                )
+                results[service_id] = {"status": resp.status_code}
+            except Exception as e:
+                results[service_id] = {"error": str(e)}
+    return results
+
+
 @router.post("/register")
 async def trigger_registration():
     results = await asyncio.gather(
         _register_on_agentic_market(),
         _register_on_prism(),
         _register_on_obol(),
+        _register_on_theoriq(),
+        _register_on_virtuals(),
+        _register_on_nevermined(),
+        _register_on_agentverse(),
+        _register_on_bitte(),
+        _register_on_masa(),
         return_exceptions=True,
     )
-    return {
-        "agentic_market": results[0] if not isinstance(results[0], Exception) else str(results[0]),
-        "prism": results[1] if not isinstance(results[1], Exception) else str(results[1]),
-        "obol": results[2] if not isinstance(results[2], Exception) else str(results[2]),
-    }
+    names = ["agentic_market", "prism", "obol", "theoriq", "virtuals", "nevermined", "agentverse", "bitte", "masa"]
+    return {name: results[i] if not isinstance(results[i], Exception) else str(results[i]) for i, name in enumerate(names)}
 
 
 async def auto_job_marketplace_registration() -> None:
-    logger.info("[MARKETPLACE] Renovando registro nos marketplaces A2A...")
-    await asyncio.gather(
+    logger.info("[MARKETPLACE] Renovando registro nos 9 marketplaces A2A...")
+    results = await asyncio.gather(
         _register_on_agentic_market(),
         _register_on_prism(),
         _register_on_obol(),
+        _register_on_theoriq(),
+        _register_on_virtuals(),
+        _register_on_nevermined(),
+        _register_on_agentverse(),
+        _register_on_bitte(),
+        _register_on_masa(),
         return_exceptions=True,
     )
-    logger.info("[MARKETPLACE] Registro concluído. Serviços: %d | Rede: %s", len(SERVICES), NETWORK_BASE)
+    names = ["agentic_market", "prism", "obol", "theoriq", "virtuals", "nevermined", "agentverse", "bitte", "masa"]
+    active = [n for n, r in zip(names, results) if not isinstance(r, Exception) and not r.get("skipped")]
+    logger.info("[MARKETPLACE] Registro concluído. Ativos: %s | Serviços: %d", active, len(SERVICES))
