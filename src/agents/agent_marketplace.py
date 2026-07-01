@@ -230,16 +230,39 @@ class AgentCallRequest(BaseModel):
 
 
 @router.get("/execute/{service_id}")
-async def probe_service(service_id: str):
+async def probe_or_execute_service(service_id: str, request: Request):
     """
-    GET → CDP Bazaar probes this to validate the 402 envelope.
-    Retorna 402 com PAYMENT-REQUIRED header (x402 v2 spec).
+    GET sem X-PAYMENT  → CDP Bazaar probe, retorna 402 com envelope completo.
+    GET com X-PAYMENT  → buyer já pagou (wrapFetchWithPayment), executa e entrega.
     """
     if service_id not in SERVICES:
         raise HTTPException(status_code=404, detail=f"Service '{service_id}' not found.")
     if not MERCHANT_WALLET:
         raise HTTPException(status_code=503, detail="MERCHANT_WALLET_ADDRESS not configured.")
-    return _x402_response(service_id)
+
+    payment_ok = await _verify_x402_payment(request)
+    if not payment_ok:
+        return _x402_response(service_id)
+
+    # Pagamento verificado — executa com payload do query string ou exemplo padrão
+    svc = SERVICES[service_id]
+    payload = dict(request.query_params) or svc["input_example"]
+    logger.info("[x402] GET payment verified — executing service=%s", service_id)
+
+    async with httpx.AsyncClient(timeout=45) as client:
+        try:
+            resp = await client.post(f"{BASE_URL}{svc['agent_fn']}", json=payload)
+            result = resp.json()
+        except Exception as e:
+            logger.error("[x402] Agent execution failed: %s", e)
+            raise HTTPException(status_code=502, detail="Agent execution failed")
+
+    await _settle_x402_payment(request, service_id)
+
+    return JSONResponse(
+        content={"service_id": service_id, "result": result, "price_usdc": svc["price_usdc"], "status": "delivered"},
+        headers={"X-PAYMENT-RESPONSE": "settled"},
+    )
 
 
 @router.post("/execute/{service_id}")
