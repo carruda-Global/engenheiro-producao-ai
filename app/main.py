@@ -249,6 +249,11 @@ async def support_page():
 </html>""")
 
 
+@app.get("/googleCWytB8JSZT1X17frcedHEG6ZHBIW4Bj0UnuCXCK0UrI.html")
+async def google_verify_new2():
+    return HTMLResponse(content='google-site-verification: googleCWytB8JSZT1X17frcedHEG6ZHBIW4Bj0UnuCXCK0UrI.html')
+
+
 @app.get("/googlekl673VPS54kpHqZIsCbysRBV0Os6o6x3IiAiJeDVmcY.html")
 async def google_verify_new():
     return HTMLResponse(content='google-site-verification: googlekl673VPS54kpHqZIsCbysRBV0Os6o6x3IiAiJeDVmcY.html')
