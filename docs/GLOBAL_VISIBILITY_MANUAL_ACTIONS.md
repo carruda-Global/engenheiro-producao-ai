@@ -36,7 +36,7 @@ Esses são formulários web (exigem conta própria). Usar a URL do manifest exis
 
 ## 3. Crunchbase — ✅ CONCLUÍDO (01/07/2026)
 
-Perfil criado: https://www.crunchbase.com/compare/organization/global-match-engenharia-ecosystem-aec/
+Perfil criado: https://www.crunchbase.com/organization/global-match-engenharia-ecosystem-aec
 
 Campos que funcionaram (para referência futura ao editar):
 - Industries: até 3 tags do autocomplete (`Artificial Intelligence (AI)`, `Compliance`, `SaaS`) — mais que isso deu erro
