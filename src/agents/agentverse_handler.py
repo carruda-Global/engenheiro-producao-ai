@@ -59,16 +59,47 @@ def _detect_service(payload: dict) -> str:
 
 
 async def _run_service(service_id: str, payload: dict) -> dict:
-    """Chama o serviço de compliance internamente."""
-    from src.agents.agent_marketplace import SERVICES
-    svc = SERVICES.get(service_id, {})
-    agent_fn = svc.get("agent_fn", "/mcp/regulatory/tools/eu_ai_act")
-    async with httpx.AsyncClient(timeout=45) as client:
-        try:
-            resp = await client.post(f"{BASE_URL}{agent_fn}", json=payload)
-            return resp.json()
-        except Exception as e:
-            return {"error": str(e)}
+    """Executa o agente de compliance diretamente via LLM (sem x402)."""
+    try:
+        from src.agents.agent_marketplace import SERVICES
+        from src.api.deepseek_client import DeepSeekClient
+        from src.config import Settings
+
+        svc = SERVICES.get(service_id)
+        if not svc:
+            return {"error": f"Service {service_id} not found"}
+
+        settings = Settings()
+        llm = DeepSeekClient(settings)
+
+        company = payload.get("company", payload.get("empresa", "Unknown"))
+        sector = payload.get("sector", payload.get("setor", "technology"))
+        ai_systems = payload.get("ai_systems", payload.get("atividades_tratamento", []))
+
+        system_prompt = f"""You are an expert compliance analyst.
+Perform a {svc['name']} for the company provided.
+Return a JSON response with: status (compliant/partial/non_compliant), risk_score (0-100),
+summary (2-3 sentences), findings (list of issues), action_plan (prioritized steps).
+Be specific and actionable."""
+
+        user_prompt = f"""Company: {company}
+Sector: {sector}
+AI Systems / Activities: {', '.join(ai_systems) if ai_systems else 'Not specified'}
+Additional context: {payload}
+
+Perform the {svc['name']} and return structured JSON."""
+
+        import json, re
+        raw = llm.chat(system_prompt=system_prompt, user_prompt=user_prompt, lang="en")
+        # Extrai JSON da resposta
+        match = re.search(r'\{.*\}', raw, re.DOTALL)
+        if match:
+            return json.loads(match.group())
+        return {"status": "partial", "risk_score": 50, "summary": raw[:500], "findings": [], "action_plan": []}
+
+    except Exception as e:
+        logger.error("[AgentVerse] Service execution error: %s", e)
+        return {"error": str(e), "status": "non_compliant", "risk_score": 0, "findings": [], "action_plan": []}
 
 
 @router.post("/messages")
