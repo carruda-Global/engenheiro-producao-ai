@@ -417,13 +417,14 @@ async def startup_event():
     async def _devto():
         await _publish_to_devto(random.choice(TOPICS))
 
-    # ── SDR — 1000 emails/dia, roda a cada 12h ──────────────────────────────
+    # ── SDR — roda a cada 12h, descobre leads reais via busca web e envia ───
     async def _sdr():
         try:
-            from src.agents.outbound_sdr_agent import send_campaign
-            for sector in ["construction_br", "finance_eu", "tech_saas", "manufacturing_eu", "any_eu"]:
+            from src.agents.outbound_sdr_agent import _process_campaign
+            # Nomes devem bater com as chaves de SECTORS/SECTOR_SEARCH_QUERIES em outbound_sdr_agent.py
+            for sector in ["construction", "finance", "tech_saas", "manufacturing_eu", "any_eu"]:
                 try:
-                    await send_campaign({"sector": sector, "limit": 100})
+                    await _process_campaign([], sector, limit=15)
                 except Exception as e:
                     logger.warning("[24/7] SDR sector=%s: %s", sector, e)
         except ImportError:

@@ -2,12 +2,67 @@ import asyncio
 import httpx
 import logging
 import os
+import re
+from urllib.parse import unquote
 from fastapi import APIRouter, BackgroundTasks
 from src.api.deepseek_client import DeepSeekClient
 from src.config import Settings
 
 router = APIRouter(prefix="/api/sdr", tags=["sdr"])
 logger = logging.getLogger(__name__)
+
+EMAIL_RE = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
+_EMAIL_BLOCKLIST = ("example.com", "sentry.io", "wixpress.com", "godaddy.com", "schema.org", "wordpress.com", "noreply", "no-reply", "yourdomain")
+_DOMAIN_BLOCKLIST = ("mailings.com.br", "econodata.com.br", "boaempresa.com.br", "99freelas.com.br", "auxilioanet.com.br", "duckduckgo.com", "google.com", "facebook.com", "linkedin.com", "instagram.com", "wikipedia.org")
+
+SECTOR_SEARCH_QUERIES = {
+    "construction": ["construtora média porte São Paulo contato comercial email", "construtora contato email construção civil Brasil"],
+    "construction_br": ["construtora média porte São Paulo contato comercial email", "construtora contato email construção civil Brasil"],
+    "finance": ["fintech company Europe contact email compliance officer", "financial services firm EU contact email DORA"],
+    "finance_eu": ["fintech company Europe contact email compliance officer", "financial services firm EU contact email DORA"],
+    "tech_saas": ["B2B SaaS startup contact email compliance", "software company United States contact email SOC2"],
+    "manufacturing_eu": ["manufacturing company Europe contact email sustainability CSRD", "industrial company EU contact email"],
+    "any_eu": ["company Europe contact email AI compliance", "technology company EU contact email EU AI Act"],
+}
+
+
+async def _discover_leads(sector: str, limit: int = 10) -> list[dict]:
+    """Descobre leads reais via busca web pública (DuckDuckGo, sem API key) — roda sozinho, sem intervenção manual."""
+    queries = SECTOR_SEARCH_QUERIES.get(sector, SECTOR_SEARCH_QUERIES["any_eu"])
+    leads: list[dict] = []
+    seen_emails: set[str] = set()
+    async with httpx.AsyncClient(timeout=15, headers={"User-Agent": "Mozilla/5.0"}) as client:
+        for query in queries:
+            if len(leads) >= limit:
+                break
+            try:
+                r = await client.get("https://html.duckduckgo.com/html/", params={"q": query})
+                wrapped = re.findall(r'href="//duckduckgo\.com/l/\?uddg=([^&"]+)', r.text)
+                result_urls = [unquote(u) for u in wrapped][:8]
+            except Exception as e:
+                logger.warning("[SDR] Search error for '%s': %s", query, e)
+                continue
+
+            for url in result_urls:
+                if len(leads) >= limit:
+                    break
+                if any(b in url.lower() for b in _DOMAIN_BLOCKLIST):
+                    continue
+                try:
+                    page = await client.get(url, timeout=8, follow_redirects=True)
+                    found = set(EMAIL_RE.findall(page.text))
+                    valid = [e for e in found if not any(b in e.lower() for b in _EMAIL_BLOCKLIST)]
+                    if valid:
+                        company = url.split("//")[-1].split("/")[0].replace("www.", "")
+                        email = valid[0]
+                        if email not in seen_emails:
+                            seen_emails.add(email)
+                            leads.append({"company": company, "email": email, "name": ""})
+                except Exception:
+                    continue
+                await asyncio.sleep(1)
+    logger.info("[SDR] Discovered %d real leads for sector=%s", len(leads), sector)
+    return leads
 
 SYSTEM_PROMPT = """You are an expert B2B cold email copywriter specializing in compliance and AI software.
 Write personalized, concise cold emails (max 150 words) that:
@@ -51,18 +106,25 @@ async def generate_email(data: dict):
 
 @router.post("/send-campaign")
 async def send_campaign(data: dict, background_tasks: BackgroundTasks):
-    """Send outbound email campaign via SMTP or Resend API."""
+    """Send outbound email campaign via Resend. Se nenhum lead for passado, descobre
+    automaticamente via busca web pública — é o que faz o job 24/7 funcionar sozinho."""
     leads = data.get("leads", [])
     sector = data.get("sector", "any_eu")
-    background_tasks.add_task(_process_campaign, leads, sector)
-    return {"status": "campaign_started", "leads_queued": len(leads)}
+    limit = data.get("limit", 10)
+    background_tasks.add_task(_process_campaign, leads, sector, limit)
+    return {"status": "campaign_started", "leads_provided": len(leads), "auto_discover": len(leads) == 0}
 
 
-async def _process_campaign(leads: list, sector: str):
+async def _process_campaign(leads: list, sector: str, limit: int = 10):
     resend_key = os.getenv("RESEND_API_KEY", "")
     if not resend_key:
         logger.warning("RESEND_API_KEY not set — emails not sent")
         return
+    if not leads:
+        leads = await _discover_leads(sector, limit)
+        if not leads:
+            logger.warning("[SDR] Nenhum lead descoberto para sector=%s — pulando ciclo", sector)
+            return
     settings = Settings()
     deepseek = DeepSeekClient(settings)
     pain_point = SECTORS.get(sector, SECTORS["any_eu"])
