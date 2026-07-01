@@ -322,7 +322,7 @@ async def startup_event():
     from src.agents.content_syndication_agent import _publish_to_devto, TOPICS
     from src.agents.pmoc_seo_agent import generate_pmoc_pages
     from src.agents.social_auto_agent import auto_job_reddit, auto_job_linkedin_content
-    from src.agents.directory_submission_agent import auto_job_directories, auto_job_press_release_distribution
+    from src.agents.directory_submission_agent import auto_job_directories, auto_job_press_release_distribution, auto_job_regtech_press
     from src.agents.review_nurture_agent import auto_job_nurture_sequence, auto_job_reactivation
 
     # ── SEO Ecosystem — 40 páginas/dia, roda a cada 6h ──────────────────────
@@ -373,6 +373,7 @@ async def startup_event():
         ("LinkedIn",         auto_job_linkedin_content,     86400),   # 24h
         ("Directories",      auto_job_directories,          259200),  # 72h
         ("PR-Distribution",  auto_job_press_release_distribution, 1209600),  # 14d
+        ("Regtech-Press",    auto_job_regtech_press,            604800),  # 7d
         ("Nurture-Emails",   auto_job_nurture_sequence,     86400),   # 24h
         ("Reactivation",     auto_job_reactivation,         604800),  # 7d
         ("PMOC-SEO",         _pmoc,                         43200),   # 12h

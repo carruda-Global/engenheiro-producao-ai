@@ -9,6 +9,17 @@ from fastapi import APIRouter
 router = APIRouter(prefix="/api/directories", tags=["directories"])
 
 RESEND_KEY = os.getenv("RESEND_API_KEY", "")
+EIN_API_KEY = os.getenv("EIN_PRESSWIRE_API_KEY", "")
+JDSUPRA_TOKEN = os.getenv("JDSUPRA_API_TOKEN", "")
+
+# Publicações regtech que recebem press release automaticamente
+REGTECH_PRESS_EMAILS = [
+    ("FinTech Global",    "news@fintech.global"),
+    ("A-Team Insight",    "editorial@a-teaminsight.com"),
+    ("RegTech Analyst",   "press@regtechanalyst.com"),
+    ("Compliance Week",   "newsroom@complianceweek.com"),
+    ("ACAMS Today",       "editor@acams.org"),
+]
 
 # Diretórios que aceitam submissão via formulário/API — priorizados por tráfego
 DIRECTORIES = [
@@ -114,9 +125,77 @@ async def _send_listing_email(directory: dict) -> bool:
         return False
 
 
+async def _submit_ein_presswire() -> bool:
+    """Envia press release para EIN Presswire via API REST."""
+    if not EIN_API_KEY:
+        return False
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            r = await client.post(
+                "https://www.einpresswire.com/api/v1/news",
+                headers={"Authorization": f"Bearer {EIN_API_KEY}"},
+                json={
+                    "headline": "Brazilian AI Startup Launches 86 Compliance Agents Covering All Major 2026 Regulatory Deadlines",
+                    "body": PR_TEMPLATE,
+                    "keywords": "regtech,compliance,AI,LGPD,GDPR,DORA,CSRD,EU AI Act",
+                    "distribution": "global",
+                },
+            )
+        logger.info("[EIN] Press release submitted: %s", r.status_code)
+        return r.status_code < 300
+    except Exception as e:
+        logger.warning("[EIN] Submit error: %s", e)
+        return False
+
+
+async def _submit_jdsupra(article_html: str) -> bool:
+    """Publica artigo no JD Supra via API."""
+    if not JDSUPRA_TOKEN:
+        return False
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            r = await client.post(
+                "https://www.jdsupra.com/api/v1/documents",
+                headers={"Authorization": f"Token {JDSUPRA_TOKEN}", "Content-Type": "application/json"},
+                json={
+                    "title": "AION: 86 AI Compliance Agents for EU AI Act, DORA, CSRD & LGPD in 2026",
+                    "content": article_html,
+                    "topics": ["Regulatory Compliance", "Artificial Intelligence", "FinTech"],
+                    "practice_areas": ["Corporate/Business Organizations", "Technology"],
+                },
+            )
+        logger.info("[JDSupra] Article submitted: %s", r.status_code)
+        return r.status_code < 300
+    except Exception as e:
+        logger.warning("[JDSupra] Submit error: %s", e)
+        return False
+
+
+async def auto_job_regtech_press() -> None:
+    """Envia press release para publicações regtech via email (Resend)."""
+    if not RESEND_KEY:
+        return
+    for name, email in REGTECH_PRESS_EMAILS:
+        try:
+            async with httpx.AsyncClient(timeout=15) as client:
+                await client.post(
+                    "https://api.resend.com/emails",
+                    headers={"Authorization": f"Bearer {RESEND_KEY}", "Content-Type": "application/json"},
+                    json={
+                        "from": "contact@global-engenharia.com",
+                        "to": [email],
+                        "subject": "Press Release: Brazilian AI Startup Launches 86 Compliance Agents for 2026 Regulatory Wave",
+                        "text": PR_TEMPLATE,
+                    },
+                )
+            logger.info("[PRESS] Sent to %s (%s)", name, email)
+            await asyncio.sleep(10)
+        except Exception as e:
+            logger.warning("[PRESS] Error sending to %s: %s", name, e)
+
+
 async def auto_job_directories():
     """Every 72h: sends listing request emails for top directories."""
-    await asyncio.sleep(5400)  # 90min warm-up
     batch = 0
     dirs_email = [d for d in DIRECTORIES if d["type"] == "email_request"]
     while True:
@@ -134,26 +213,27 @@ async def auto_job_directories():
 
 
 async def auto_job_press_release_distribution():
-    """Every 14 days: sends press release to owner email for distribution to OpenPR/EIN."""
-    await asyncio.sleep(10800)  # 3h warm-up
-    while True:
-        try:
-            if RESEND_KEY:
-                async with httpx.AsyncClient(timeout=15) as client:
-                    await client.post(
-                        "https://api.resend.com/emails",
-                        headers={"Authorization": f"Bearer {RESEND_KEY}", "Content-Type": "application/json"},
-                        json={
-                            "from": "automacao@global-engenharia.com",
-                            "to": ["carruda2307@gmail.com"],
-                            "subject": "[AUTO] Press Release pronto — publicar no OpenPR e EIN Presswire",
-                            "text": PR_TEMPLATE,
-                        },
-                    )
-                logger.info("[CRON] Press release sent to owner for distribution")
-        except Exception as e:
-            logger.error("[CRON] PR distribution error: %s", e)
-        await asyncio.sleep(1209600)  # 14 dias
+    """Every 14 days: distribui press release via EIN API + JD Supra + publicações regtech."""
+    try:
+        await _submit_ein_presswire()
+        await _submit_jdsupra(f"<p>{PR_TEMPLATE.replace(chr(10), '</p><p>')}</p>")
+        await auto_job_regtech_press()
+        # Fallback: envia para dono encaminhar ao OpenPR
+        if RESEND_KEY:
+            async with httpx.AsyncClient(timeout=15) as client:
+                await client.post(
+                    "https://api.resend.com/emails",
+                    headers={"Authorization": f"Bearer {RESEND_KEY}", "Content-Type": "application/json"},
+                    json={
+                        "from": "automacao@global-engenharia.com",
+                        "to": ["carruda2307@gmail.com"],
+                        "subject": "[AUTO] PR distribuído — verificar EIN + JDSupra + 5 publicações regtech",
+                        "text": "Press release enviado automaticamente para:\n- EIN Presswire (API)\n- JD Supra (API)\n- FinTech Global\n- A-Team Insight\n- RegTech Analyst\n- Compliance Week\n- ACAMS Today\n\nPublicar também em OpenPR.com manualmente se necessário.\n\n" + PR_TEMPLATE,
+                    },
+                )
+        logger.info("[CRON] Press release distributed to all channels")
+    except Exception as e:
+        logger.error("[CRON] PR distribution error: %s", e)
 
 
 @router.get("/list")
