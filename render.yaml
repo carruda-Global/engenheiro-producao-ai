@@ -1,4 +1,4 @@
-services:
+﻿services:
   - type: web
     name: hmas-orchestrator
     env: docker
@@ -59,6 +59,10 @@ services:
       - key: AZURE_CLIENT_ID
         sync: false
       - key: AZURE_CLIENT_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: DEVTO_API_KEY
         sync: false
     healthCheckPath: /
     numInstances: 1
@@ -165,3 +169,4 @@ databases:
     databaseName: hmas
     user: hmas_user
     region: ohio
+
