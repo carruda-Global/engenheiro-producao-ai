@@ -301,7 +301,7 @@ def _make_loop(name: str, fn, interval: int):
             except Exception as e:
                 logger.error("[24/7] %s error: %s", name, e)
             await asyncio.sleep(interval)
-    return _loop
+    return _loop()
 
 
 @app.on_event("startup")
