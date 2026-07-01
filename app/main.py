@@ -145,6 +145,28 @@ async def startup():
     except Exception as e:
         logger.warning("[A2A] Falha ao montar rotas A2A: %s", e)
 
+    # ── AgentVerse (Fetch.ai) — registro automático via uagents-core ─────────
+    try:
+        from uagents_core.utils.registration import register_chat_agent, RegistrationRequestCredentials
+        agentverse_key = os.getenv("AGENTVERSE_KEY", "")
+        agent_seed = os.getenv("AGENT_SEED_PHRASE", "")
+        base_url = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
+        if agentverse_key and agent_seed:
+            register_chat_agent(
+                "EcoSystem Compliance",
+                f"{base_url}/api/marketplace/execute/compliance-eu-ai-act",
+                active=True,
+                credentials=RegistrationRequestCredentials(
+                    agentverse_api_key=agentverse_key,
+                    agent_seed_phrase=agent_seed,
+                ),
+            )
+            logger.info("[AgentVerse] Agente registrado com sucesso")
+        else:
+            logger.info("[AgentVerse] AGENTVERSE_KEY ou AGENT_SEED_PHRASE não configurados — pulando")
+    except Exception as e:
+        logger.warning("[AgentVerse] Falha no registro: %s", e)
+
 
 @app.on_event("shutdown")
 async def shutdown():
