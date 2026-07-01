@@ -146,16 +146,42 @@ async def receive_message(request: Request):
 
     result = await _run_service(service_id, payload)
 
+    # Formata resposta como texto de chat (formato esperado pelo AgentVerse)
+    status = result.get("status", "partial")
+    risk_score = result.get("risk_score", 50)
+    summary = result.get("summary", "")
+    findings = result.get("findings", [])
+    action_plan = result.get("action_plan", [])
+
+    findings_text = "\n".join(f"• {f}" if isinstance(f, str) else f"• {f.get('description', str(f))}" for f in findings[:5])
+    actions_text = "\n".join(f"{i+1}. {a}" if isinstance(a, str) else f"{i+1}. {a.get('action', str(a))}" for i, a in enumerate(action_plan[:5]))
+
+    chat_response = f"""## {name}
+
+**Status:** {status.upper()} | **Risk Score:** {risk_score}/100
+
+{summary}
+
+{"**Key Findings:**" + chr(10) + findings_text if findings_text else ""}
+
+{"**Action Plan:**" + chr(10) + actions_text if actions_text else ""}
+
+---
+*EcoSystem AEC — Global Match Engenharia de Produção*
+*Full report: global-engenharia.com/ecosystem*
+"""
+
     return JSONResponse({
-        "type": "compliance_result",
+        "type": "agent-message",
+        "message": chat_response.strip(),
         "service_id": service_id,
-        "service_name": name,
-        "price_usdc": price,
-        "sender": msg.sender,
-        "session": msg.session,
-        "result": result,
-        "status": "delivered",
-        "provider": "Global Match Engenharia de Produção",
+        "status": "success",
+        "data": {
+            "status": status,
+            "risk_score": risk_score,
+            "findings": findings,
+            "action_plan": action_plan,
+        }
     })
 
 
