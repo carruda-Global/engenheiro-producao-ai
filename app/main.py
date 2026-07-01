@@ -78,6 +78,7 @@ from src.agents.directory_submission_agent import router as directories_router
 from src.agents.review_nurture_agent import router as nurture_router
 from src.agents.pmoc_seo_agent import router as pmoc_seo_router
 from src.agents.pricing_optimizer_agent import router as pricing_router
+from src.agents.agent_marketplace import router as marketplace_router, auto_job_marketplace_registration
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -311,6 +312,7 @@ app.include_router(directories_router)
 app.include_router(nurture_router)
 app.include_router(pmoc_seo_router)
 app.include_router(pricing_router)
+app.include_router(marketplace_router)
 
 def _make_loop(name: str, fn, interval: int):
     """Wraps any async fn into an infinite loop that starts immediately, no warm-up."""
@@ -390,6 +392,7 @@ async def startup_event():
         ("Reactivation",     auto_job_reactivation,         604800),  # 7d
         ("PMOC-SEO",         _pmoc,                         43200),   # 12h
         ("Price-Optimizer",  auto_job_price_optimizer,      86400),   # 24h
+        ("A2A-Marketplace",  auto_job_marketplace_registration, 604800), # 7d
     ]
 
     for name, fn, interval in JOBS:
