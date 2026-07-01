@@ -75,6 +75,7 @@ from src.agents.dashboard_agent import router as dashboard_router
 from src.agents.social_auto_agent import router as social_auto_router
 from src.agents.directory_submission_agent import router as directories_router
 from src.agents.review_nurture_agent import router as nurture_router
+from src.agents.pmoc_seo_agent import router as pmoc_seo_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -270,6 +271,7 @@ app.include_router(dashboard_router)
 app.include_router(social_auto_router)
 app.include_router(directories_router)
 app.include_router(nurture_router)
+app.include_router(pmoc_seo_router)
 
 async def _job_seo():
     """Every 6h: generates 10 SEO pages per market (40/day)."""
@@ -358,7 +360,23 @@ async def startup_event():
     asyncio.create_task(auto_job_press_release_distribution())
     asyncio.create_task(auto_job_nurture_sequence())
     asyncio.create_task(auto_job_reactivation())
-    logger.info("[CRON] All 10 automation jobs started: SEO / Syndication / SDR / PR / Reddit / LinkedIn / Directories / NurtureEmails / Reactivation")
+    # PMOC SEO — 90 páginas em 3 batches automáticos
+    from src.agents.pmoc_seo_agent import generate_pmoc_pages
+    async def _job_pmoc_seo():
+        await asyncio.sleep(1800)  # 30min warm-up
+        batches = [("bairros", 30), ("empresas", 20), ("problemas", 20)]
+        cycle = 0
+        while True:
+            batch, count = batches[cycle % len(batches)]
+            try:
+                result = await generate_pmoc_pages(batch, count)
+                logger.info("[CRON] PMOC-SEO: %d páginas geradas (batch=%s)", result["generated"], batch)
+            except Exception as e:
+                logger.error("[CRON] PMOC-SEO error: %s", e)
+            cycle += 1
+            await asyncio.sleep(43200)  # 12h entre batches
+    asyncio.create_task(_job_pmoc_seo())
+    logger.info("[CRON] All 11 automation jobs started: SEO / Syndication / SDR / PR / Reddit / LinkedIn / Directories / NurtureEmails / Reactivation")
 
 
 static_dir = Path(__file__).parent.parent / "static"
