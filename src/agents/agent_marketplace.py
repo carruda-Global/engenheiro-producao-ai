@@ -153,6 +153,25 @@ def _build_payment_required(service_id: str) -> dict:
         ],
         "extensions": {
             "bazaar": {
+                "schema": {
+                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                    "type": "object",
+                    "properties": {
+                        "service_id": {"type": "string"},
+                        "status":     {"type": "string", "enum": ["delivered", "error"]},
+                        "result": {
+                            "type": "object",
+                            "properties": {
+                                "status":      {"type": "string", "enum": ["compliant", "partial", "non_compliant"]},
+                                "risk_score":  {"type": "integer", "minimum": 0, "maximum": 100},
+                                "findings":    {"type": "array", "items": {"type": "object"}},
+                                "action_plan": {"type": "array", "items": {"type": "object"}},
+                            },
+                            "required": ["status", "risk_score"],
+                        },
+                    },
+                    "required": ["service_id", "status", "result"],
+                },
                 "info": {
                     "name": svc["name"],
                     "description": svc["description"],
