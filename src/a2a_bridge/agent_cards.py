@@ -14,23 +14,22 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
     rest_url = f"{base_url}/a2a/rest" if base_url else "/a2a/rest"
 
     card = AgentCard(
-        name="Engenheiro de Produção AI",
+        name="EcoSystem AEC — 86 AI Compliance Agents",
         description=(
-            "Sistema multiagente com 30 agentes de IA para Arquitetura, Engenharia, "
-            "Construcao (AEC), Conformidade Regulatoria Brasileira e Automacao "
-            "Empresarial. Inclui agentes AEC, Regulatorios (NR-1, Tributario, "
-            "LGPD, ESG, Carbono, Canal de Denuncias, Igualdade Salarial, "
-            "Anticorrupcao), Microsoft Pack (6 agentes M365), e Cross-Sell "
-            "(Onboarding de Funcionarios, Atendimento PT-BR, Conciliacao Financeira)."
+            "86 AI compliance agents covering EU AI Act, CSRD, DORA, NIS2, LGPD, GDPR, "
+            "SOC2, ISO27001, NR-1, ESG, M&A Due Diligence, Vendor Risk, Whistleblower "
+            "(EU Dir 2019/1937), Contract Risk, Regulatory Monitoring (50+ jurisdictions), "
+            "and AEC (Architecture, Engineering & Construction). Available in 8 languages. "
+            "Starting at $99/month. Microsoft Azure Marketplace & Google Cloud Marketplace."
         ),
-        version="2.1.0",
+        version="7.0.0",
         documentation_url="https://engenheiro-producao-ai.onrender.com/docs",
         icon_url=f"{base_url}/static/logo.png" if base_url else "/static/logo.png",
     )
 
     prov = AgentProvider(
-        organization="Projato Engenharia",
-        url="https://projato.com.br",
+        organization="Global Match Engenharia",
+        url="https://global-engenharia.com",
     )
     card.provider.CopyFrom(prov)
 
@@ -498,6 +497,44 @@ def build_agent_card(base_url: str | None = None) -> AgentCard:
             "Gere relatorio de fechamento mensal com divergencias",
         ],
     )
+
+    # ── Agentes compliance global (EcoSystem AEC 7.0) ────────────────────────
+    _add_skill(card, id="eu_ai_act", name="EU AI Act Readiness",
+        description="Risk classification, technical documentation and conformity assessment for high-risk AI systems. August 2026 deadline.",
+        tags=["EU AI Act", "AI governance", "compliance", "2026"], examples=["Classify my AI system risk level", "Generate technical documentation for EU AI Act"])
+    _add_skill(card, id="csrd_reporting", name="CSRD Sustainability Reporting",
+        description="Double materiality assessment, ESRS gap analysis and sustainability reports for 50,000+ EU companies required to report.",
+        tags=["CSRD", "ESG", "sustainability", "ESRS", "EU"], examples=["Run CSRD double materiality assessment", "Generate ESRS E1 climate report"])
+    _add_skill(card, id="dora_compliance", name="DORA Compliance",
+        description="Digital Operational Resilience Act compliance for financial entities. ICT risk management, incident reporting, TLPT.",
+        tags=["DORA", "fintech", "resilience", "EU", "financial"], examples=["DORA gap analysis for our bank", "Generate ICT incident report"])
+    _add_skill(card, id="nis2_compliance", name="NIS2 Directive",
+        description="NIS2 scope determination, cybersecurity implementation roadmap and incident notification for essential/important entities.",
+        tags=["NIS2", "cybersecurity", "EU", "incident"], examples=["Am I in scope for NIS2?", "Generate NIS2 implementation roadmap"])
+    _add_skill(card, id="vendor_risk", name="Vendor Risk Assessment",
+        description="Third-party risk scoring, portfolio scan and due diligence reports for supplier compliance.",
+        tags=["vendor risk", "third party", "supply chain", "due diligence"], examples=["Assess vendor risk for this supplier", "Run portfolio risk scan"])
+    _add_skill(card, id="ma_due_diligence", name="M&A Due Diligence",
+        description="Compliance check and sanctions screening for mergers and acquisitions.",
+        tags=["M&A", "due diligence", "sanctions", "acquisition"], examples=["Run compliance DD for this acquisition target", "Screen for sanctions exposure"])
+    _add_skill(card, id="whistleblower", name="Whistleblower Management",
+        description="EU Directive 2019/1937 compliant whistleblower case management with anonymous reporting and investigation workflows.",
+        tags=["whistleblower", "EU Directive 2019/1937", "ethics", "reporting"], examples=["Set up whistleblower channel", "Check EU whistleblower compliance"])
+    _add_skill(card, id="contract_risk", name="Contract Risk Analysis",
+        description="Contract risk scoring, DPA (Data Processing Agreement) compliance check and clause flagging.",
+        tags=["contracts", "DPA", "GDPR", "risk", "legal"], examples=["Analyze this contract for compliance risks", "Check DPA against GDPR requirements"])
+    _add_skill(card, id="regulatory_monitor", name="Regulatory Monitor",
+        description="Real-time regulatory change monitoring across 50+ jurisdictions with impact analysis and automated alerts.",
+        tags=["regulatory", "monitoring", "global", "alerts", "jurisdictions"], examples=["What changed in EU regulation last week?", "Impact analysis of new DORA guideline"])
+    _add_skill(card, id="board_reporting", name="Board ESG Reporting",
+        description="Executive ESG dashboards and audit committee reports for board-level compliance oversight.",
+        tags=["ESG", "board", "reporting", "audit", "executive"], examples=["Generate board compliance report", "Create audit committee ESG summary"])
+    _add_skill(card, id="soc2_assessment", name="SOC2 Type II Assessment",
+        description="SOC2 Type II gap analysis, control mapping and audit readiness for US enterprise clients.",
+        tags=["SOC2", "audit", "security", "US", "enterprise"], examples=["SOC2 Type II gap analysis", "Map controls to SOC2 trust criteria"])
+    _add_skill(card, id="iso27001", name="ISO 27001:2022 Compliance",
+        description="ISO 27001:2022 gap analysis, ISMS implementation and certification readiness.",
+        tags=["ISO27001", "ISMS", "security", "certification"], examples=["ISO 27001 gap analysis", "Generate ISMS policy documents"])
 
     iface_jsonrpc = AgentInterface(
         protocol_binding="JSONRPC",

@@ -135,6 +135,15 @@ async def startup():
     await orchestrator.initialize()
     logger.info("Sistema pronto. 59/59 agentes ativos.")
 
+    # ── A2A Protocol — monta rotas JSON-RPC + agent card completo ───────────
+    try:
+        from src.a2a_bridge.setup import setup_a2a_routes
+        base_url = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
+        setup_a2a_routes(app, settings, base_url=base_url)
+        logger.info("[A2A] Protocolo ativo: %s/.well-known/agent-card.json | /a2a/jsonrpc | /a2a/rest", base_url)
+    except Exception as e:
+        logger.warning("[A2A] Falha ao montar rotas A2A: %s", e)
+
 
 @app.on_event("shutdown")
 async def shutdown():
