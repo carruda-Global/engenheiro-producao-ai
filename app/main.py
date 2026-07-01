@@ -79,6 +79,7 @@ from src.agents.review_nurture_agent import router as nurture_router
 from src.agents.pmoc_seo_agent import router as pmoc_seo_router
 from src.agents.pricing_optimizer_agent import router as pricing_router
 from src.agents.agent_marketplace import router as marketplace_router, auto_job_marketplace_registration
+from src.agents.agentverse_handler import router as agentverse_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -154,7 +155,7 @@ async def startup():
         if agentverse_key and agent_seed:
             register_chat_agent(
                 "EcoSystem Compliance",
-                f"{base_url}/api/marketplace/execute/compliance-eu-ai-act",
+                f"{base_url}/api/agentverse/messages",
                 active=True,
                 credentials=RegistrationRequestCredentials(
                     agentverse_api_key=agentverse_key,
@@ -335,6 +336,7 @@ app.include_router(nurture_router)
 app.include_router(pmoc_seo_router)
 app.include_router(pricing_router)
 app.include_router(marketplace_router)
+app.include_router(agentverse_router)
 
 def _make_loop(name: str, fn, interval: int):
     """Wraps any async fn into an infinite loop that starts immediately, no warm-up."""
