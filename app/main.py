@@ -639,17 +639,12 @@ async def mcp_server_manifest(server_id: str):
 
 
 INTERNAL_AGENTS = {
-    # Orquestração
-    "master_orchestrator", "workforce_orchestrator", "ecosystem_evolution",
-    "meta_learning", "federated_knowledge", "cross_platform_bridge",
-    # Inteligência
-    "quality_critic", "client_intelligence", "knowledge_agent", "facilitator_agent",
-    # Integração (conectores — não passam por orchestrator._agent_map, mas listados
-    # aqui para documentar o Tier 3 completo; o filtro abaixo já os ignora)
-    "antigravity_bridge", "zapier_integration_agent", "physical_ai_connector",
-    "universal_governance",
-    # Operação
-    "dashboard_agent", "usage_billing",
+    # Tier 3 — Enterprise Platform (não vendidos diretamente, sustentam os Copilots)
+    "master_orchestrator", "cross_platform_bridge", "client_intelligence",
+    "meta_learning", "ecosystem_evolution", "federated_knowledge",
+    "universal_governance", "antigravity_bridge", "physical_ai_connector",
+    "mai_code_reviewer", "zapier_integration_agent", "dashboard_agent",
+    "usage_billing",
 }
 
 
