@@ -1,5 +1,8 @@
 from src.agents.base import BaseAgent
-from typing import Dict, Any, List
+from src.config import Settings
+from src.api.deepseek_client import DeepSeekClient
+from typing import Dict, Any
+import asyncio
 
 
 class AntigravityBridge(BaseAgent):
@@ -11,17 +14,9 @@ class AntigravityBridge(BaseAgent):
     }
 
     def __init__(self):
-        super().__init__(
-            agent_id="#61",
-            name="Antigravity Bridge",
-            description="Conector MCP bidirecional entre Google Antigravity 2.0 e Microsoft Copilot Studio",
-            group="enterprise_connectors",
-            price_brl=2990.0,
-            price_usd=1490.0,
-            tools=["workflow_router", "cross_platform_sync", "state_persistence"],
-            llm="deepseek-v4-flash",
-            budget=400000
-        )
+        settings = Settings()
+        llm = DeepSeekClient(settings)
+        super().__init__(settings, llm)
 
     async def execute(self, context: Dict[str, Any]) -> Dict[str, Any]:
         action = context.get("action", "route")
@@ -39,12 +34,22 @@ class AntigravityBridge(BaseAgent):
         results = {}
         for i, step in enumerate(steps):
             platform = self._decide_platform(step)
-            results[step.get("id", f"step_{i}")] = {
-                "platform": platform,
-                "status": "routed",
-                "step_index": i
-            }
-        return {"workflow_id": workflow_id, "completed_steps": len(steps), "results": results}
+            step_result = await self._execute_on_platform(platform, step, tenant_id)
+            results[step.get("id", f"step_{i}")] = step_result
+        return {
+            "workflow_id": workflow_id,
+            "completed_steps": len(steps),
+            "results": results
+        }
+
+    async def _execute_on_platform(self, platform: str, step: dict, tenant_id: str) -> Dict:
+        prompt = step.get("payload", {}).get("prompt", str(step))
+        try:
+            system = f"You are a {platform} specialist. Execute this workflow step."
+            response = await asyncio.to_thread(self.llm.chat, system, prompt)
+            return {"platform": platform, "status": "completed", "result": response}
+        except Exception as e:
+            return {"platform": platform, "status": "failed", "error": str(e)}
 
     def _decide_platform(self, step: dict) -> str:
         required = step.get("requires", [])

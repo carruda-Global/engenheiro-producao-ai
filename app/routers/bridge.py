@@ -11,7 +11,12 @@ async def create_workflow(request: Request):
     tenant_id = request.headers.get("X-Tenant-ID", "default")
     workflow_id = str(uuid.uuid4())
     bridge = AntigravityBridge()
-    result = await bridge._route_workflow(workflow_id, data.get("steps", []), tenant_id)
+    result = await bridge.execute({
+        "action": "route",
+        "workflow_id": workflow_id,
+        "steps": data.get("steps", []),
+        "tenant_id": tenant_id
+    })
     return {"workflow_id": workflow_id, "status": "processing", **result}
 
 
