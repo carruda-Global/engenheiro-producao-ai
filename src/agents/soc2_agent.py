@@ -1,14 +1,16 @@
-"""Global SOC2 Copilot — questionário estruturado (catálogo real AICPA TSC) ->
-motor de gap relacional -> PDF com paywall free/premium.
+"""Global SOC2 Copilot — structured questionnaire (real AICPA TSC catalog) ->
+deterministic gap engine -> PDF with free/premium paywall.
 
-Mesma arquitetura do NR1: catálogo real (não é o LLM inventando controles),
-questionário fechado, motor de decisão determinístico. LLM só entra pra
-transformar o resultado em texto de recomendação, nunca decide o gap.
+Same architecture as NR1: real catalog (not the LLM guessing controls),
+closed questionnaire, deterministic decision engine. LLM only writes the
+executive summary text, never decides the gap.
 
-Fonte do catálogo: AICPA Trust Services Criteria 2017 (rev. 2022).
+Catalog source: AICPA Trust Services Criteria 2017 (rev. 2022).
+All-English product — international/US market.
 """
 import asyncio
 from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from src.api.deepseek_client import DeepSeekClient
 from src.config import Settings
@@ -16,52 +18,50 @@ from src.agents._copilot_common import gerar_pdf_relatorio
 
 router = APIRouter(prefix="/api/soc2", tags=["soc2"])
 
-# Catálogo real — Parte 01 dos 33 Common Criteria (os 9 CC "âncora" + A1.2).
-# Fonte única de verdade: gera o seed.sql também (ver Repositorio dos
-# Agentes/01 - global_soc2_copilot.md/seed.sql).
+# Real catalog — Part 1 of the 33 Common Criteria (the 9 anchor CCs + A1.2).
 CATALOGO_SOC2 = [
-    {"id": "CC1.1", "categoria": "Control Environment", "nome": "Integridade e valores éticos",
-     "pergunta": "Existe código de conduta/ética formalizado e comunicado aos funcionários?", "obrigatorio": True},
-    {"id": "CC2.1", "categoria": "Communication and Information", "nome": "Comunicação de informações de segurança",
-     "pergunta": "Existe política de segurança da informação documentada e comunicada?", "obrigatorio": True},
-    {"id": "CC3.1", "categoria": "Risk Assessment", "nome": "Definição de objetivos para avaliação de risco",
-     "pergunta": "Existe processo formal de avaliação de riscos (risk assessment) documentado?", "obrigatorio": True},
-    {"id": "CC4.1", "categoria": "Monitoring Activities", "nome": "Avaliações contínuas e independentes",
-     "pergunta": "Existem auditorias internas ou avaliações independentes periódicas dos controles?", "obrigatorio": True},
-    {"id": "CC5.1", "categoria": "Control Activities", "nome": "Seleção e desenvolvimento de atividades de controle",
-     "pergunta": "Existem controles documentados mapeados aos riscos identificados?", "obrigatorio": True},
-    {"id": "CC6.1", "categoria": "Logical and Physical Access Controls", "nome": "Controles de acesso lógico",
-     "pergunta": "Existe controle de acesso lógico (firewall, VPN, autenticação) documentado?", "obrigatorio": True},
-    {"id": "CC6.2", "categoria": "Logical and Physical Access Controls", "nome": "Provisionamento e desprovisionamento de acesso",
-     "pergunta": "Existe processo formal de onboarding/offboarding de acesso a sistemas?", "obrigatorio": True},
-    {"id": "CC6.3", "categoria": "Logical and Physical Access Controls", "nome": "Gestão de privilégios de acesso",
-     "pergunta": "O acesso é concedido por papel/função com revisão periódica de privilégios?", "obrigatorio": True},
-    {"id": "CC7.1", "categoria": "System Operations", "nome": "Detecção de vulnerabilidades",
-     "pergunta": "Existe ferramenta de scan de vulnerabilidades rodando periodicamente?", "obrigatorio": True},
-    {"id": "CC7.2", "categoria": "System Operations", "nome": "Monitoramento de eventos de segurança",
-     "pergunta": "Existe SIEM ou ferramenta de monitoramento de eventos de segurança?", "obrigatorio": True},
-    {"id": "CC8.1", "categoria": "Change Management", "nome": "Gestão de mudanças",
-     "pergunta": "Existe processo formal de change management (aprovação, teste, deploy)?", "obrigatorio": True},
-    {"id": "CC9.1", "categoria": "Risk Mitigation", "nome": "Mitigação de riscos de negócio",
-     "pergunta": "Existe plano de continuidade de negócio / resposta a incidentes documentado?", "obrigatorio": True},
-    {"id": "A1.2", "categoria": "Availability", "nome": "Monitoramento de capacidade e disponibilidade",
-     "pergunta": "Existe backup automatizado e plano de disaster recovery testado?", "obrigatorio": False},
+    {"id": "CC1.1", "categoria": "Control Environment", "nome": "Integrity and Ethical Values",
+     "pergunta": "Is there a formalized code of conduct/ethics communicated to employees?", "obrigatorio": True},
+    {"id": "CC2.1", "categoria": "Communication and Information", "nome": "Security Information Communication",
+     "pergunta": "Is there a documented and communicated information security policy?", "obrigatorio": True},
+    {"id": "CC3.1", "categoria": "Risk Assessment", "nome": "Risk Assessment Objectives",
+     "pergunta": "Is there a documented, formal risk assessment process?", "obrigatorio": True},
+    {"id": "CC4.1", "categoria": "Monitoring Activities", "nome": "Ongoing and Independent Evaluations",
+     "pergunta": "Are periodic internal audits or independent evaluations of controls performed?", "obrigatorio": True},
+    {"id": "CC5.1", "categoria": "Control Activities", "nome": "Control Activity Selection and Development",
+     "pergunta": "Are documented controls mapped to the identified risks?", "obrigatorio": True},
+    {"id": "CC6.1", "categoria": "Logical and Physical Access Controls", "nome": "Logical Access Controls",
+     "pergunta": "Is logical access control (firewall, VPN, authentication) documented?", "obrigatorio": True},
+    {"id": "CC6.2", "categoria": "Logical and Physical Access Controls", "nome": "Access Provisioning and Deprovisioning",
+     "pergunta": "Is there a formal onboarding/offboarding process for system access?", "obrigatorio": True},
+    {"id": "CC6.3", "categoria": "Logical and Physical Access Controls", "nome": "Access Privilege Management",
+     "pergunta": "Is access granted by role/function with periodic privilege review?", "obrigatorio": True},
+    {"id": "CC7.1", "categoria": "System Operations", "nome": "Vulnerability Detection",
+     "pergunta": "Is a vulnerability scanning tool run periodically?", "obrigatorio": True},
+    {"id": "CC7.2", "categoria": "System Operations", "nome": "Security Event Monitoring",
+     "pergunta": "Is there a SIEM or security event monitoring tool in place?", "obrigatorio": True},
+    {"id": "CC8.1", "categoria": "Change Management", "nome": "Change Management",
+     "pergunta": "Is there a formal change management process (approval, testing, deployment)?", "obrigatorio": True},
+    {"id": "CC9.1", "categoria": "Risk Mitigation", "nome": "Business Risk Mitigation",
+     "pergunta": "Is there a documented business continuity / incident response plan?", "obrigatorio": True},
+    {"id": "A1.2", "categoria": "Availability", "nome": "Capacity and Availability Monitoring",
+     "pergunta": "Is there automated backup and a tested disaster recovery plan?", "obrigatorio": False},
 ]
 
 RECOMENDACOES = {
-    "CC1.1": "Formalize um código de conduta e colete assinatura/ciência de todos os funcionários anualmente.",
-    "CC2.1": "Documente e publique a política de segurança da informação, revisada ao menos anualmente.",
-    "CC3.1": "Implemente um processo de risk assessment ao menos anual, com registro de riscos e mitigação.",
-    "CC4.1": "Programe auditorias internas trimestrais ou semestrais dos controles críticos.",
-    "CC5.1": "Mapeie cada controle existente ao risco correspondente identificado no risk assessment.",
-    "CC6.1": "Implemente MFA, VPN e segmentação de rede documentados formalmente.",
-    "CC6.2": "Crie checklist formal de onboarding/offboarding com aprovação e registro de acesso.",
-    "CC6.3": "Implemente revisão trimestral de acessos com base no princípio de menor privilégio.",
-    "CC7.1": "Configure scan de vulnerabilidades automatizado (ex: semanal) com relatório de remediação.",
-    "CC7.2": "Implemente ferramenta de SIEM/log monitoring com alertas configurados.",
-    "CC8.1": "Documente fluxo de change management com aprovação, ambiente de teste e rollback.",
-    "CC9.1": "Elabore plano de continuidade de negócio (BCP) e teste-o ao menos anualmente.",
-    "A1.2": "Configure backup automatizado com teste de restauração periódico (DR drill).",
+    "CC1.1": "Formalize a code of conduct and collect signed acknowledgment from all employees annually.",
+    "CC2.1": "Document and publish the information security policy, reviewed at least annually.",
+    "CC3.1": "Implement an at-least-annual risk assessment process with a risk register and mitigation tracking.",
+    "CC4.1": "Schedule quarterly or semi-annual internal audits of critical controls.",
+    "CC5.1": "Map each existing control to the corresponding risk identified in the risk assessment.",
+    "CC6.1": "Implement MFA, VPN, and formally documented network segmentation.",
+    "CC6.2": "Create a formal onboarding/offboarding checklist with approval and access logging.",
+    "CC6.3": "Implement quarterly access reviews based on the principle of least privilege.",
+    "CC7.1": "Set up automated vulnerability scanning (e.g. weekly) with a remediation report.",
+    "CC7.2": "Deploy a SIEM/log monitoring tool with configured alerts.",
+    "CC8.1": "Document a change management workflow with approval, test environment, and rollback.",
+    "CC9.1": "Draft a business continuity plan (BCP) and test it at least annually.",
+    "A1.2": "Configure automated backups with periodic restore testing (DR drill).",
 }
 
 
@@ -78,14 +78,13 @@ class AvaliacaoIn(BaseModel):
 
 @router.get("/questionario")
 async def obter_questionario():
-    """Sprint 2 equivalente do NR1: perguntas fechadas, catálogo real, sem IA."""
+    """NR1's Sprint 2 equivalent: closed questions, real catalog, no AI."""
     return {"framework": "SOC 2 (AICPA TSC 2017, rev. 2022)", "perguntas": CATALOGO_SOC2}
 
 
 def _avaliar_respostas(respostas: list[RespostaItem]) -> dict:
-    """Motor de decisão — Sprint 3: comparação determinística contra o
-    catálogo real. Não usa LLM para decidir gap, só para redigir texto."""
-    catalogo_por_id = {c["id"]: c for c in CATALOGO_SOC2}
+    """Decision engine — Sprint 3: deterministic comparison against the real
+    catalog. LLM is never used to decide the gap, only to write the summary."""
     respostas_por_id = {r.controle_id: r.status for r in respostas}
 
     obligations = []
@@ -116,7 +115,7 @@ def _avaliar_respostas(respostas: list[RespostaItem]) -> dict:
             gaps.append(f"{cid} ({controle['categoria']}): {controle['nome']}")
             action_plan.append({
                 "priority": 1 if controle["obrigatorio"] else 2,
-                "action": RECOMENDACOES.get(cid, f"Implementar controle {cid}"),
+                "action": RECOMENDACOES.get(cid, f"Implement control {cid}"),
                 "deadline_days": 30 if controle["obrigatorio"] else 60,
             })
 
@@ -143,7 +142,7 @@ def _avaliar_respostas(respostas: list[RespostaItem]) -> dict:
 
 @router.post("/avaliar")
 async def avaliar(dados: AvaliacaoIn):
-    """Sprint 4 equivalente do NR1: motor real + PDF. IA só redige o resumo executivo."""
+    """NR1's Sprint 4 equivalent: real engine + PDF. AI only writes the executive summary."""
     resultado = _avaliar_respostas(dados.respostas)
 
     settings = Settings()
@@ -153,27 +152,24 @@ async def avaliar(dados: AvaliacaoIn):
         f"Classification: {resultado['classification']}\nGaps: {resultado['gaps']}\n"
         "Write a 2-3 sentence executive summary explaining this result in plain business language."
     )
-    resumo = await asyncio.to_thread(
+    resultado["classification_reasoning"] = await asyncio.to_thread(
         deepseek.chat, "You are a SOC2 audit readiness advisor.", resumo_prompt
     )
-    resultado["classification_reasoning"] = resumo
 
-    from fastapi.responses import StreamingResponse
-    marca_dagua = not dados.licenca_premium
-    pdf_buf = gerar_pdf_relatorio("SOC 2 Readiness Report", dados.company, resultado)
     if not dados.licenca_premium:
         return {
             "preview": resultado,
-            "message": "Relatório completo com marca d'água — desbloqueie a versão premium para baixar sem marca d'água.",
+            "message": "Full report generated with watermark — unlock the premium version to download without watermark.",
             "checkout_url": "https://buy.stripe.com/3cs00l1Ae6QRfC47u8g7e08",
         }
+    pdf_buf = gerar_pdf_relatorio("SOC 2 Readiness Report", dados.company, resultado)
     return StreamingResponse(pdf_buf, media_type="application/pdf",
                               headers={"Content-Disposition": 'attachment; filename="SOC2_Readiness_Report.pdf"'})
 
 
 @router.post("/readiness-assessment")
 async def soc2_assessment_legacy(data: dict):
-    """Compatibilidade — fluxo antigo em texto livre, sem catálogo."""
+    """Backward compatibility — old free-text flow, no catalog."""
     settings = Settings()
     deepseek = DeepSeekClient(settings)
     prompt = f"Company: {data.get('company', '')}\nCurrent controls: {data.get('current_controls', 'unknown')}"
