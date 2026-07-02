@@ -533,24 +533,6 @@ async def agent_card():
                 "description": "Automacao de vendas no Dynamics 365: qualificacao de leads, previsao de receita e gestao de pipeline com IA generativa.",
                 "tags": ["dynamics365", "microsoft", "crm", "sales", "erp"],
             },
-            {
-                "id": "agentforce_sdr",
-                "name": "Agentforce SDR",
-                "description": "Agente SDR no Salesforce Agentforce: prospecao automatizada, qualificacao de leads e agendamento de reunioes via Einstein AI.",
-                "tags": ["salesforce", "agentforce", "sdr", "crm", "sales"],
-            },
-            {
-                "id": "oracle_erp_compliance",
-                "name": "Oracle ERP Compliance",
-                "description": "Conformidade regulatoria no Oracle Fusion ERP: automacao de obrigacoes fiscais brasileiras (SPED, NF-e, eSocial) integradas ao Oracle.",
-                "tags": ["oracle", "erp", "compliance", "fiscal", "brazil"],
-            },
-            {
-                "id": "sap_joule_compliance",
-                "name": "SAP Joule Compliance",
-                "description": "Agente de compliance no SAP S/4HANA via SAP Joule: auditoria automatizada de processos fiscais e regulatorios brasileiros.",
-                "tags": ["sap", "s4hana", "joule", "compliance", "erp"],
-            },
         ],
     }
 
@@ -609,7 +591,7 @@ MCP_SERVERS = {
     },
     "erp": {
         "url": "https://engenheiro-producao-ai.onrender.com/mcp/erp/sse",
-        "tools": ["dynamics_sales", "dynamics_finance", "dynamics_hr", "agentforce_sdr", "agentforce_contracts", "oracle_erp_compliance", "oracle_hcm_regulatory", "sap_compliance_bridge", "sap_cbam_export", "powerbi_compliance"],
+        "tools": ["dynamics_sales", "dynamics_finance", "dynamics_hr", "powerbi_compliance"],
     },
 }
 

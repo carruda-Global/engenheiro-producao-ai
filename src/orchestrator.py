@@ -20,12 +20,6 @@ from src.agents import (
     ConciliacaoFinanceiraAgent,
     DynamicsSalesAgent, DynamicsFinanceAgent, DynamicsSupplyChainAgent,
     DynamicsHRAgent, DynamicsCustomerServiceAgent, PowerBIComplianceAgent,
-    AgentforceSDRAgent, AgentforceFieldServiceAgent,
-    AgentforceContractIntelligenceAgent, AgentforceRevenueIntelligenceAgent,
-    AgentforceSustainabilityAgent,
-    OracleERPComplianceAgent, OracleHCMRegulatoryAgent,
-    OracleSupplyChainESGAgent, OracleCXSalesIntelligenceAgent,
-    SAPComplianceBridgeAgent, SAPPredictiveMaintenanceAgent, SAPCBAMExportAgent,
     MasterOrchestratorAgent, CrossPlatformBridgeAgent,
     RegulatoryWatchAgent, ClientIntelligenceAgent, QualityCriticAgent,
     MetaLearningAgent, EcosystemEvolutionAgent, FederatedKnowledgeAgent,
@@ -98,18 +92,6 @@ class Orchestrator:
             "dynamics_hr": DynamicsHRAgent,
             "dynamics_customer_service": DynamicsCustomerServiceAgent,
             "powerbi_compliance": PowerBIComplianceAgent,
-            "agentforce_sdr": AgentforceSDRAgent,
-            "agentforce_field_service": AgentforceFieldServiceAgent,
-            "agentforce_contracts": AgentforceContractIntelligenceAgent,
-            "agentforce_revenue": AgentforceRevenueIntelligenceAgent,
-            "agentforce_sustainability": AgentforceSustainabilityAgent,
-            "oracle_erp_compliance": OracleERPComplianceAgent,
-            "oracle_hcm_regulatory": OracleHCMRegulatoryAgent,
-            "oracle_supply_chain_esg": OracleSupplyChainESGAgent,
-            "oracle_cx_sales": OracleCXSalesIntelligenceAgent,
-            "sap_compliance_bridge": SAPComplianceBridgeAgent,
-            "sap_predictive_maintenance": SAPPredictiveMaintenanceAgent,
-            "sap_cbam_export": SAPCBAMExportAgent,
             "master_orchestrator": MasterOrchestratorAgent,
             "cross_platform_bridge": CrossPlatformBridgeAgent,
             "regulatory_watch": RegulatoryWatchAgent,
@@ -145,11 +127,6 @@ class Orchestrator:
             "onboarding_funcionarios", "atendimento_cliente_ptbr", "conciliacao_financeira",
             "dynamics_sales", "dynamics_finance", "dynamics_supply_chain", "dynamics_hr",
             "dynamics_customer_service", "powerbi_compliance",
-            "agentforce_sdr", "agentforce_field_service", "agentforce_contracts",
-            "agentforce_revenue", "agentforce_sustainability",
-            "oracle_erp_compliance", "oracle_hcm_regulatory", "oracle_supply_chain_esg",
-            "oracle_cx_sales",
-            "sap_compliance_bridge", "sap_predictive_maintenance", "sap_cbam_export",
         ]
 
         for agent_id in workflow_chain:
@@ -215,18 +192,6 @@ class Orchestrator:
             "dynamics_hr": lambda: agent.analyze_payroll_equity(input_data.get("payroll_data", ""), input_data.get("lang", "pt")),
             "dynamics_customer_service": lambda: agent.classify_ticket(input_data.get("ticket_text", ""), input_data.get("lang", "pt")),
             "powerbi_compliance": lambda: agent.generate_compliance_dashboard(input_data.get("tenant_data", ""), input_data.get("lang", "pt")),
-            "agentforce_sdr": lambda: agent.qualify_lead(input_data.get("lead_data", ""), input_data.get("lang", "pt")),
-            "agentforce_field_service": lambda: agent.dispatch_technician(input_data.get("service_request", ""), input_data.get("lang", "pt")),
-            "agentforce_contracts": lambda: agent.analyze_contract(input_data.get("contract_text", ""), input_data.get("lang", "pt")),
-            "agentforce_revenue": lambda: agent.forecast_revenue(input_data.get("pipeline_data", ""), input_data.get("lang", "pt")),
-            "agentforce_sustainability": lambda: agent.generate_esg_report(input_data.get("esg_data", ""), input_data.get("lang", "pt")),
-            "oracle_erp_compliance": lambda: agent.audit_fiscal_compliance(input_data.get("period", ""), input_data.get("lang", "pt")),
-            "oracle_hcm_regulatory": lambda: agent.check_labor_compliance(input_data.get("hcm_data", ""), input_data.get("lang", "pt")),
-            "oracle_supply_chain_esg": lambda: agent.trace_supplier_emissions(input_data.get("suppliers_data", ""), input_data.get("lang", "pt")),
-            "oracle_cx_sales": lambda: agent.analyze_customer_sentiment(input_data.get("feedback_data", ""), input_data.get("lang", "pt")),
-            "sap_compliance_bridge": lambda: agent.check_grc_compliance(input_data.get("grc_data", ""), input_data.get("lang", "pt")),
-            "sap_predictive_maintenance": lambda: agent.predict_failures(input_data.get("equipment_data", ""), input_data.get("lang", "pt")),
-            "sap_cbam_export": lambda: agent.calculate_cbam(input_data.get("export_data", ""), input_data.get("lang", "pt")),
             "master_orchestrator": lambda: agent.create_plan(input_data.get("objective", ""), input_data.get("tenant_context", {})),
             "cross_platform_bridge": lambda: agent.sync_entity(
                 input_data.get("entity_type", ""), input_data.get("source", ""),
@@ -366,42 +331,6 @@ class Orchestrator:
         elif agent_id == "powerbi_compliance":
             data = context.get("document", "") or context.get("tenant_data", "")
             return agent.generate_compliance_dashboard(data) if data else None
-        elif agent_id == "agentforce_sdr":
-            data = context.get("document", "") or context.get("lead_data", "")
-            return agent.qualify_lead(data) if data else None
-        elif agent_id == "agentforce_field_service":
-            data = context.get("document", "") or context.get("service_request", "")
-            return agent.dispatch_technician(data) if data else None
-        elif agent_id == "agentforce_contracts":
-            data = context.get("document", "") or context.get("contract_text", "")
-            return agent.analyze_contract(data) if data else None
-        elif agent_id == "agentforce_revenue":
-            data = context.get("document", "") or context.get("pipeline_data", "")
-            return agent.forecast_revenue(data) if data else None
-        elif agent_id == "agentforce_sustainability":
-            data = context.get("document", "") or context.get("esg_data", "")
-            return agent.generate_esg_report(data) if data else None
-        elif agent_id == "oracle_erp_compliance":
-            period = context.get("period", "current_month")
-            return agent.audit_fiscal_compliance(period)
-        elif agent_id == "oracle_hcm_regulatory":
-            data = context.get("document", "") or context.get("hcm_data", "")
-            return agent.check_labor_compliance(data) if data else None
-        elif agent_id == "oracle_supply_chain_esg":
-            data = context.get("document", "") or context.get("suppliers_data", "")
-            return agent.trace_supplier_emissions(data) if data else None
-        elif agent_id == "oracle_cx_sales":
-            data = context.get("document", "") or context.get("feedback_data", "")
-            return agent.analyze_customer_sentiment(data) if data else None
-        elif agent_id == "sap_compliance_bridge":
-            data = context.get("document", "") or context.get("grc_data", "")
-            return agent.check_grc_compliance(data) if data else None
-        elif agent_id == "sap_predictive_maintenance":
-            data = context.get("document", "") or context.get("equipment_data", "")
-            return agent.predict_failures(data) if data else None
-        elif agent_id == "sap_cbam_export":
-            data = context.get("document", "") or context.get("export_data", "")
-            return agent.calculate_cbam(data) if data else None
         elif agent_id == "master_orchestrator":
             objective = context.get("objective", context.get("document", ""))
             return agent.create_plan(objective, context) if objective else None
