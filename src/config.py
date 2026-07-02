@@ -89,6 +89,12 @@ class Settings:
         self.microsoft_fulfillment_api_version: str = microsoft.get("fulfillment_api_version", "2018-08-31")
         self.microsoft_enabled: bool = microsoft.get("enabled", True)
 
+        hubspot = self.config.get("marketplace", {}).get("hubspot", {})
+        self.hubspot_client_id: str = hubspot.get("client_id", os.getenv("HUBSPOT_CLIENT_ID", ""))
+        self.hubspot_client_secret: str = hubspot.get("client_secret", os.getenv("HUBSPOT_CLIENT_SECRET", ""))
+        self.hubspot_app_id: str = hubspot.get("app_id", os.getenv("HUBSPOT_APP_ID", ""))
+        self.hubspot_enabled: bool = hubspot.get("enabled", True)
+
         self.base_url: str = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
 
         clusters = self.config.get("clusters", {})

@@ -375,6 +375,24 @@ marketplace:
     enabled: true
     fulfillment_api_version: '2018-08-31'
     tenant_id: ${AZURE_TENANT_ID}
+  hubspot:
+    client_id: ${HUBSPOT_CLIENT_ID}
+    client_secret: ${HUBSPOT_CLIENT_SECRET}
+    app_id: ${HUBSPOT_APP_ID}
+    redirect_uri: https://engenheiro-producao-ai.onrender.com/hubspot/oauth/callback
+    webhook_url: https://engenheiro-producao-ai.onrender.com/hubspot/webhook
+    enabled: true
+  pipefy:
+    api_key: ${PIPEFY_API_KEY}
+    webhook_url: https://engenheiro-producao-ai.onrender.com/pipefy/webhook
+    pipe_compliance_nr1: ${PIPEFY_PIPE_COMPLIANCE_NR1}
+    pipe_compliance_lgpd: ${PIPEFY_PIPE_COMPLIANCE_LGPD}
+    pipe_compliance_eu_ai_act: ${PIPEFY_PIPE_COMPLIANCE_EU_AI_ACT}
+    enabled: true
+  appsumo:
+    webhook_secret: ${APPSUMO_WEBHOOK_SECRET}
+    webhook_url: https://engenheiro-producao-ai.onrender.com/appsumo/webhook
+    enabled: true
 memory:
   episodic:
     enabled: true

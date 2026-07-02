@@ -36,6 +36,10 @@ from app.routers.stripe_app import router as stripe_app_router
 from app.routers.privacy import router as privacy_router
 from app.routers.stripe_webhook import router as stripe_webhook_router
 from app.routers.governance import router as governance_router
+from app.routers.hubspot_marketplace import router as hubspot_router
+from app.routers.pipefy_marketplace import router as pipefy_router
+from app.routers.zapier_integration import router as zapier_integration_router
+from app.routers.appsumo_marketplace import router as appsumo_router
 from app.routers.bridge import router as bridge_router
 from app.routers.code_review import router as code_review_router
 from app.routers.physical_ai import router as physical_ai_router
@@ -239,6 +243,10 @@ app.include_router(stripe_app_router)
 app.include_router(privacy_router)
 app.include_router(stripe_webhook_router)
 app.include_router(governance_router)
+app.include_router(hubspot_router)
+app.include_router(pipefy_router)
+app.include_router(zapier_integration_router)
+app.include_router(appsumo_router)
 
 
 @app.get("/suporte", response_class=HTMLResponse)

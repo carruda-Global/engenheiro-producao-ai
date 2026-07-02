@@ -117,6 +117,12 @@ def generate_offers():
             },
             "sap": {
                 "plans": [{"id": p["id"], "name": p["name"], "price_usd": p["price_usd"]} for p in NEW_PRODUCTS]
+            },
+            "hubspot": {
+                "plans": [{"id": p["id"], "name": p["name"], "price_usd": p["price_usd"]} for p in NEW_PRODUCTS]
+            },
+            "pipefy": {
+                "plans": [{"id": p["id"], "name": p["name"], "price_usd": p["price_usd"]} for p in NEW_PRODUCTS]
             }
         }
     }
@@ -180,10 +186,47 @@ def main():
     print("\n[5/6] Salesforce AgentExchange - Offer gerada")
     print("   Upload manual em: https://partners.salesforce.com")
 
-    print("\n[6/6] AWS / Oracle / SAP - Offers geradas")
-    print("   Acessar respectivos portals para publicacao")
+    print("\n[6/6] HubSpot App Marketplace - Configuracao manual")
+    print("   Endpoints:")
+    print("     Install:    https://engenheiro-producao-ai.onrender.com/hubspot/install")
+    print("     OAuth:      https://engenheiro-producao-ai.onrender.com/hubspot/oauth/callback")
+    print("     Webhook:    https://engenheiro-producao-ai.onrender.com/hubspot/webhook")
+    print("     Compliance: https://engenheiro-producao-ai.onrender.com/hubspot/compliance-check")
+    print("   Configurar em: https://developers.hubspot.com/")
+    print("   Guia: marketplace-integration/hubspot/setup_guide.md")
+
+    print("\n[7/7] Pipefy Ecosystem - Configuracao manual")
+    print("   Endpoints:")
+    print("     Webhook:    https://engenheiro-producao-ai.onrender.com/pipefy/webhook")
+    print("     Run Check:  https://engenheiro-producao-ai.onrender.com/pipefy/run-check")
+    print("   Criar Pipes de compliance NR-1, LGPD, EU AI Act")
+    print("   Guia: marketplace-integration/pipefy/setup_guide.md")
+
+    print("\n[8/8] AppSumo (Lifetime Deals) - Configuracao manual")
+    print("   Webhook:    https://engenheiro-producao-ai.onrender.com/appsumo/webhook")
+    print("   License:    https://engenheiro-producao-ai.onrender.com/appsumo/license/activate")
+    print("   Guia: marketplace-integration/appsumo/setup_guide.md")
+
+    print("\n[9/9] Zapier App Directory - Deploy via CLI")
+    print("   cd zapier-integration && zapier push")
+    print("   Guia: zapier-integration/README.md")
+
+    print("\n[10/10] n8n Community Node - Publicar no npm")
+    print("   cd n8n-nodes/aion-compliance && npm publish")
+    print("   Guia: n8n-nodes/aion-compliance/README.md")
 
     print("\n" + "=" * 60)
+    print("RESUMO - NOVAS PLATAFORMAS ADICIONADAS:")
+    print("  ✅ HubSpot App Marketplace (faixa 1)")
+    print("  ✅ Pipefy Ecosystem (faixa 2)")
+    print("  ✅ Zapier App Directory (faixa 3)")
+    print("  ✅ n8n Community Nodes (faixa 4)")
+    print("  ✅ AppSumo (lifetime deals)")
+    print("  🟡 G2 Crowd + Capterra (perfis prontos - precisa reviews)")
+    print("  🟡 TAAFT + Futurepedia + Toolify.ai (listings prontos)")
+    print("  🟡 Product Hunt (estrategia definida)")
+    print("=" * 60)
+    print()
     print("Stripe Agentic Commerce:")
     print("  Upload catalog: config/stripe_agentic_catalog.csv")
     print("  ACP config: config/acp_checkout_config.json")
