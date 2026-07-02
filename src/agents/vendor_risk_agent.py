@@ -1,35 +1,44 @@
+"""Global Vendor Risk Copilot — upload de questionário/certificações -> risk score -> PDF."""
 import asyncio
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File, Form
+from fastapi.responses import StreamingResponse
 from src.api.deepseek_client import DeepSeekClient
 from src.config import Settings
+from src.agents._copilot_common import extrair_texto, parsear_json_llm, gerar_pdf_relatorio
 
 router = APIRouter(prefix="/api/vendor-risk", tags=["vendor_risk"])
 
 SYSTEM_PROMPT = """You are a Vendor Risk Assessment specialist for enterprise compliance.
-Required by: ISO 27001, SOC2, DORA, NIS2, CSRD supply chain requirements.
-Assess vendors on: cybersecurity posture, data handling, financial stability, regulatory compliance,
-concentration risk, ESG practices, contractual protections.
-Output structured risk score (0-100) with RED/AMBER/GREEN rating and specific remediation steps.
-Used by: procurement, legal, compliance, IT security teams at Fortune 500 companies."""
+Criteria: cybersecurity posture, data handling, financial stability, regulatory compliance
+(LGPD/GDPR, SOC2, ISO27001), concentration risk, ESG practices, contractual protections.
 
-@router.post("/assess")
-async def assess_vendor(data: dict):
+Analyze the provided vendor questionnaire/certifications and return STRICT JSON (no markdown outside JSON):
+{
+  "classification": "Low Risk" | "Medium Risk" | "High Risk",
+  "classification_reasoning": "string, 2-3 sentences",
+  "risk_score": 0-100,
+  "obligations": [{"requirement": "string (criteria)", "status": "met" | "gap" | "unclear"}],
+  "gaps": ["string"],
+  "action_plan": [{"priority": 1, "action": "string", "deadline_days": 30}]
+}"""
+
+
+@router.post("/analyze")
+async def analyze_document(file: UploadFile = File(...), company: str = Form(...)):
+    conteudo = await file.read()
+    texto = extrair_texto(conteudo, file.filename or "")[:12000]
     settings = Settings()
     deepseek = DeepSeekClient(settings)
-    prompt = (
-        f"Vendor: {data.get('vendor_name','')}\n"
-        f"Service: {data.get('service_type','')}\n"
-        f"Data access: {data.get('data_access','')}\n"
-        f"Country: {data.get('country','')}\n"
-        f"Certifications: {data.get('certifications','unknown')}\n"
-        f"Annual spend: {data.get('annual_spend','')}\n"
-        f"Assess risk and provide RAG rating with remediation plan."
-    )
-    response = await asyncio.to_thread(deepseek.chat, SYSTEM_PROMPT, prompt)
-    return {"assessment": response, "checkout_url": "https://buy.stripe.com/3cs00l1Ae6QRfC47u8g7e08"}
+    raw = await asyncio.to_thread(deepseek.chat, SYSTEM_PROMPT, f"Vendor: {company}\n\nDocument content:\n{texto}")
+    analise = parsear_json_llm(raw)
+    pdf_buf = gerar_pdf_relatorio("Vendor Risk Assessment Report", company, analise)
+    return StreamingResponse(pdf_buf, media_type="application/pdf",
+                              headers={"Content-Disposition": 'attachment; filename="Vendor_Risk_Report.pdf"'})
+
 
 @router.post("/portfolio-scan")
 async def scan_portfolio(data: dict):
+    """Compatibilidade — varredura rápida de múltiplos fornecedores sem upload."""
     settings = Settings()
     deepseek = DeepSeekClient(settings)
     vendors = data.get("vendors", [])
