@@ -639,9 +639,17 @@ async def mcp_server_manifest(server_id: str):
 
 
 INTERNAL_AGENTS = {
-    "master_orchestrator", "federated_knowledge", "ecosystem_evolution",
-    "quality_critic", "meta_learning", "cross_platform_bridge",
-    "workforce_orchestrator", "knowledge_agent", "facilitator_agent",
+    # Orquestração
+    "master_orchestrator", "workforce_orchestrator", "ecosystem_evolution",
+    "meta_learning", "federated_knowledge", "cross_platform_bridge",
+    # Inteligência
+    "quality_critic", "client_intelligence", "knowledge_agent", "facilitator_agent",
+    # Integração (conectores — não passam por orchestrator._agent_map, mas listados
+    # aqui para documentar o Tier 3 completo; o filtro abaixo já os ignora)
+    "antigravity_bridge", "zapier_integration_agent", "physical_ai_connector",
+    "universal_governance",
+    # Operação
+    "dashboard_agent", "usage_billing",
 }
 
 
