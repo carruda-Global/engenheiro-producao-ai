@@ -91,6 +91,7 @@ async def montar_inventario_empresa(empresa_id: UUID) -> dict:
 
     for atividade in atividades:
         avaliacao = await avaliar_atividade(atividade["nome"])
+        avaliacao.pop("atividade", None)  # avaliar_atividade returns the name as a string; don't let it clobber the full row dict below
         inventario.append({"atividade": dict(atividade), **avaliacao})
         documentos_necessarios.update(avaliacao.get("documentos_a_gerar", []))
 

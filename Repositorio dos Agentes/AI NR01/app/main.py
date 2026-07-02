@@ -1,9 +1,12 @@
 """NR1 AI — API backend (usada pelo app desktop via HTTP local, ou testável direto)."""
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
 from fastapi import FastAPI
 
 from app.core.database.db import init_pool, close_pool
 from app.modules.nr1.router import router as nr1_router
+
+load_dotenv()
 
 
 @asynccontextmanager
