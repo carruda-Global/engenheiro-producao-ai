@@ -17,24 +17,15 @@ class HubSpotClient:
     def get_authorization_url(self, redirect_uri: str, scopes: list[str] | None = None) -> str:
         if scopes is None:
             scopes = [
-                "cms.domains.read",
-                "cms.pages.landing_pages.read",
-                "cms.pages.site_pages.read",
-                "cms.source_code.read",
-                "cms.source_code.write",
                 "crm.objects.companies.read",
+                "crm.objects.companies.write",
                 "crm.objects.contacts.read",
-                "crm.objects.deals.read",
-                "crm.objects.owners.read",
+                "crm.objects.contacts.write",
+                "crm.objects.custom.read",
+                "crm.objects.custom.write",
                 "crm.schemas.companies.read",
                 "crm.schemas.contacts.read",
-                "crm.schemas.deals.read",
-                "developer.projects.write",
-                "developer.secrets.read",
-                "developer.secrets.write",
-                "developer.test_accounts.read",
-                "developer.test_accounts.write",
-                "files",
+                "crm.schemas.custom.read",
             ]
         scope_str = "%20".join(scopes)
         return (

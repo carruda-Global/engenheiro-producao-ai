@@ -1,0 +1,43 @@
+{
+  "uid": "AIONCompliance_app",
+  "type": "app",
+  "config": {
+    "description": "106 AI compliance agents covering NR-1, LGPD, EU AI Act, CSRD, DORA, NIS2, SOC2 and ISO27001 — automated regulatory readiness checks directly from your CRM records.",
+    "name": "AION Compliance",
+    "distribution": "marketplace",
+    "auth": {
+      "type": "oauth",
+      "redirectUrls": [
+        "https://engenheiro-producao-ai.onrender.com/hubspot/oauth/callback"
+      ],
+      "requiredScopes": [
+        "oauth",
+        "crm.objects.companies.read",
+        "crm.objects.companies.write",
+        "crm.objects.contacts.read",
+        "crm.objects.contacts.write",
+        "crm.objects.custom.read",
+        "crm.objects.custom.write",
+        "crm.schemas.companies.read",
+        "crm.schemas.contacts.read",
+        "crm.schemas.custom.read"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": [
+        "https://api.hubapi.com",
+        "https://engenheiro-producao-ai.onrender.com"
+      ],
+      "iframe": [],
+      "img": []
+    },
+    "support": {
+      "supportEmail": "contact@global-engenharia.com",
+      "documentationUrl": "https://global-engenharia.com/ecosystem",
+      "supportUrl": "https://global-engenharia.com/ecosystem",
+      "supportPhone": "+5511994798464"
+    }
+  }
+}
