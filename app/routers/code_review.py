@@ -9,12 +9,13 @@ async def review_pr(request: Request):
     data = await request.json()
     tenant_id = request.headers.get("X-Tenant-ID", "default")
     reviewer = MAICodeReviewer()
-    result = await reviewer._review_pr(
-        repo=data.get("repo", ""),
-        pr_number=data.get("pr_number", 0),
-        diff=data.get("diff", ""),
-        tenant_id=tenant_id
-    )
+    result = await reviewer.execute({
+        "action": "review",
+        "repo": data.get("repo", ""),
+        "pr_number": data.get("pr_number", 0),
+        "diff": data.get("diff", ""),
+        "tenant_id": tenant_id
+    })
     return result
 
 
@@ -36,6 +37,10 @@ async def github_webhook(request: Request):
     diff = diff_resp.text
 
     reviewer = MAICodeReviewer()
-    result = await reviewer._review_pr(repo, pr_number, diff, tenant_id)
+    result = await reviewer.execute({
+        "action": "review", "repo": repo,
+        "pr_number": pr_number, "diff": diff,
+        "tenant_id": tenant_id
+    })
 
     return {"status": "reviewed", "risk_score": result["risk_score"]}
