@@ -638,9 +638,17 @@ async def mcp_server_manifest(server_id: str):
     return {"id": server_id, "name": f"AION {server_id.title()} MCP", "description": f"MCP server for {server_id} agents", "tools": [{"name": t} for t in server["tools"]]}
 
 
+INTERNAL_AGENTS = {
+    "master_orchestrator", "federated_knowledge", "ecosystem_evolution",
+    "quality_critic", "meta_learning", "cross_platform_bridge",
+    "workforce_orchestrator", "knowledge_agent", "facilitator_agent",
+}
+
+
 @app.get("/api/v1/agents")
 async def v1_list_agents():
-    return {"agents": list(orchestrator.agents.keys()), "total": len(orchestrator.agents)}
+    public_agents = [a for a in orchestrator.agents.keys() if a not in INTERNAL_AGENTS]
+    return {"agents": public_agents, "total": len(public_agents)}
 
 
 @app.get("/api/v1/subscriptions/plans")
