@@ -4,6 +4,11 @@ import logging
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 
+from app.app_utils.marketplace_auth import (
+    require_marketplace_admin_secret,
+    verify_hmac_signature,
+)
+from src.config import get_settings
 from src.monetization.plans import PLANS, get_plan
 from src.monetization.subscription_activator import (
     activate_subscription,
@@ -26,8 +31,13 @@ class SalesforceActivationResponse(BaseModel):
 
 @router.post("/webhook")
 async def handle_webhook(request: Request):
+    body = await request.body()
+    signature = request.headers.get("x-salesforce-signature", "")
+    if not verify_hmac_signature(body, signature, get_settings().salesforce_webhook_secret):
+        raise HTTPException(status_code=401, detail="Assinatura invalida")
+
     try:
-        payload = await request.json()
+        payload = json.loads(body)
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
 
@@ -53,9 +63,12 @@ async def handle_webhook(request: Request):
 
 @router.get("/subscribe")
 async def subscribe(
+    request: Request,
     plan: str = Query(default="compliance_essencial"),
     subscriber_id: str = Query(default=""),
 ):
+    require_marketplace_admin_secret(request, get_settings().marketplace_admin_secret)
+
     if not subscriber_id:
         raise HTTPException(
             status_code=400,

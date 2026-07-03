@@ -52,8 +52,8 @@ class AppSumoLicenseResponse(BaseModel):
 
 def _verify_signature(payload: bytes, signature: str) -> bool:
     if not APPSUMO_SECRET:
-        logger.warning("APPSUMO_WEBHOOK_SECRET nao configurado — pulando verificacao")
-        return True
+        logger.error("APPSUMO_WEBHOOK_SECRET nao configurado — rejeitando webhook (fail closed)")
+        return False
     expected = hmac.new(
         APPSUMO_SECRET.encode(),
         payload,

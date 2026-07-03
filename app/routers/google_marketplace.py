@@ -6,7 +6,8 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 
-from src.config import Settings
+from app.app_utils.marketplace_auth import require_marketplace_admin_secret
+from src.config import Settings, get_settings
 from src.monetization.google_client import GoogleCloudMarketplaceClient
 from src.monetization.plans import PLANS, get_plan
 
@@ -41,9 +42,12 @@ _active_subscriptions: dict[str, dict] = {}
 
 @router.get("/subscribe")
 async def subscribe(
+    request: Request,
     plan: str = Query(default="compliance_essencial"),
     customer_id: str = Query(default=""),
 ):
+    require_marketplace_admin_secret(request, get_settings().marketplace_admin_secret)
+
     if not customer_id:
         raise HTTPException(
             status_code=400,
@@ -83,6 +87,8 @@ async def subscribe(
 
 @router.post("/webhook")
 async def handle_webhook(request: Request):
+    require_marketplace_admin_secret(request, get_settings().marketplace_admin_secret)
+
     settings = Settings()
     client = GoogleCloudMarketplaceClient(settings)
 
@@ -137,6 +143,8 @@ async def handle_webhook(request: Request):
 
 @router.post("/fulfill")
 async def fulfill_subscription(request: Request):
+    require_marketplace_admin_secret(request, get_settings().marketplace_admin_secret)
+
     settings = Settings()
     client = GoogleCloudMarketplaceClient(settings)
 

@@ -7,6 +7,8 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
+from app.app_utils.marketplace_auth import require_marketplace_admin_secret
+from src.config import get_settings
 from src.monetization.hubspot_client import HubSpotClient
 from src.monetization.plans import PLANS, get_plan
 from src.monetization.subscription_activator import (
@@ -203,9 +205,12 @@ async def compliance_check(payload: HubSpotComplianceRequest):
 
 @router.get("/subscribe")
 async def subscribe(
+    request: Request,
     plan: str = Query(default="compliance_essencial"),
     portal_id: str = Query(default=""),
 ):
+    require_marketplace_admin_secret(request, get_settings().marketplace_admin_secret)
+
     if not portal_id:
         raise HTTPException(
             status_code=400,

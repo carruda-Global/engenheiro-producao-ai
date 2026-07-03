@@ -2,7 +2,7 @@ PLANS = [
     {"id": "starter", "name": "AEC Starter", "price_brl": 997, "price_usd": 249, "agents": ["#1"]},
     {"id": "professional", "name": "AEC Professional", "price_brl": 2391, "price_usd": 599, "agents": ["#1", "#2", "#3"]},
     {"id": "enterprise", "name": "AEC Enterprise", "price_brl": 4685, "price_usd": 1199, "agents": ["#1", "#2", "#3", "#4", "#5"]},
-    {"id": "regulatory_starter", "name": "Compliance Essencial", "price_brl": 590, "price_usd": 149, "agents": ["#13", "#15"]},
+    {"id": "compliance_essencial", "name": "Compliance Essencial", "price_brl": 590, "price_usd": 149, "agents": ["#13", "#15"]},
     {"id": "regulatory_pro", "name": "Regulatory Pro", "price_brl": 1490, "price_usd": 379, "agents": ["#13", "#15", "#19", "#20", "#21"]},
     {"id": "esg_carbono", "name": "ESG + Carbono", "price_brl": 2490, "price_usd": 629, "agents": ["#16", "#17", "#18"]},
     {"id": "microsoft_pack", "name": "Microsoft Pack", "price_brl": 4482, "price_usd": 1129, "agents": ["#22", "#23", "#24", "#25", "#26", "#27"]},

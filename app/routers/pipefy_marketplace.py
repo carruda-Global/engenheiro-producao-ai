@@ -5,6 +5,11 @@ import os
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 
+from app.app_utils.marketplace_auth import (
+    require_marketplace_admin_secret,
+    verify_hmac_signature,
+)
+from src.config import get_settings
 from src.monetization.pipefy_client import PipefyClient
 from src.monetization.plans import PLANS
 from src.monetization.subscription_activator import (
@@ -40,7 +45,12 @@ class PipefyRunCheckRequest(BaseModel):
 
 
 @router.post("/webhook")
-async def handle_webhook(payload: PipefyWebhookPayload):
+async def handle_webhook(request: Request, payload: PipefyWebhookPayload):
+    body = await request.body()
+    signature = request.headers.get("x-pipefy-signature", "")
+    if not verify_hmac_signature(body, signature, get_settings().pipefy_webhook_secret):
+        raise HTTPException(status_code=401, detail="Assinatura invalida")
+
     action = payload.action
     card_id = payload.card_id
     pipe_id = payload.pipe_id
@@ -95,9 +105,12 @@ async def run_compliance_check(payload: PipefyRunCheckRequest):
 
 @router.get("/subscribe")
 async def subscribe(
+    request: Request,
     plan: str = Query(default="compliance_essencial"),
     organization_id: str = Query(default=""),
 ):
+    require_marketplace_admin_secret(request, get_settings().marketplace_admin_secret)
+
     if not organization_id:
         raise HTTPException(
             status_code=400,

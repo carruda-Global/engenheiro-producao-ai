@@ -97,6 +97,10 @@ class Settings:
 
         self.base_url: str = os.getenv("BASE_URL", "https://engenheiro-producao-ai.onrender.com")
 
+        self.marketplace_admin_secret: str = os.getenv("MARKETPLACE_ADMIN_SECRET", "")
+        self.pipefy_webhook_secret: str = os.getenv("PIPEFY_WEBHOOK_SECRET", "")
+        self.salesforce_webhook_secret: str = os.getenv("SALESFORCE_WEBHOOK_SECRET", "")
+
         clusters = self.config.get("clusters", {})
         self.agents_config: dict = {}
         for cluster_name, cluster_cfg in clusters.items():
