@@ -42,3 +42,8 @@ jinja2>=3.1.4
 aiofiles>=24.1.0
 sqlalchemy>=2.0.0
 python-dotenv>=1.0.0
+
+# Global Copilots — document parsing/generation (SOC2, ISO27001, Contract Risk, Vendor Risk, EU AI Act)
+pypdf>=5.1.0
+reportlab>=4.2.5
+Pillow>=11.0.0
